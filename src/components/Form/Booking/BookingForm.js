@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import { getLocations } from "../../../api/location";
 import styles from "./BookingForm.module.css";
 import DateSelector from "../Date/DateSelector";
-import { useNavigate } from "react-router-dom";  // Thay thế useHistory bằng useNavigate
+import { useNavigate } from "react-router-dom"; 
 
 const BookingForm = () => {
   const [locations, setLocations] = useState([]);
-  const [departure, setDeparture] = useState("");
-  const [destination, setDestination] = useState("");
+  const [departure, setDeparture] = useState(localStorage.getItem('departure') || "");
+  const [destination, setDestination] = useState(localStorage.getItem('destination') || "");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [returnDate, setReturnDate] = useState(null);
-  const [ticketCount, setTicketCount] = useState(1);  // State cho "Số vé"
+  const [ticketCount, setTicketCount] = useState(1); 
 
-  const navigate = useNavigate();  // Sử dụng hook useNavigate để điều hướng
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -27,6 +27,16 @@ const BookingForm = () => {
     fetchLocations();
   }, []);
 
+  const handleDepartureChange = (e) => {
+    setDeparture(e.target.value);
+    localStorage.setItem('departure', e.target.value); // Lưu vào localStorage
+  };
+
+  const handleDestinationChange = (e) => {
+    setDestination(e.target.value);
+    localStorage.setItem('destination', e.target.value); // Lưu vào localStorage
+  };
+
   const handleTripTypeChange = (e) => {
     setIsRoundTrip(e.target.value === 'round-trip');
     if (e.target.value !== 'round-trip') {
@@ -35,13 +45,11 @@ const BookingForm = () => {
   };
 
   const handleSearch = () => {
-    // Kiểm tra xem người dùng đã nhập đủ thông tin chưa
     if (!departure || !destination || !selectedDate) {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    // Tạo query string để truyền thông tin tìm kiếm lên server
     const queryParams = new URLSearchParams({
       departureLocation: departure,
       arrivalLocation: destination,
@@ -50,7 +58,6 @@ const BookingForm = () => {
       ticketCount: ticketCount
     });
 
-    // Điều hướng tới trang kết quả tìm kiếm với query string
     navigate(`/search-results?${queryParams.toString()}`);
   };
 
@@ -81,7 +88,7 @@ const BookingForm = () => {
           <label>Điểm đi</label>
           <select
             value={departure}
-            onChange={(e) => setDeparture(e.target.value)}
+            onChange={handleDepartureChange}
           >
             <option value="">Chọn điểm đi</option>
             {locations.map((location) => (
@@ -98,6 +105,8 @@ const BookingForm = () => {
               const temp = departure;
               setDeparture(destination);
               setDestination(temp);
+              localStorage.setItem('departure', destination); // Cập nhật giá trị trong localStorage
+              localStorage.setItem('destination', temp); // Cập nhật giá trị trong localStorage
             }}
           >
             ↔️
@@ -108,7 +117,7 @@ const BookingForm = () => {
           <label>Điểm đến</label>
           <select
             value={destination}
-            onChange={(e) => setDestination(e.target.value)}
+            onChange={handleDestinationChange}
           >
             <option value="">Chọn điểm đến</option>
             {locations.map((location) => (

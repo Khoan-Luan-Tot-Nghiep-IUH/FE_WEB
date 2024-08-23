@@ -1,33 +1,34 @@
 .bookingForm {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  background-color: white;
+  background-color: #fff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
 }
 
 .tripType {
   display: flex;
-  justify-content: space-around;
   margin-bottom: 20px;
-  width: 100%;
+  align-items: center;
 }
 
 .formGroupContainer {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  flex-wrap: wrap;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .formGroup {
   flex: 1;
-  margin-bottom: 15px;
-  min-width: calc(25% - 10px);
-  box-sizing: border-box;
+  margin-bottom: 0;
+  padding-right: 10px;
+}
+
+.formGroup:last-child {
+  padding-right: 0;
 }
 
 .formGroup input,
@@ -37,6 +38,10 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
+}
+
+.dateField {
+  width: 100%;
 }
 
 .btnContainer {
@@ -90,15 +95,23 @@
   background-color: #e66a00;
 }
 
+.formGroupContainer.roundTrip .formGroup {
+  flex: 1;
+  min-width: 0; /* Giảm min-width để tránh chiếm quá nhiều không gian */
+}
+
 .formGroupContainer.roundTrip .formGroup.dateReturn {
   display: block;
+  flex: 1; /* Ngày về sẽ chiếm đủ không gian cần thiết */
 }
 
 .formGroupContainer.roundTrip .formGroup.ticketCount {
   flex: 0.5;
-  max-width: calc(12.5% - 10px);
+  max-width: 100px; /* Giới hạn chiều rộng tối đa của ô "Số vé" */
+  margin-left: 10px; /* Tạo khoảng cách giữa ô "Ngày về" và "Số vé" */
 }
 
-.formGroupContainer.roundTrip .formGroup {
-  min-width: calc(20% - 10px);
+.formGroupContainer:not(.roundTrip) .formGroup.dateReturn {
+  display: none; /* Ẩn ô Ngày về khi không chọn Khứ hồi */
+  flex: 0;
 }

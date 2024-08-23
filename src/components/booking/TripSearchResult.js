@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { searchTrips } from "../..//api/tripApi";
+import { searchTrips } from "../../api/tripApi";
+import Layout from "../layout"; // Make sure the path is correct based on your folder structure
 
 const TripSearchResult = () => {
   const [trips, setTrips] = useState([]);
@@ -33,32 +34,31 @@ const TripSearchResult = () => {
     fetchTrips();
   }, [location.search]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
-    <div>
-      <h1>Kết quả tìm kiếm</h1>
-      {trips.length > 0 ? (
-        <ul>
-          {trips.map((trip) => (
-            <div key={trip._id}>
-              <h3>From: {trip.departureLocation.name}</h3>
-              <p>To: {trip.arrivalLocation.name}</p>
-              <p>Departure: {new Date(trip.departureTime).toLocaleString()}</p>
-              <p>Arrival: {new Date(trip.arrivalTime).toLocaleString()}</p>
-            </div>
-          ))}
-        </ul>
-      ) : (
-        <div>No trips found</div>
-      )}
-    </div>
+    <Layout>
+      <div>
+        <h1>Kết quả tìm kiếm</h1>
+        {loading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div>{error}</div>
+        ) : trips.length > 0 ? (
+          <ul>
+            {trips.map((trip) => (
+              <div key={trip._id}>
+                <h3>From: {trip.departureLocation?.name}</h3>
+                <p>To: {trip.arrivalLocation?.name}</p>
+                <p>Departure: {new Date(trip.departureTime).toLocaleString()}</p>
+                <p>Arrival: {new Date(trip.arrivalTime).toLocaleString()}</p>
+                <p>Price: {trip.price} VND</p>
+              </div>
+            ))}
+          </ul>
+        ) : (
+          <div>No trips found</div>
+        )}
+      </div>
+    </Layout>
   );
 };
 
