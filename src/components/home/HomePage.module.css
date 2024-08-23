@@ -1,0 +1,25 @@
+
+.heroSection {
+  position: relative;
+  text-align: center;
+  z-index: 2; 
+  margin-top: -100px; 
+}
+
+.heroBanner {
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin: 0 auto; 
+}
+
+
+.bookingSection {
+  padding: 30px 0;
+  margin-top: -50px; 
+  z-index: 2;
+  position: relative;
+}

@@ -1,0 +1,80 @@
+.navbar {
+    background-color: #ff7a00;
+    color: white;
+    position: relative;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 250px;
+}
+
+.navbarContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    position: relative;
+}
+
+.navbarLeft, .navbarRight {
+    display: flex;
+    align-items: center;
+}
+
+.languageSelect, .downloadApp {
+    background-color: #fff;
+    color: #ff7a00;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logo {
+    height: 70px;
+    margin-top: -35px; 
+}
+
+.navLinks {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    background-color: #e66a00;
+    padding: 10px 0;
+    border-radius: 5px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navLinks a {
+    color: white;
+    margin: 0 20px;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navLinks a:hover {
+    background-color: #fff; 
+    color: #ff7a00; 
+    border-radius: 5px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btnLogin {
+    background-color: #ffffff;
+    color: #ff7a00;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Thêm hiệu ứng chuyển tiếp khi hover */
+}
+
+.btnLogin:hover {
+    background-color: #e66a00;
+    color: white;
+}

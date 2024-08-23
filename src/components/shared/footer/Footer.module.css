@@ -1,0 +1,106 @@
+.footer {
+    background-color: #f7f7f7;
+    padding: 40px 20px;
+    color: #333;
+    font-family: Arial, sans-serif;
+  }
+  
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .contactInfo {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+  
+  .contactInfo h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .contactInfo h2 {
+    font-size: 28px;
+    color: #e66a00;
+    margin-bottom: 20px;
+  }
+  
+  .contactInfo p {
+    margin: 5px 0;
+  }
+  
+  .contactInfo a {
+    color: #e66a00;
+    text-decoration: none;
+  }
+  
+  .appLinks {
+    flex: 1 1 100%;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .downloadIcons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .downloadIcons img {
+    width: 120px;
+    height: auto;
+  }
+  
+  .footerLinks {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+  }
+  
+  .footerCol {
+    flex: 1 1 200px;
+  }
+  
+  .footerCol h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .footerCol ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footerCol ul li {
+    margin-bottom: 10px;
+  }
+  
+  .footerCol ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .footerCol ul li a:hover {
+    color: #e66a00;
+  }
+  
+  .footerLogos {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+  }
+  
+  .footerLogos img {
+    width: 150px;
+    height: auto;
+  }
+  
