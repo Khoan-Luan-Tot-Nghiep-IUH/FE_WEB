@@ -29,12 +29,12 @@ const BookingForm = () => {
 
   const handleDepartureChange = (e) => {
     setDeparture(e.target.value);
-    localStorage.setItem('departure', e.target.value); // Lưu vào localStorage
+    localStorage.setItem('departure', e.target.value); 
   };
 
   const handleDestinationChange = (e) => {
     setDestination(e.target.value);
-    localStorage.setItem('destination', e.target.value); // Lưu vào localStorage
+    localStorage.setItem('destination', e.target.value); 
   };
 
   const handleTripTypeChange = (e) => {
@@ -49,16 +49,27 @@ const BookingForm = () => {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
-
+  
     const queryParams = new URLSearchParams({
       departureLocation: departure,
       arrivalLocation: destination,
       departureDate: selectedDate.toISOString(),
-      returnDate: isRoundTrip && returnDate ? returnDate.toISOString() : undefined,
       ticketCount: ticketCount
     });
-
+    if (isRoundTrip && returnDate) {
+      queryParams.append("returnDate", returnDate.toISOString());
+    }
+  
     navigate(`/search-results?${queryParams.toString()}`);
+  };
+  
+
+  const handleSwapLocations = () => {
+    const temp = departure;
+    setDeparture(destination);
+    setDestination(temp);
+    localStorage.setItem('departure', destination); 
+    localStorage.setItem('destination', temp); 
   };
 
   return (
@@ -100,15 +111,7 @@ const BookingForm = () => {
         </div>
 
         <div className={styles.switchButton}>
-          <button
-            onClick={() => {
-              const temp = departure;
-              setDeparture(destination);
-              setDestination(temp);
-              localStorage.setItem('departure', destination); // Cập nhật giá trị trong localStorage
-              localStorage.setItem('destination', temp); // Cập nhật giá trị trong localStorage
-            }}
-          >
+          <button onClick={handleSwapLocations}>
             ↔️
           </button>
         </div>

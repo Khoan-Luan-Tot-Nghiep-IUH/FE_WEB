@@ -1,0 +1,97 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .resultsContainer {
+    display: flex;
+    margin-top: 20px;
+  }
+  
+  .filterContainer {
+    width: 250px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin-right: 20px;
+    border: 1px solid #ddd;
+  }
+  
+  .filterContainer h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .filterSection {
+    margin-bottom: 20px;
+  }
+  
+  .filterSection h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #666;
+  }
+  
+  .filterSection label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+  }
+  
+  .results {
+    flex-grow: 1;
+  }
+  
+  .tripSection {
+    margin-bottom: 40px;
+  }
+  
+  .tripSection h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #e74c3c;
+  }
+  
+  .tripCard {
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .tripInfo h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .tripInfo p {
+    font-size: 14px;
+    margin: 4px 0;
+    color: #555;
+  }
+  
+  .bookButton {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .bookButton:hover {
+    background-color: #c0392b;
+  }
+  
