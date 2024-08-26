@@ -113,9 +113,9 @@ const filterTrips = (trips, departureTimeFilter, busTypeFilter, seatLocationFilt
 
     const matchesSeatLocation =
       !seatLocationFilter ||
-      (seatLocationFilter === "front" && trip.frontSeatsAvailable > 0) ||
-      (seatLocationFilter === "middle" && trip.middleSeatsAvailable > 0) ||
-      (seatLocationFilter === "back" && trip.backSeatsAvailable > 0);
+      (seatLocationFilter === "front" && trip.availableSeatsFront > 0) ||
+      (seatLocationFilter === "middle" && trip.availableSeatsMiddle > 0) ||
+      (seatLocationFilter === "back" && trip.availableSeatsBack > 0);
 
     return matchesTime && matchesBusType && matchesSeatLocation;
   });
