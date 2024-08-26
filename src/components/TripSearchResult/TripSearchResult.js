@@ -22,6 +22,7 @@ const TripSearchResult = () => {
 
   useEffect(() => {
     const fetchTrips = async () => {
+      setLoading(true); 
       try {
         const searchParams = {
           departureLocation: queryParams.get("departureLocation"),
@@ -33,10 +34,10 @@ const TripSearchResult = () => {
         const result = await searchTrips(searchParams);
         setDepartureTrips(result.departureTrips);
         setReturnTrips(result.returnTrips || []);
-        setLoading(false);
+        setLoading(false);  
       } catch (err) {
         setError("Failed to fetch search results.");
-        setLoading(false);
+        setLoading(false);  
       }
     };
 
@@ -48,6 +49,12 @@ const TripSearchResult = () => {
     navigate(path);
   };
 
+  const handleFilterChange = (filterSetter, newFilterValue) => {
+    setLoading(true);
+    filterSetter(newFilterValue);
+    setLoading(false); 
+  };
+
   const filteredDepartureTrips = filterTrips(departureTrips, departureTimeFilter, busTypeFilter, seatLocationFilter);
   const filteredReturnTrips = filterTrips(returnTrips, departureTimeFilter, busTypeFilter, seatLocationFilter);
 
@@ -56,18 +63,18 @@ const TripSearchResult = () => {
       <div className={styles.container}>
         <h1>Kết quả tìm kiếm</h1>
         {loading ? (
-          <div>Loading...</div>
+          <div className={styles.loading}>Đang tải...</div>
         ) : error ? (
           <div>{error}</div>
         ) : departureTrips.length > 0 ? (
           <div className={styles.resultsContainer}>
             <FilterSection
               departureTimeFilter={departureTimeFilter}
-              setDepartureTimeFilter={setDepartureTimeFilter}
+              setDepartureTimeFilter={(newFilter) => handleFilterChange(setDepartureTimeFilter, newFilter)}
               busTypeFilter={busTypeFilter}
-              setBusTypeFilter={setBusTypeFilter}
+              setBusTypeFilter={(newFilter) => handleFilterChange(setBusTypeFilter, newFilter)}
               seatLocationFilter={seatLocationFilter}
-              setSeatLocationFilter={setSeatLocationFilter}
+              setSeatLocationFilter={(newFilter) => handleFilterChange(setSeatLocationFilter, newFilter)}
             />
             <TripList
               trips={filteredDepartureTrips}
@@ -92,6 +99,7 @@ const TripSearchResult = () => {
 
 export default TripSearchResult;
 
+// Định nghĩa hàm filterTrips bên dưới component
 const filterTrips = (trips, departureTimeFilter, busTypeFilter, seatLocationFilter) => {
   return trips.filter((trip) => {
     const matchesTime =
