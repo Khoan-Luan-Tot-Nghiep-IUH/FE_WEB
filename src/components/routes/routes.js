@@ -4,7 +4,7 @@ import Loader from '../shared/Loader/Loader';
 
 const HomePage = React.lazy(() => import('../home/HomePage'));
 const Login = React.lazy(() => import('../auth/Login')); 
-const TripSearchResult = React.lazy(()=>import('../booking/TripSearchResult'))
+const TripSearchResult = React.lazy(()=>import('../TripSearchResult/TripSearchResult'))
 const AppRoutes = ({ userInfo }) => (
   <Suspense fallback={<Loader />}>
     <Routes>
