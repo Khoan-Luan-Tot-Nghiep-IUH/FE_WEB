@@ -8,9 +8,18 @@ const BookingForm = () => {
   const [locations, setLocations] = useState([]);
   const [departure, setDeparture] = useState(localStorage.getItem('departure') || "");
   const [destination, setDestination] = useState(localStorage.getItem('destination') || "");
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const savedDate = localStorage.getItem('selectedDate');
+    return savedDate ? new Date(savedDate) : new Date();
+  });
+  
   const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const [returnDate, setReturnDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(() => {
+    const savedReturnDate = localStorage.getItem('returnDate');
+    return savedReturnDate ? new Date(savedReturnDate) : null;
+  });
+  
   const [ticketCount, setTicketCount] = useState(1); 
 
   const navigate = useNavigate();
@@ -41,7 +50,18 @@ const BookingForm = () => {
     setIsRoundTrip(e.target.value === 'round-trip');
     if (e.target.value !== 'round-trip') {
       setReturnDate(null);
+      localStorage.removeItem('returnDate');
     }
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    localStorage.setItem('selectedDate', date.toISOString());
+  };
+
+  const handleReturnDateChange = (date) => {
+    setReturnDate(date);
+    localStorage.setItem('returnDate', date.toISOString());
   };
 
   const handleSearch = () => {
@@ -62,7 +82,6 @@ const BookingForm = () => {
   
     navigate(`/search-results?${queryParams.toString()}`);
   };
-  
 
   const handleSwapLocations = () => {
     const temp = departure;
@@ -106,7 +125,7 @@ const BookingForm = () => {
               <option key={location._id} value={location.name}>
                 {location.name}
               </option>
-            ))}
+            ))} 
           </select>
         </div>
 
@@ -135,7 +154,7 @@ const BookingForm = () => {
           <label>Ngày đi</label>
           <DateSelector 
             selectedDate={selectedDate} 
-            onDateChange={setSelectedDate} 
+            onDateChange={handleDateChange} 
           />
         </div>
 
@@ -144,7 +163,7 @@ const BookingForm = () => {
             <label>Ngày về</label>
             <DateSelector 
               selectedDate={returnDate} 
-              onDateChange={setReturnDate} 
+              onDateChange={handleReturnDateChange} 
             />
           </div>
         )}
