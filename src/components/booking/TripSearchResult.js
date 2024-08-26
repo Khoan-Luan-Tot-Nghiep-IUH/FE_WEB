@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { searchTrips } from "../../api/tripApi";
 import Layout from "../layout";
 import styles from "./TripSearchResult.module.css";
+
 const TripSearchResult = () => {
   const [departureTrips, setDepartureTrips] = useState([]);
   const [returnTrips, setReturnTrips] = useState([]);
@@ -73,6 +74,7 @@ const TripSearchResult = () => {
       timeZone: "UTC", 
     });
   };
+
   const isTimeInRange = (time, range) => {
     const hour = new Date(time).getUTCHours();
     switch (range) {
@@ -88,7 +90,6 @@ const TripSearchResult = () => {
         return true;
     }
   };
-
 
   const filterTrips = (trips) => {
     return trips.filter((trip) => {
@@ -136,21 +137,21 @@ const TripSearchResult = () => {
                       type="checkbox"
                       onChange={() => handleDepartureTimeFilterChange("morning")}
                     />
-                    Sáng sớm (00:00 - 06:00)
+                    Sáng sớm (00:00 - 5:59)
                   </label>
                   <label>
                     <input
                       type="checkbox"
                       onChange={() => handleDepartureTimeFilterChange("forenoon")}
                     />
-                    Buổi sáng (06:00 - 12:00)
+                    Buổi sáng (06:00 - 11:59)
                   </label>
                   <label>
                     <input
                       type="checkbox"
                       onChange={() => handleDepartureTimeFilterChange("afternoon")}
                     />
-                    Buổi chiều (12:00 - 18:00)
+                    Buổi chiều (12:00 - 17:59)
                   </label>
                   <label>
                     <input
@@ -168,14 +169,14 @@ const TripSearchResult = () => {
                   <label>
                     <input
                       type="checkbox"
-                      onChange={() => handleBusTypeFilterChange("Ghế")}
+                      onChange={() => handleBusTypeFilterChange("Ghế Ngồi")}
                     />
                     Ghế
                   </label>
                   <label>
                     <input
                       type="checkbox"
-                      onChange={() => handleBusTypeFilterChange("Giường")}
+                      onChange={() => handleBusTypeFilterChange("Giường Nằm")}
                     />
                     Giường
                   </label>
@@ -196,7 +197,7 @@ const TripSearchResult = () => {
                     <input
                       type="radio"
                       name="seatLocation"
-                      onChange={() => handleSeatLocationFilterChange("front")}
+                      onChange={() => handleSeatLocationFilterChange("Front")}
                     />
                     Hàng đầu
                   </label>
@@ -204,7 +205,7 @@ const TripSearchResult = () => {
                     <input
                       type="radio"
                       name="seatLocation"
-                      onChange={() => handleSeatLocationFilterChange("middle")}
+                      onChange={() => handleSeatLocationFilterChange("Middle")}
                     />
                     Hàng giữa
                   </label>
@@ -212,7 +213,7 @@ const TripSearchResult = () => {
                     <input
                       type="radio"
                       name="seatLocation"
-                      onChange={() => handleSeatLocationFilterChange("back")}
+                      onChange={() => handleSeatLocationFilterChange("Back")}
                     />
                     Hàng cuối
                   </label>
@@ -284,4 +285,3 @@ const TripSearchResult = () => {
 };
 
 export default TripSearchResult;
-
