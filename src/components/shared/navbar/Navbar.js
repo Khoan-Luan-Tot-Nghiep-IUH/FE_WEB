@@ -1,9 +1,26 @@
 import React from 'react';
 import styles from './Navbar.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/logo.webp';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../../Redux/User/userSlice';
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const userInfo = useSelector((state) => state.user.userInfo);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
+
+  const handleLoginClick = (e) => {
+    e.preventDefault();
+    navigate('/login', { state: { from: location } });
+  };
+
   return (
     <header className={styles.navbar}>
       <div className={styles.navbarContainer}>
@@ -20,7 +37,14 @@ const Navbar = () => {
           </Link>
         </div>
         <div className={styles.navbarRight}>
-          <Link to="/login" className={styles.btnLogin}>Đăng nhập/Đăng ký</Link>
+          {userInfo ? (
+            <>
+              <span>Welcome, {userInfo.fullName}!</span>
+              <button onClick={handleLogout} className={styles.btnLogout}>Logout</button>
+            </>
+          ) : (
+            <a href="/login" onClick={handleLoginClick} className={styles.btnLogin}>Đăng nhập/Đăng ký</a>
+          )}
         </div>
       </div>
       <nav className={styles.navLinks}>

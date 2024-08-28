@@ -3,8 +3,9 @@ import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '../../Redux/User/apiSlice';
 import { setCredentials } from '../../Redux/User/userSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';  // Cập nhật import đúng cú pháp
-import './Login.css'; 
+import {jwtDecode} from 'jwt-decode'; // Correct import
+
+import './Login.css';
 
 const Login = () => {
   const [userName, setUserName] = useState('');
@@ -16,25 +17,8 @@ const Login = () => {
 
   const [login, { isLoading }] = useLoginMutation();
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
-    if (token) {
-      handleSocialLoginSuccess(token);
-    }
-  }, [location]);
-
-  const handleSocialLoginSuccess = (token) => {
-    try {
-      const decodedUser = jwtDecode(token);
-      const userInfo = { ...decodedUser, token };
-      localStorage.setItem('user', JSON.stringify(userInfo));
-      dispatch(setCredentials(userInfo));
-      navigate(location.state?.from || '/', { replace: true });
-    } catch (error) {
-      setErrorMessage('Social login failed. Please try again.');
-    }
-  };
+  // Store the full path and search (query params)
+  const from = location.state?.from || { pathname: '/search-results', search: location.search };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -46,13 +30,32 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(userInfo));
       dispatch(setCredentials(userInfo));
 
-      // Điều hướng về trang trước đó hoặc về trang mặc định
-      const redirectTo = location.state?.from || '/';
-      navigate(redirectTo, { replace: true });
+      // Navigate back to the original page, including the search query
+      navigate(from.pathname + from.search, { replace: true });
     } catch (err) {
       setErrorMessage(err.data?.message || 'Login failed. Please try again.');
     }
   };
+
+  const handleSocialLoginSuccess = (token) => {
+    try {
+      const decodedUser = jwtDecode(token);
+      const userInfo = { ...decodedUser, token };
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      dispatch(setCredentials(userInfo));
+      navigate(from.pathname + from.search, { replace: true });
+    } catch (error) {
+      setErrorMessage('Social login failed. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    if (token) {
+      handleSocialLoginSuccess(token);
+    }
+  }, [location]);
 
   const handleFacebookLogin = () => {
     window.location.href = 'http://localhost:5000/api/user/facebook';
@@ -66,7 +69,6 @@ const Login = () => {
     <div className="login-container">
       <div className="login-box">
         <h2 className="login-title">Welcome Back!</h2>
-        
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
             <input
@@ -93,13 +95,10 @@ const Login = () => {
           </button>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </form>
-
         <div className="divider">or</div>
-
         <button onClick={handleFacebookLogin} className="social-login-btn facebook">
           Login with Facebook
         </button>
-
         <button onClick={handleGoogleLogin} className="social-login-btn google">
           Login with Google
         </button>
