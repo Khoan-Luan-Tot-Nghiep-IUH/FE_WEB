@@ -4,7 +4,7 @@ import styles from "./TripSearchResult.module.css";
 const TripCard = ({ trip, onBookTrip }) => {
   const formatTime = (time) => {
     const date = new Date(time);
-    return date.toLocaleTimeString("vi-VN", {
+    return date.toLocaleString("vi-VN", {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "UTC"
