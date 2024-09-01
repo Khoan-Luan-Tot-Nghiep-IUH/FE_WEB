@@ -1,5 +1,3 @@
-// DateSelector.js
-
 import React from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,10 +9,16 @@ const DateSelector = ({ selectedDate, onDateChange }) => {
     return date < today.setHours(0, 0, 0, 0); // So sánh đến đầu ngày hôm nay
   };
 
+  const handleDateChange = (date) => {
+    // Chuyển đổi ngày đã chọn sang UTC trước khi gửi lên backend
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    onDateChange(utcDate);
+  };
+
   return (
     <DatePicker
       selected={selectedDate}
-      onChange={onDateChange}
+      onChange={handleDateChange}
       dateFormat="dd/MM/yyyy"
       className={styles.datePickerInput}
       placeholderText="Chọn ngày đi"
