@@ -1,64 +1,100 @@
-/* SuperAdminDashboard.css */
 .super-admin-dashboard {
-    display: flex;
-  }
-  
-  .main-content {
-    margin-left: 250px; /* Để phần nội dung tránh bị che bởi sidebar */
-    padding: 20px;
-    width: calc(100% - 250px);
-  }
-  
-  .section {
-    margin-bottom: 40px;
-    padding: 20px;
-    border-bottom: 1px solid #ddd; /* Tạo ranh giới giữa các phần */
-  }
-  
-  
-  .create-button {
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .create-button:hover {
-    background-color: #45a049;
-  }
-  
-  .admin-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .admin-table th {
-    background-color: #f2f2f2;
-  }
-  
-  .delete-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .delete-button:hover {
-    background-color: #c0392b;
-  }
-  .button:active {
-    transform: scale(0.98);
-    box-shadow: 0 5px #666;
-    transform: translateY(4px);
-  }
-  
-  
+  display: flex;
+  background-color: #f8f9fa; /* Màu nền nhẹ nhàng */
+  min-height: 100vh; /* Full height */
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 30px;
+  width: calc(100% - 250px);
+  background-color: #ffffff; /* Màu nền trắng */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+  border-radius: 10px; /* Bo góc */
+}
+
+.section {
+  margin-bottom: 40px;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0; /* Ranh giới giữa các phần */
+}
+
+.create-button {
+  padding: 10px 20px;
+  background-color: #007bff; /* Màu xanh chủ đạo */
+  color: white;
+  border: none;
+  border-radius: 5px; /* Bo góc */
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease; /* Hiệu ứng hover */
+}
+
+.create-button:hover {
+  background-color: #0056b3; /* Màu khi hover */
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 10px; /* Bo góc bảng */
+  overflow: hidden; /* Giữ bo góc khi có border */
+}
+
+.admin-table th, .admin-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* Ranh giới giữa các ô */
+}
+
+.admin-table th {
+  background-color: #007bff; /* Nền tiêu đề bảng */
+  color: white; /* Chữ trắng */
+  font-weight: bold;
+}
+
+.admin-table td {
+  background-color: #f8f9fa; /* Nền cho các ô */
+}
+
+.admin-table tr:nth-child(even) {
+  background-color: #f2f2f2; /* Màu cho các hàng chẵn */
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+.button:active {
+  transform: scale(0.98);
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+/* Toastify Styling */
+.Toastify__toast {
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.Toastify__toast--success {
+  background-color: #9af0ae;
+}
+
+.Toastify__toast--error {
+  background-color: #dc3545;
+}
