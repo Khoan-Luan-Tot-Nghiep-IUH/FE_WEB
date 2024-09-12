@@ -1,34 +1,50 @@
 import React, { useState } from 'react';
-import Sidebar from '../shared/SideBar/SideBar'; // Import Sidebar
-import ManageCompanies from './navSideBar/ManageCompanies'; // Import các component cần hiển thị
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Sidebar from '../shared/SideBar/SideBar';
+import ManageCompanies from './navSideBar/ManageCompanies';
 import ManageAdmins from './navSideBar/ManageAdmins';
 import ManageUsers from './navSideBar/ManageUsers';
-
 import './SuperAdminDashboard.css';
 
 const SuperAdminDashboard = () => {
-  const [activeContent, setActiveContent] = useState('companies');
+  const [activeContent, setActiveContent] = useState(null);
+
+  const notify = () => {
+    toast.success("Chào mừng bạn đến với hệ thống!", {
+      autoClose: 3000, // Đóng sau 3 giây
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
 
   const renderContent = () => {
     switch (activeContent) {
       case 'companies':
-        return <ManageCompanies />; // Hiển thị trang Quản lý Nhà xe
+        return <ManageCompanies />;
       case 'admins':
-        return <ManageAdmins />; // Hiển thị trang Quản lý Admin
+        return <ManageAdmins />;
       case 'users':
-        return <ManageUsers />; // Hiển thị trang Quản lý Người dùng
+        return <ManageUsers />;
       default:
-        return <div>Chọn một mục từ sidebar</div>;
+        notify();
+        return (
+          <div style={{ color: 'red', fontWeight: 'bold', fontSize: '32px', textAlign: 'center' }}>
+            CHÀO MỪNG BẠN ĐẾN TRANG QUẢN LÍ HỆ THỐNG
+          </div>
+        );
     }
   };
 
   return (
     <div className="super-admin-dashboard">
       <Sidebar setActiveContent={setActiveContent} />
-
       <div className="main-content">
-        <h1>Super Admin Dashboard</h1>
         {renderContent()}
+        <ToastContainer />
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { setCredentials } from './Redux/User/userSlice';
 import AppRoutes from './components/routes/routes';
 import './reset.css';
-
 const useRestoreUser = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector(state => state.user);
