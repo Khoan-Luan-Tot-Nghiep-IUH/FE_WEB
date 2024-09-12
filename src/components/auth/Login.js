@@ -22,18 +22,28 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage(''); // Reset error message before attempt
     try {
       const userData = await login({ userName, password }).unwrap();
-      const decodedUser = jwtDecode(userData.accessToken);
-      const userInfo = { ...decodedUser, token: userData.accessToken };
+      
+      // Check if the accessToken exists and decode it
+      if (userData?.accessToken) {
+        const decodedUser = jwtDecode(userData.accessToken);
+        const userInfo = { ...decodedUser, token: userData.accessToken };
+        console.log('Role ID:', userInfo.roleId);
+        // Save user information to localStorage and Redux store
+        localStorage.setItem('user', JSON.stringify(userInfo));
+        dispatch(setCredentials(userInfo));
 
-      localStorage.setItem('user', JSON.stringify(userInfo));
-      dispatch(setCredentials(userInfo));
-
-      // Navigate back to the original page, including the search query
-      navigate(from.pathname + from.search, { replace: true });
+        // Navigate back to the original page, including the search query
+        navigate(from.pathname + from.search, { replace: true });
+      } else {
+        throw new Error('Token is missing or invalid.');
+      }
     } catch (err) {
-      setErrorMessage(err.data?.message || 'Login failed. Please try again.');
+      // If error has data and message, display it; otherwise, display generic error
+      const errorMsg = err?.data?.message || 'Login failed. Please try again.';
+      setErrorMessage(errorMsg);
     }
   };
 

@@ -55,6 +55,35 @@ const Navbar = () => {
         <Link to="/hoa-don">Hóa đơn</Link>
         <Link to="/lien-he">Liên hệ</Link>
         <Link to="/ve-chung-toi">Về chúng tôi</Link>
+        
+        {/* Links theo role */}
+        {userInfo && userInfo.roleId === 'superadmin' && (
+          <>
+            <Link to="/superadmin/dashboard">Quản lý hệ thống</Link>
+            <Link to="/company/dashboard">Quản lý nhà xe</Link>
+          </>
+        )}
+
+        {userInfo && userInfo.roleId === 'companyadmin' && (
+          <>
+            <Link to="/company/dashboard">Quản lý nhà xe</Link>
+            <Link to="/company/manage-trips">Quản lý chuyến đi</Link>
+          </>
+        )}
+
+        {userInfo && userInfo.roleId === 'staff' && (
+          <>
+            <Link to="/staff/dashboard">Trang quản lý nhân viên</Link>
+            <Link to="/staff/support">Hỗ trợ khách hàng</Link>
+          </>
+        )}
+
+        {userInfo && userInfo.roleId === 'user' && (
+          <>
+            <Link to="/user/profile">Thông tin cá nhân</Link>
+            <Link to="/user/bookings">Lịch sử đặt vé</Link>
+          </>
+        )}
       </nav>
     </header>
   );
