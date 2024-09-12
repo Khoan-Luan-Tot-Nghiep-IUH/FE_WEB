@@ -4,6 +4,7 @@ import { useLoginMutation } from '../../Redux/User/apiSlice';
 import { setCredentials } from '../../Redux/User/userSlice';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode'; // Correct import
+import Notification from '../shared/Notification/Notification'; // Import Notification component
 
 import './Login.css';
 
@@ -16,6 +17,11 @@ const Login = () => {
   const location = useLocation();
 
   const [login, { isLoading }] = useLoginMutation();
+
+  // State for Snackbar notifications
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationSeverity, setNotificationSeverity] = useState('success');
 
   // Store the full path and search (query params)
   const from = location.state?.from || { pathname: '/search-results', search: location.search };
@@ -35,6 +41,9 @@ const Login = () => {
         localStorage.setItem('user', JSON.stringify(userInfo));
         dispatch(setCredentials(userInfo));
 
+        // Show success notification
+        showNotification('success', 'Login successful!');
+
         // Navigate back to the original page, including the search query
         navigate(from.pathname + from.search, { replace: true });
       } else {
@@ -44,6 +53,9 @@ const Login = () => {
       // If error has data and message, display it; otherwise, display generic error
       const errorMsg = err?.data?.message || 'Login failed. Please try again.';
       setErrorMessage(errorMsg);
+
+      // Show error notification
+      showNotification('error', errorMsg);
     }
   };
 
@@ -54,8 +66,10 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(userInfo));
       dispatch(setCredentials(userInfo));
       navigate(from.pathname + from.search, { replace: true });
+      showNotification('success', 'Social login successful!');
     } catch (error) {
       setErrorMessage('Social login failed. Please try again.');
+      showNotification('error', 'Social login failed. Please try again.');
     }
   };
 
@@ -73,6 +87,18 @@ const Login = () => {
 
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:5000/api/user/google';
+  };
+
+  // Helper function to show notification
+  const showNotification = (severity, message) => {
+    setNotificationSeverity(severity);
+    setNotificationMessage(message);
+    setNotificationOpen(true);
+  };
+
+  // Handle closing the notification
+  const handleNotificationClose = () => {
+    setNotificationOpen(false);
   };
 
   return (
@@ -113,6 +139,14 @@ const Login = () => {
           Login with Google
         </button>
       </div>
+
+      {/* Snackbar notification component */}
+      <Notification
+        open={notificationOpen}
+        onClose={handleNotificationClose}
+        severity={notificationSeverity}
+        message={notificationMessage}
+      />
     </div>
   );
 };
