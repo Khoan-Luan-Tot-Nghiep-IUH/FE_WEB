@@ -27,7 +27,6 @@ const SuperAdminDashboard = () => {
       <Sidebar setActiveContent={setActiveContent} />
 
       <div className="main-content">
-        <h1>Super Admin Dashboard</h1>
         {renderContent()}
       </div>
     </div>
