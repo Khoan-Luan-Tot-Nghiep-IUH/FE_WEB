@@ -1,0 +1,25 @@
+.company-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Khoảng cách giữa các nhóm */
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px; /* Khoảng cách giữa label và input */
+    font-weight: bold; /* Đậm chữ label */
+    color: #333; /* Màu sắc label */
+  }
+  
+  .form-group input {
+    padding: 10px; /* Padding cho input */
+    border: 1px solid #ccc; /* Viền input */
+    border-radius: 4px; /* Bo góc cho input */
+    width: 100%; /* Đảm bảo input chiếm toàn bộ chiều rộng */
+    box-sizing: border-box; /* Đảm bảo padding và border không làm tăng kích thước */
+  }
+  
