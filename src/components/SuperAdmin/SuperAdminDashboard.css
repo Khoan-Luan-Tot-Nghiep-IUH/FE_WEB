@@ -84,14 +84,13 @@
   transform: translateY(4px);
 }
 
-/* Toastify Styling */
 .Toastify__toast {
   border-radius: 10px;
   padding: 10px;
   font-size: 16px;
 }
 
-.Toastify__toast--success {
+.Toastify__toast--success { 
   background-color: #9af0ae;
 }
 
