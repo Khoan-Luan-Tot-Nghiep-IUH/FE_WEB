@@ -23,11 +23,27 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.userInfo = action.payload;
+      state.userInfo = {
+        ...state.userInfo, 
+        ...action.payload,
+        token: action.payload.token || state.userInfo.token,  
+      };
+      localStorage.setItem('user', JSON.stringify(state.userInfo));
     },
     logout: (state) => {
       state.userInfo = null;
       localStorage.removeItem('user');
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    
+    // Action để xóa lỗi
+    clearError: (state) => {
+      state.error = null;
     },
   },
 });

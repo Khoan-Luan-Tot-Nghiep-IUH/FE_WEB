@@ -6,6 +6,8 @@ import ManageCompanies from './navSideBar/ManageCompanies';
 import ManageAdmins from './navSideBar/ManageAdmins';
 import ManageUsers from './navSideBar/ManageUsers';
 import './SuperAdminDashboard.css';
+import Statistics from './navSideBar/Statistics';
+import Settings from './navSideBar/Settings';
 
 const SuperAdminDashboard = () => {
   const [activeContent, setActiveContent] = useState('default');
@@ -13,6 +15,7 @@ const SuperAdminDashboard = () => {
   useEffect(() => {
     notify();
   }, []);
+
   const notify = () => {
     toast.success("Chào mừng bạn đến với hệ thống!", {
       autoClose: 1500,
@@ -28,7 +31,7 @@ const SuperAdminDashboard = () => {
     switch (activeContent) {
       case 'default':
         return (
-          <div style={{ color: 'red', fontWeight: 'bold', fontSize: '32px', textAlign: 'center' }}>
+          <div className="text-3xl font-bold text-center text-red-500 mt-10">
             CHÀO MỪNG BẠN ĐẾN TRANG QUẢN LÍ HỆ THỐNG
           </div>
         );
@@ -38,12 +41,12 @@ const SuperAdminDashboard = () => {
         return <ManageAdmins />;
       case 'users':
         return <ManageUsers />;
-      case 'statistics':
-        return <div>Thống kê Content</div>; // Placeholder for statistics
+        case 'statistics':
+          return <Statistics />;
       case 'logs':
         return <div>Nhật ký hoạt động Content</div>; // Placeholder for logs
       case 'settings':
-        return <div>Cài đặt Content</div>; // Placeholder for settings
+        return  <Settings/>; // Placeholder for settings
       case 'reports':
         return <div>Báo cáo Content</div>; // Placeholder for reports
       default:
@@ -54,7 +57,7 @@ const SuperAdminDashboard = () => {
   return (
     <div className="super-admin-dashboard">
       <Sidebar setActiveContent={setActiveContent} />
-      <div className="main-content">
+      <div className="main-content ml-64 p-8">
         {renderContent()}
         <ToastContainer />
       </div>
