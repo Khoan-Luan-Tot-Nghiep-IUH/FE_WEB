@@ -115,6 +115,7 @@ const Login = () => {
           </div>
           {errorMessage && <p className="text-red-500 text-xs italic">{errorMessage}</p>}
           <div className="flex items-center justify-between mb-4">
+           <a href="/register" className="text-sm text-blue-500 hover:text-blue-700">Register Now?</a>
             <a href="/forgot-password" className="text-sm text-blue-500 hover:text-blue-700">Did you forget your password?</a>
           </div>
           <button

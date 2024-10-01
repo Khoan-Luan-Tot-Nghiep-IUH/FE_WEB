@@ -1,161 +1,189 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useRegisterMutation, useVerifyOtpMutation } from '../../Redux/User/apiSlice';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../Redux/User/userSlice';
+import Notification from '../shared/Notification/Notification';
 
 const Register = () => {
-  const [fullName, setFullName] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState('');
-  const [message, setMessage] = useState('');
-  const [step, setStep] = useState(1); // Quản lý bước (1: nhập thông tin, 2: nhập OTP)
+  const [otp, setOtp] = useState('');  // OTP từ người dùng
+  const [step, setStep] = useState(1);  // Quản lý bước đăng ký (1: Đăng ký, 2: Nhập OTP)
   const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('');
 
-  // Hàm để gửi OTP thông qua backend (bước 1)
-  const handleRegister = async () => {
-    try {
-      setMessage('');
-      if (!phoneNumber) {
-        setMessage('Vui lòng nhập số điện thoại');
-        return;
-      }
+  const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const [register, { isLoading }] = useRegisterMutation();
+  const [verify] = useVerifyOtpMutation();  // Sử dụng hook verify OTP từ apiSlice
+
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationSeverity, setNotificationSeverity] = useState('success');
+
+  // Xử lý đăng ký
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    try {
       let formattedPhoneNumber = phoneNumber;
       if (phoneNumber.startsWith('0')) {
         formattedPhoneNumber = '+84' + phoneNumber.substring(1);
       }
 
-      // Gửi thông tin đăng ký tới backend và yêu cầu gửi OTP
-      const response = await axios.post('http://localhost:5000/api/user/register', {
-        fullName,
-        userName,
-        password,
-        email,
-        phoneNumber: formattedPhoneNumber
-      });
-
-      if (response.data.success) {
-        setMessage('Mã OTP đã được gửi!');
-        setFormattedPhoneNumber(formattedPhoneNumber); // Lưu số điện thoại để xác minh OTP
-        setStep(2); // Chuyển sang bước nhập OTP
+      const userData = await register({ userName, password, fullName, email, phoneNumber: formattedPhoneNumber }).unwrap();
+      if (userData?.success) {
+        setFormattedPhoneNumber(formattedPhoneNumber);  // Lưu số điện thoại để xác minh OTP
+        setStep(2);  // Chuyển sang bước nhập OTP
+        showNotification('success', 'Mã OTP đã được gửi!');
       } else {
-        setMessage('Gửi mã OTP thất bại.');
+        throw new Error('Đăng ký thất bại');
       }
-    } catch (error) {
-      setMessage(`Lỗi khi gửi OTP: ${error.response?.data?.msg || error.message}`);
+    } catch (err) {
+      const errorMsg = err?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
+      setErrorMessage(errorMsg);
+      showNotification('error', errorMsg);
     }
   };
-
-  // Hàm để xác minh OTP (bước 2)
-  const handleVerifyOTP = async () => {
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    console.log("Phone number: ", formattedPhoneNumber);
+    console.log("OTP entered: ", otp);
+  
     try {
-      // Gửi mã OTP và số điện thoại tới backend để xác minh
-      const response = await axios.post('http://localhost:5000/api/user/verify', {
+      const verifyData = await verify({
         phoneNumber: formattedPhoneNumber,
-        verificationCode: otp
-      });
-
-      if (response.data.success) {
-        setMessage('Đăng ký thành công!');
+        verificationCode: otp,
+      }).unwrap();
+      if (verifyData?.success) {
+        console.log("Xác minh OTP thành công: ", verifyData);
+        const userInfo = { ...verifyData.newUser }; 
+        dispatch(setCredentials(userInfo));
+        localStorage.setItem('user', JSON.stringify(userInfo));
+  
+        showNotification('success', 'Xác minh OTP thành công! Vui lòng đăng nhập.');
+        navigate('/login'); 
       } else {
-        setMessage('Mã OTP không chính xác hoặc đã hết hạn.');
+        throw new Error('Xác minh OTP thất bại');
       }
-    } catch (error) {
-      setMessage(`Lỗi khi xác minh OTP: ${error.response?.data?.msg || error.message}`);
+    } catch (err) {
+      console.error("Lỗi xác minh OTP: ", err);
+      showNotification('error', 'Xác minh OTP thất bại. Vui lòng thử lại.');
     }
+  };
+  const showNotification = (severity, message) => {
+    setNotificationSeverity(severity);
+    setNotificationMessage(message);
+    setNotificationOpen(true);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationOpen(false);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center bg-cover bg-center bg-fixed" style={{ backgroundImage: 'url("https://source.unsplash.com/1600x900/?nature,water")' }}>
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md bg-opacity-80">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          {step === 1 ? 'Create Your Account' : 'Enter OTP'}
+        </h2>
 
-        {/* Hiển thị giao diện bước 1: Nhập thông tin */}
-        {step === 1 && (
-          <>
-            <div className="mb-4">
-              <label className="block text-gray-700">Full Name:</label>
+        {/* Hiển thị form đăng ký hoặc nhập OTP dựa vào step */}
+        {step === 1 ? (
+          <form className="space-y-4" onSubmit={handleRegister}>
+            <div>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Email:</label>
-              <input
-                type="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Username:</label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Username"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Password:</label>
+            <div>
               <input
                 type="password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Phone Number:</label>
+            <div>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                placeholder="Phone Number"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <button 
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              onClick={handleRegister}
+            {errorMessage && <p className="text-red-500 text-xs italic">{errorMessage}</p>}
+            <button
+              type="submit"
+              className="w-full bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
-              Submit
+              {isLoading ? 'Registering...' : 'Register'}
             </button>
-          </>
-        )}
-
-        {/* Hiển thị giao diện bước 2: Nhập OTP */}
-        {step === 2 && (
-          <>
-            <div className="mb-4">
-              <label className="block text-gray-700">OTP:</label>
+          </form>
+        ) : (
+          <form className="space-y-4" onSubmit={handleVerifyOTP}>
+            <div>
               <input
                 type="text"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
+                required
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <button 
-              className="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-              onClick={handleVerifyOTP}
+            {errorMessage && <p className="text-red-500 text-xs italic">{errorMessage}</p>}
+            <button
+              type="submit"
+              className="w-full bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
-              Verify OTP
+              {isLoading ? 'Verifying...' : 'Verify OTP'}
             </button>
-          </>
+          </form>
         )}
-        {message && <p className="text-red-500 mt-4 text-center">{message}</p>}
       </div>
+
+      {/* Snackbar notification component */}
+      <Notification
+        open={notificationOpen}
+        onClose={handleNotificationClose}
+        severity={notificationSeverity}
+        message={notificationMessage}
+      />
     </div>
   );
 };

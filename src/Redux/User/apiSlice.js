@@ -21,13 +21,6 @@ export const apiSlice = createApi({
         body: credentials,
       }),
     }),
-    register: builder.mutation({
-      query: (userData) => ({
-        url: '/user/register',
-        method: 'POST',
-        body: userData,
-      }),
-    }),
     getUserInfo: builder.query({
       query: (id) => `/user/profile/${id}`,
       providesTags: (result, error, id) => [{ type: 'User', id }],
@@ -40,12 +33,27 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
     }),
+    register: builder.mutation({
+      query: (userData) => ({
+        url: '/user/register',
+        method: 'POST',
+        body: userData,
+      }),
+    }),
+    verifyOtp: builder.mutation({
+      query: (otpData) => ({
+        url: '/user/verify',
+        method: 'POST',
+        body: otpData,
+      }),
+    }),
   }),
 });
 
 export const { 
-  useLoginMutation, 
-  useRegisterMutation, 
+  useLoginMutation,  
   useGetUserInfoQuery, 
-  useUpdateUserProfileMutation 
+  useUpdateUserProfileMutation,
+  useRegisterMutation, 
+  useVerifyOtpMutation 
 } = apiSlice;
