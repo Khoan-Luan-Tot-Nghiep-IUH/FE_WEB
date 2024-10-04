@@ -1,12 +1,20 @@
-import React from 'react'
+import React from 'react';
+import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
+import { Outlet } from 'react-router-dom';
+
 const CompanyAdminDashboard = () => {
-    return (
-      <div>
-        <h1>Company Admin Dashboard</h1>
-        <p>Chỉ quản trị viên nhà xe có thể truy cập trang này.</p>
+  return (
+    <div className="flex bg-gray-100 min-h-screen">
+      <Sidebar />
+      <div className="flex-1 ml-64">
+        <Topbar />
+        <div className="p-6 mt-16">
+          <Outlet />
+        </div>
       </div>
-    );
-  };
-  
-  export default CompanyAdminDashboard;
-  
+    </div>
+  );
+};
+
+export default CompanyAdminDashboard;

@@ -145,8 +145,8 @@ const Navbar = () => {
           )}
           {userInfo && userInfo.roleId === 'companyadmin' && (
             <>
-              <Link to="/company/dashboard" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý nhà xe</Link>
-              <Link to="/company/manage-trips" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý chuyến đi</Link>
+              <Link to="companyadmin/dashboard" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý nhà xe</Link>
+              <Link to="/companyadmin/manages-trips" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý chuyến đi</Link>
             </>
           )}
           {userInfo && userInfo.roleId === 'staff' && (
@@ -184,7 +184,7 @@ const Navbar = () => {
           )}
           {userInfo && userInfo.roleId === 'companyadmin' && (
             <>
-              <Link to="/company/dashboard" className="text-white hover:text-gray-300 transition duration-300">Quản lý nhà xe</Link>
+              <Link to="/companyadmin/dashboard" className="text-white hover:text-gray-300 transition duration-300">Quản lý nhà xe</Link>
               <Link to="/company/manage-trips" className="text-white hover:text-gray-300 transition duration-300">Quản lý chuyến đi</Link>
             </>
           )}
