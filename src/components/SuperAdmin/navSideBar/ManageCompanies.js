@@ -23,6 +23,8 @@ const ManageCompanies = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [adminUserName, setAdminUserName] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [adminPhoneNumber, setAdminPhoneNumber] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
   const [showAddAdmin, setShowAddAdmin] = useState(false);
 
   const { data: companiesData, isLoading: isCompaniesLoading, error: companiesError } = useGetCompaniesQuery();
@@ -50,6 +52,8 @@ const ManageCompanies = () => {
     setSelectedCompanyId(null);
     setAdminUserName('');
     setAdminPassword('');
+    setAdminEmail('');
+    setAdminPhoneNumber('');
     setShowAddAdmin(false);
   };
 
@@ -112,7 +116,7 @@ const ManageCompanies = () => {
     setEmail(company.email);
     setModalVisible(true);
     setShowAddAdmin(true);
-    document.body.style.overflow = 'hidden'; // Disable scrolling when modal is opened
+    document.body.style.overflow = 'hidden';
   };
 
   const handleAddAdmin = async () => {
@@ -122,6 +126,8 @@ const ManageCompanies = () => {
           companyId: selectedCompanyId,
           userName: adminUserName,
           password: adminPassword,
+          email: adminEmail,         
+          phoneNumber: adminPhoneNumber
         }).unwrap();
         showSnackbar('success', 'Thêm admin thành công!');
         resetForm();
@@ -156,7 +162,7 @@ const ManageCompanies = () => {
           resetForm();
           setModalVisible(true);
           setShowAddAdmin(false);
-          document.body.style.overflow = 'hidden'; // Disable scrolling when modal is opened
+          document.body.style.overflow = 'hidden'; 
         }}
       >
         <i className="fas fa-plus"></i> Thêm công ty
@@ -205,6 +211,21 @@ const ManageCompanies = () => {
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                   placeholder="Mật khẩu của admin"
+                  className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                />
+                 <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="Email của admin"
+                  className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                />
+
+                  <input
+                  type="text"
+                  value={adminPhoneNumber}
+                  onChange={(e) => setAdminPhoneNumber(e.target.value)}  
+                  placeholder="Số điện thoại của admin"
                   className="w-full p-2 border border-gray-300 rounded-md mb-4"
                 />
                 <button
