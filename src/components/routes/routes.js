@@ -3,9 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
-import CompanyAdminDashboard from 'components/CompanyAdmin/CompanyAdminDashboard';
-import ManageTrips from 'components/CompanyAdmin/pages/ManageTrips';
-import Dashboard from 'components/CompanyAdmin/pages/Dashboard';
+
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -19,6 +17,12 @@ const UserProfile = React.lazy(() => import('components/auth/UserProfile'));
 const TicketBookingPage = React.lazy(() => import('components/Orders/TicketBookingPage'));
 const UserDashboardLayout = React.lazy(() => import('components/auth/Dashboard/UserDashboardLayout'));
 const OffersPage = React.lazy(() => import('components/auth/sidebar/OffersPage'));
+
+const CompanyAdminDashboard = React.lazy(()=> import ('components/CompanyAdmin/CompanyAdminDashboard'));
+const ManageTrips = React.lazy(()=> import ('components/CompanyAdmin/pages/ManageTrips'));
+const Dashboard = React.lazy(()=> import ('components/CompanyAdmin/pages/Dashboard'));
+const ManageBuses = React.lazy(()=>import('components/CompanyAdmin/pages/ManageBuses'));
+
 
 const AppRoutes = ({ userInfo }) => {
   return (
@@ -57,6 +61,7 @@ const AppRoutes = ({ userInfo }) => {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="trip" element={<ManageTrips />} />
+            <Route path="manage-buses" element={<ManageBuses />} />
           </Route>
 
           {/* Route cho người dùng */}

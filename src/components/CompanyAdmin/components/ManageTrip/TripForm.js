@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useCreateTripMutation, useUpdateTripMutation, useGetTripByIdQuery } from '../../../Redux/Trip/TripApiSlice';
+import { useCreateTripMutation, useUpdateTripMutation, useGetTripByIdQuery } from '../../../../Redux/Trip/TripApiSlice';
+import { useGetLocationsQuery } from '../../../../Redux/Location/locationApiSlice'; 
 
 const TripForm = ({ tripId, closeDrawer }) => {
-  const { companyId } = useSelector((state) => state.user.userInfo); // Lấy `companyId` từ Redux store
+  const { companyId } = useSelector((state) => state.user.userInfo); 
   const [createTrip] = useCreateTripMutation();
   const [updateTrip] = useUpdateTripMutation();
   const { data: tripData } = useGetTripByIdQuery(tripId, { skip: !tripId });
+
+  // Lấy danh sách địa điểm từ API
+  const { data: locationData, isLoading: isLoadingLocations } = useGetLocationsQuery();
 
   const [formData, setFormData] = useState({
     departureLocation: '',
@@ -20,11 +24,12 @@ const TripForm = ({ tripId, closeDrawer }) => {
     schedule: [],
   });
 
+  // Cập nhật form khi có dữ liệu tripData (trường hợp chỉnh sửa chuyến đi)
   useEffect(() => {
     if (tripData) {
       setFormData({
-        departureLocation: tripData.departureLocation.name,
-        arrivalLocation: tripData.arrivalLocation.name,
+        departureLocation: tripData.departureLocation._id, // Lưu ObjectId của departureLocation
+        arrivalLocation: tripData.arrivalLocation._id, // Lưu ObjectId của arrivalLocation
         busType: tripData.busType.name,
         departureTime: tripData.departureTime.slice(0, 16),
         arrivalTime: tripData.arrivalTime.slice(0, 16),
@@ -42,30 +47,6 @@ const TripForm = ({ tripId, closeDrawer }) => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-  };
-
-  // Xử lý khi thêm lịch trình mới
-  const handleScheduleChange = (index, field, value) => {
-    const newSchedule = [...formData.schedule];
-    newSchedule[index][field] = value;
-    setFormData({ ...formData, schedule: newSchedule });
-  };
-
-  // Thêm một điểm dừng mới
-  const addStop = () => {
-    setFormData({
-      ...formData,
-      schedule: [
-        ...formData.schedule,
-        { stopName: '', stopAddress: '', estimatedArrivalTime: '', stopOrder: formData.schedule.length + 1 },
-      ],
-    });
-  };
-
-  // Xóa một điểm dừng
-  const removeStop = (index) => {
-    const newSchedule = formData.schedule.filter((_, i) => i !== index);
-    setFormData({ ...formData, schedule: newSchedule });
   };
 
   const handleSubmit = async (e) => {
@@ -87,32 +68,44 @@ const TripForm = ({ tripId, closeDrawer }) => {
     <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold mb-6 text-gray-700">{tripId ? 'Sửa Chuyến Đi' : 'Tạo Chuyến Đi Mới'}</h1>
       
-      {/* Input cho Điểm Khởi Hành */}
+      {/* Select cho Điểm Khởi Hành */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Điểm Khởi Hành:</label>
-        <input
-          type="text"
+        <select
           name="departureLocation"
           value={formData.departureLocation}
           onChange={handleChange}
-          placeholder="Nhập điểm khởi hành"
           className="mt-2 p-2 border rounded w-full focus:ring focus:ring-green-500"
           required
-        />
+        >
+          <option value="">Chọn điểm khởi hành</option>
+          {/* Hiển thị danh sách địa điểm từ API */}
+          {!isLoadingLocations && locationData?.data?.map((location) => (
+            <option key={location._id} value={location._id}>
+              {location.name} - {location.city}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Input cho Điểm Đến */}
+      {/* Select cho Điểm Đến */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Điểm Đến:</label>
-        <input
-          type="text"
+        <select
           name="arrivalLocation"
           value={formData.arrivalLocation}
           onChange={handleChange}
-          placeholder="Nhập điểm đến"
           className="mt-2 p-2 border rounded w-full focus:ring focus:ring-green-500"
           required
-        />
+        >
+          <option value="">Chọn điểm đến</option>
+          {/* Hiển thị danh sách địa điểm từ API */}
+          {!isLoadingLocations && locationData?.data?.map((location) => (
+            <option key={location._id} value={location._id}>
+              {location.name} - {location.city}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Thời gian khởi hành */}
@@ -156,44 +149,7 @@ const TripForm = ({ tripId, closeDrawer }) => {
         </label>
       </div>
 
-      {/* Toggle Lịch Trình */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700">
-          <input
-            type="checkbox"
-            name="hasSchedule"
-            checked={formData.hasSchedule}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          Thêm Lịch Trình Dừng
-        </label>
-      </div>
-
-      {/* Lịch Trình Điểm Dừng */}
-      {formData.hasSchedule && (
-        <div>
-          <h2 className="text-lg font-bold mb-4 text-gray-600">Lịch Trình Điểm Dừng</h2>
-          {formData.schedule.map((stop, index) => (
-            <div key={index} className="border rounded-lg p-4 mb-4">
-              {/* Các trường thông tin của điểm dừng */}
-              <label className="block text-sm font-medium text-gray-700">Tên Điểm Dừng:</label>
-              <input
-                type="text"
-                value={stop.stopName}
-                onChange={(e) => handleScheduleChange(index, 'stopName', e.target.value)}
-                placeholder="Nhập tên điểm dừng"
-                className="mt-2 mb-2 p-2 border rounded w-full"
-              />
-              {/* Tương tự cho các trường khác */}
-            </div>
-          ))}
-          <button type="button" onClick={addStop} className="mb-4 bg-blue-500 text-white px-4 py-2 rounded">
-            Thêm Điểm Dừng
-          </button>
-        </div>
-      )}
-
+      {/* Nút Gửi */}
       <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded w-full">
         {tripId ? 'Cập Nhật Chuyến Đi' : 'Tạo Chuyến Đi'}
       </button>
