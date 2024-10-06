@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetTripsByCompanyQuery } from '../../../Redux/Trip/TripApiSlice';
-import TripList from '../ManageTrip/TripList';
-import TripForm from '../ManageTrip/TripForm';
+import TripList from '../components/ManageTrip/TripList';
+import TripForm from '../components/ManageTrip/TripForm';
 
 const ManageTrips = () => {
   const { companyId } = useSelector((state) => state.user.userInfo || {});
