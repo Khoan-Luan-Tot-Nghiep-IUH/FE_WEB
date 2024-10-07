@@ -3,11 +3,15 @@ import { useSelector } from 'react-redux';
 import { useGetTripsByCompanyQuery } from '../../../Redux/Trip/TripApiSlice';
 import TripList from '../components/ManageTrip/TripList';
 import TripForm from '../components/ManageTrip/TripForm';
+import { Button, Drawer, Typography, Spin, Alert, notification } from 'antd';
+
+const { Title } = Typography;
 
 const ManageTrips = () => {
   const { companyId } = useSelector((state) => state.user.userInfo || {});
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Trạng thái để mở/đóng Drawer
-  const [editingTripId, setEditingTripId] = useState(null); // Để lưu `tripId` khi chỉnh sửa
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingTripId, setEditingTripId] = useState(null);
+  const [formMode, setFormMode] = useState('add');
 
   const { data = {}, isLoading, error, refetch } = useGetTripsByCompanyQuery(companyId, {
     skip: !companyId,
@@ -15,68 +19,71 @@ const ManageTrips = () => {
 
   const trips = data.trips || [];
 
-  // Mở Drawer cho việc tạo mới hoặc chỉnh sửa chuyến đi
-  const openDrawer = (tripId = null) => {
-    setEditingTripId(tripId); // Cập nhật `tripId` nếu đang chỉnh sửa
+  // Hàm hiển thị thông báo
+  const showNotification = (type, message, description) => {
+    notification[type]({
+      message,
+      description,
+    });
+  };
+
+  const openDrawer = (trip = null) => {
+    if (trip) {
+      setEditingTripId(trip._id);
+      setFormMode('edit');
+    } else {
+      setEditingTripId(null);
+      setFormMode('add');
+    }
     setIsDrawerOpen(true);
   };
 
-  // Đóng Drawer
-  const closeDrawer = () => {
+  const closeDrawer = (actionSuccess, message) => {
     setIsDrawerOpen(false);
-    setEditingTripId(null); // Đặt lại `tripId`
-    refetch(); // Lấy lại danh sách chuyến đi sau khi thêm hoặc chỉnh sửa
+    setEditingTripId(null);
+    setFormMode('add');
+    if (actionSuccess) {
+      showNotification('success', 'Thành công', message);
+    }
+    refetch();
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Quản Lý Chuyến Đi</h1>
-
-      {/* Trip List */}
+    <div className="p-6 bg-white shadow-md rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <Title level={3} className="text-gray-700">Quản Lý Chuyến Đi</Title>
+        {!isDrawerOpen && (
+          <Button type="primary" size="large" onClick={() => openDrawer()}>
+            Tạo Chuyến Đi
+          </Button>
+        )}
+      </div>
       {isLoading ? (
-        <p>Đang tải danh sách chuyến đi...</p>
-      ) : error ? (
-        <p>Có lỗi xảy ra khi tải danh sách chuyến đi: {error.message}</p>
-      ) : (
-        <TripList trips={trips} openDrawer={openDrawer} />
-      )}
-
-      {/* Nút mở Drawer để tạo mới chuyến đi */}
-      <div className="mt-4">
-        <button
-          onClick={() => openDrawer()}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Tạo Chuyến Đi
-        </button>
-      </div>
-
-      {/* Drawer */}
-      <div
-        className={`fixed inset-y-0 right-0 w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        {/* Nút đóng Drawer */}
-        <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-          onClick={closeDrawer}
-        >
-          Đóng
-        </button>
-        <div className="h-full overflow-y-scroll">
-          <div className="p-6">
-            <TripForm tripId={editingTripId} closeDrawer={closeDrawer} />
-          </div>
+        <div className="flex justify-center items-center py-10">
+          <Spin tip="Đang tải danh sách chuyến đi..." size="large" />
         </div>
-      </div>
-
-      {isDrawerOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={closeDrawer}
-        ></div>
+      ) : error ? (
+        <div className="flex justify-center items-center py-10">
+          <Alert message="Có lỗi xảy ra khi tải danh sách chuyến đi" description={error.message} type="error" showIcon />
+        </div>
+      ) : (
+        <TripList trips={trips} openDrawer={openDrawer} hideAddButton={isDrawerOpen} showNotification={showNotification}   refetch={refetch} />
       )}
+      <Drawer
+        title={editingTripId ? 'Chỉnh Sửa Chuyến Đi' : 'Thêm Chuyến Đi Mới'}
+        width={500}
+        onClose={() => closeDrawer(false)}
+        visible={isDrawerOpen}
+        destroyOnClose
+      >
+        <TripForm
+          tripId={editingTripId}
+          closeDrawer={(successMessage) => closeDrawer(true, successMessage)}
+          trips={trips}
+          formMode={formMode}
+          showNotification={showNotification}
+        />
+      </Drawer>
     </div>
   );
 };

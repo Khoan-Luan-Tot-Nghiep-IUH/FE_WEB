@@ -1,26 +1,29 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaTachometerAlt, FaBusAlt, FaRoute, FaDollarSign, FaUser, FaFileInvoice, FaTools } from 'react-icons/fa';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { FaTachometerAlt, FaBusAlt, FaRoute, FaDollarSign, FaUser, FaFileInvoice, FaTools, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import { logout } from '../../../Redux/User/userSlice'; // Đảm bảo bạn đã import đúng hàm logout
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
+
   return (
     <aside className="w-64 bg-gray-900 h-screen fixed top-0 left-0 shadow-lg">
-      {/* Sidebar header */}
       <div className="p-4 font-bold text-xl bg-gray-800 text-center text-white border-b border-gray-700">
         Quản Lý Nhà Xe
       </div>
-
-      {/* Navigation Menu */}
       <nav className="mt-6">
         <ul className="space-y-2">
-          {/* Group Title: Quản lý chung */}
           <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
             Quản lý chung
           </li>
-
-          {/* Dashboard */}
           <li>
-            <NavLink 
+            <NavLink
               to="/companyadmin/dashboard"
               className={({ isActive }) =>
                 isActive
@@ -35,7 +38,7 @@ const Sidebar = () => {
 
           {/* Quản lý chuyến đi */}
           <li>
-            <NavLink 
+            <NavLink
               to="/companyadmin/trip"
               className={({ isActive }) =>
                 isActive
@@ -58,7 +61,7 @@ const Sidebar = () => {
 
           {/* Quản lý xe */}
           <li>
-            <NavLink 
+            <NavLink
               to="/companyadmin/manage-buses"
               className={({ isActive }) =>
                 isActive
@@ -73,7 +76,7 @@ const Sidebar = () => {
 
           {/* Quản lý tài xế */}
           <li>
-            <NavLink 
+            <NavLink
               to="/manage-drivers"
               className={({ isActive }) =>
                 isActive
@@ -96,7 +99,7 @@ const Sidebar = () => {
 
           {/* Doanh thu */}
           <li>
-            <NavLink 
+            <NavLink
               to="/revenue"
               className={({ isActive }) =>
                 isActive
@@ -111,7 +114,7 @@ const Sidebar = () => {
 
           {/* Hóa đơn */}
           <li>
-            <NavLink 
+            <NavLink
               to="/invoices"
               className={({ isActive }) =>
                 isActive
@@ -134,7 +137,7 @@ const Sidebar = () => {
 
           {/* Bảo trì */}
           <li>
-            <NavLink 
+            <NavLink
               to="/maintenance"
               className={({ isActive }) =>
                 isActive
@@ -145,6 +148,36 @@ const Sidebar = () => {
               <FaTools className="mr-3 text-lg" />
               <span>Bảo trì xe</span>
             </NavLink>
+          </li>
+
+          {/* Divider */}
+          <hr className="border-gray-700 my-2" />
+
+          {/* Group Title: Other */}
+          <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
+            Khác
+          </li>
+
+          {/* Trang chủ */}
+          <li>
+            <NavLink
+              to="/"
+              className="px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+            >
+              <FaHome className="mr-3 text-lg" />
+              <span>Trang chủ</span>
+            </NavLink>
+          </li>
+
+          {/* Đăng xuất */}
+          <li>
+            <button
+              onClick={handleLogout}
+              className="w-full px-4 py-3 hover:bg-red-700 text-white flex items-center rounded-lg transition-all duration-200"
+            >
+              <FaSignOutAlt className="mr-3 text-lg" />
+              <span>Đăng xuất</span>
+            </button>
           </li>
         </ul>
       </nav>
