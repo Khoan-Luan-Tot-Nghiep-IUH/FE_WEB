@@ -1,46 +1,146 @@
-import React from 'react';
-import { FaHome, FaClipboardList, FaUser, FaChartBar, FaCogs, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaHome, FaClipboardList, FaUser, FaChartBar, FaCogs, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../Redux/User/userSlice';
+import { Tooltip } from 'antd';
+
 const Sidebar = ({ setActiveContent }) => {
   const dispatch = useDispatch();
+  const [collapsed, setCollapsed] = useState(false);
+
   const handleNavigation = (content) => {
     setActiveContent(content);
   };
+
   const handleLogout = () => {
     dispatch(logout());
     window.location.href = '/';
   };
 
   return (
-    <div className="w-64 bg-gray-800 text-white h-screen fixed left-0 top-0 shadow-lg">
-      <h2 className="text-2xl font-bold p-4 border-b border-gray-700 text-center">Quản lý Hệ thống</h2>
-      <ul className="space-y-2 mt-4">
-        <li onClick={() => handleNavigation('default')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaHome className="inline-block mr-2" /> Tổng Quan
-        </li>
-        <li onClick={() => handleNavigation('companies')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaClipboardList className="inline-block mr-2" /> Quản lý Công ty
-        </li>
-        <li onClick={() => handleNavigation('admins')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaUser className="inline-block mr-2" /> Quản lý Admin
-        </li>
-        <li onClick={() => handleNavigation('users')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaUser className="inline-block mr-2" /> Quản lý Người dùng
-        </li>
-        <li onClick={() => handleNavigation('statistics')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaChartBar className="inline-block mr-2" /> Thống kê
-        </li>
-        <li onClick={() => handleNavigation('logs')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaClipboardList className="inline-block mr-2" /> Nhật ký hoạt động
-        </li>
-        <li onClick={() => handleNavigation('settings')} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaCogs className="inline-block mr-2" /> Cài đặt
-        </li>
-        <li onClick={handleLogout} className="p-4 cursor-pointer hover:bg-gray-700 transition">
-          <FaSignOutAlt className="inline-block mr-2" /> <span>Đăng xuất</span>
-        </li>
+    <div
+      className={`h-screen fixed top-0 left-0 flex flex-col items-center bg-gray-900 text-white shadow-lg transition-all duration-300 ${
+        collapsed ? 'w-16' : 'w-64'
+      }`}
+    >
+      {/* Sidebar Header */}
+      <div className="w-full p-4 flex justify-between items-center bg-gray-800">
+        {!collapsed && <span className="font-bold text-lg">Quản lý Hệ thống</span>}
+        <button
+          className="text-xl text-gray-400 hover:text-white focus:outline-none ml-auto"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
+        </button>
+      </div>
+
+      {/* Navigation Menu */}
+      <ul className="flex-1 w-full mt-4 space-y-1">
+        {/* Tổng Quan */}
+        <Tooltip title="Tổng Quan" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('default')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaHome className="text-xl" />
+            {/* Ẩn chữ khi Sidebar thu gọn */}
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Tổng Quan</span>
+          </li>
+        </Tooltip>
+
+        {/* Quản lý Công ty */}
+        <Tooltip title="Quản lý Công ty" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('companies')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaClipboardList className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Công ty</span>
+          </li>
+        </Tooltip>
+
+        {/* Quản lý Admin */}
+        <Tooltip title="Quản lý Admin" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('admins')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaUser className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Admin</span>
+          </li>
+        </Tooltip>
+
+        {/* Quản lý Người dùng */}
+        <Tooltip title="Quản lý Người dùng" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('users')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaUser className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Người dùng</span>
+          </li>
+        </Tooltip>
+
+        {/* Thống kê */}
+        <Tooltip title="Thống kê" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('statistics')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaChartBar className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Thống kê</span>
+          </li>
+        </Tooltip>
+
+        {/* Nhật ký hoạt động */}
+        <Tooltip title="Nhật ký hoạt động" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('logs')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaClipboardList className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Nhật ký hoạt động</span>
+          </li>
+        </Tooltip>
+
+        {/* Cài đặt */}
+        <Tooltip title="Cài đặt" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('settings')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaCogs className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Cài đặt</span>
+          </li>
+        </Tooltip>
       </ul>
+
+      {/* Nút Đăng Xuất */}
+      <Tooltip title="Đăng Xuất" placement="right" visible={collapsed}>
+        <li
+          onClick={handleLogout}
+          className={`flex items-center p-4 hover:bg-red-600 transition-all duration-300 cursor-pointer ${
+            collapsed ? 'justify-center' : 'justify-start'
+          }`}
+        >
+          <FaSignOutAlt className="text-xl" />
+          <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Đăng Xuất</span>
+        </li>
+      </Tooltip>
     </div>
   );
 };

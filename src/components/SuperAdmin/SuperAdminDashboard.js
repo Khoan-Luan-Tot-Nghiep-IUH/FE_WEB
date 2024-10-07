@@ -11,11 +11,13 @@ import Settings from './navSideBar/Settings';
 
 const SuperAdminDashboard = () => {
   const [activeContent, setActiveContent] = useState('default');
+  const [collapsed, setCollapsed] = useState(false); // Trạng thái Sidebar thu nhỏ/mở rộng
 
   useEffect(() => {
     notify();
   }, []);
 
+  // Thông báo chào mừng
   const notify = () => {
     toast.success("Chào mừng bạn đến với hệ thống!", {
       autoClose: 1500,
@@ -24,9 +26,11 @@ const SuperAdminDashboard = () => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
+      position: 'top-right' // Đặt vị trí thông báo cho dễ nhìn
     });
   };
 
+  // Render nội dung chính theo từng lựa chọn
   const renderContent = () => {
     switch (activeContent) {
       case 'default':
@@ -41,26 +45,26 @@ const SuperAdminDashboard = () => {
         return <ManageAdmins />;
       case 'users':
         return <ManageUsers />;
-        case 'statistics':
-          return <Statistics />;
+      case 'statistics':
+        return <Statistics />;
       case 'logs':
-        return <div>Nhật ký hoạt động Content</div>; // Placeholder for logs
+        return <div>Nhật ký hoạt động Content</div>;
       case 'settings':
-        return  <Settings/>; // Placeholder for settings
+        return <Settings />;
       case 'reports':
-        return <div>Báo cáo Content</div>; // Placeholder for reports
+        return <div>Báo cáo Content</div>;
       default:
         return null;
     }
   };
 
   return (
-    <div className="super-admin-dashboard">
-      <Sidebar setActiveContent={setActiveContent} />
-      <div className="main-content ml-64 p-8">
+    <div className="super-admin-dashboard flex">
+      <Sidebar setActiveContent={setActiveContent} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className={`main-content transition-all duration-300 ${collapsed ? 'ml-16' : 'ml-64'} p-8`}>
         {renderContent()}
-        <ToastContainer />
       </div>
+      <ToastContainer />
     </div>
   );
 };

@@ -32,13 +32,13 @@ const BusTypeForm = ({ busType, closeDrawer }) => {
     try {
       if (busType) {
         await updateBusType({ id: busType._id, updatedBusType: formData }).unwrap();
-        alert('Cập nhật loại xe thành công!');
+        closeDrawer(`Cập nhật loại xe "${formData.name}" thành công!`);
       } else {
         await createBusType(formData).unwrap();
-        alert('Thêm loại xe mới thành công!');
+        closeDrawer(`Thêm loại xe "${formData.name}" thành công!`);
       }
-      closeDrawer();
     } catch (err) {
+      closeDrawer(`Lỗi khi lưu loại xe: ${err.message}`, 'error');
       console.error('Lỗi khi lưu loại xe:', err);
     }
   };

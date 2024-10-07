@@ -8,7 +8,6 @@ const baseQueryWithAuth = fetchBaseQuery({
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
-
       return headers;
     },
 });
@@ -21,10 +20,13 @@ export const tripApiSlice = createApi({
       query: () => '/api/trips',
     }),
     getTripsByCompany: builder.query({
-      query: (companyId) => `/api/trips/${companyId}`,
+      query: (companyId) => `/api/trips/company/${companyId}`,
     }),
     getTripById: builder.query({
-      query: (tripId) => `/api/trips/${tripId}`,
+      query: (tripId) => {
+        console.log("Fetching Trip ID:", tripId);
+        return `/api/trips/${tripId}`;
+      },
     }),
     createTrip: builder.mutation({
       query: (newTrip) => {
