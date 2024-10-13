@@ -146,7 +146,7 @@ const Navbar = () => {
           {userInfo && userInfo.roleId === 'companyadmin' && (
             <>
               <Link to="companyadmin/dashboard" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý nhà xe</Link>
-              <Link to="/companyadmin/manages-trips" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý chuyến đi</Link>
+              <Link to="/companyadmin/trip" className="text-white hover:text-gray-300 py-2 transition duration-300">Quản lý chuyến đi</Link>
             </>
           )}
           {userInfo && userInfo.roleId === 'staff' && (
@@ -169,7 +169,7 @@ const Navbar = () => {
         <div className="container mx-auto flex justify-around">
           <Link to="/" className="text-white hover:text-gray-300 transition duration-300">Trang chủ</Link>
           <Link to="/lich-trinh" className="text-white hover:text-gray-300 transition duration-300">Lịch trình</Link>
-          <Link to="/tra-cuu-ve" className="text-white hover:text-gray-300 transition duration-300">Tra cứu vé</Link>
+          <Link to="/search-page" className="text-white hover:text-gray-300 transition duration-300">Tra cứu vé</Link>
           <Link to="/tin-tuc" className="text-white hover:text-gray-300 transition duration-300">Tin tức</Link>
           <Link to="/hoa-don" className="text-white hover:text-gray-300 transition duration-300">Hóa đơn</Link>
           <Link to="/lien-he" className="text-white hover:text-gray-300 transition duration-300">Liên hệ</Link>
@@ -185,7 +185,7 @@ const Navbar = () => {
           {userInfo && userInfo.roleId === 'companyadmin' && (
             <>
               <Link to="/companyadmin/dashboard" className="text-white hover:text-gray-300 transition duration-300">Quản lý nhà xe</Link>
-              <Link to="/company/manage-trips" className="text-white hover:text-gray-300 transition duration-300">Quản lý chuyến đi</Link>
+              <Link to="/companyadmin/trip" className="text-white hover:text-gray-300 transition duration-300">Quản lý chuyến đi</Link>
             </>
           )}
           {userInfo && userInfo.roleId === 'staff' && (

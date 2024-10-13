@@ -3,9 +3,9 @@ import RouteCard from './RouteCard';
 
 const PopularRoutesSection = () => {
  const routes = [
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/5/img_hero.png?v1', title: 'Sài Gòn - Nha Trang', price: 'Từ 200.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', title: 'Hà Nội - Hải Phòng', price: 'Từ 100.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', title: 'Sài Gòn - Đà Lạt', price: 'Từ 200.000đ' },
+    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/5/img_hero.png?v1', title: 'Sài Gòn - Đà Lạt', price: 'Từ 200.000đ' },
+    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', title: 'Đồng Nai - Đà Lạt', price: 'Từ 100.000đ' },
+    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', title: 'Đà Lạt - Sài Gòn', price: 'Từ 200.000đ' },
     { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/22/img_hero.png', title: 'Sài Gòn - Phan Thiết', price: 'Từ 150.000đ' },
     { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', title: 'Hà Nội - Hải Phòng', price: 'Từ 100.000đ' },
     { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', title: 'Sài Gòn - Đà Lạt', price: 'Từ 200.000đ' },

@@ -4,7 +4,6 @@ import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
 
-
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
 const Login = React.lazy(() => import('../auth/Login'));
@@ -22,6 +21,9 @@ const CompanyAdminDashboard = React.lazy(()=> import ('components/CompanyAdmin/C
 const ManageTrips = React.lazy(()=> import ('components/CompanyAdmin/pages/ManageTrips'));
 const Dashboard = React.lazy(()=> import ('components/CompanyAdmin/pages/Dashboard'));
 const ManageBuses = React.lazy(()=>import('components/CompanyAdmin/pages/ManageBuses'));
+const SearchResults = React.lazy(()=> import('components/home/components/SearchResult/SearchResults'));
+
+const SearchPage = React.lazy(()=> import ('components/home/components/SearchResult/SearchPage'));
 
 
 const AppRoutes = ({ userInfo }) => {
@@ -70,7 +72,8 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="ticket-buy" element={<TicketBookingPage />} />
             <Route path="offers" element={<OffersPage />} />
           </Route>
-
+          <Route path="/search-results" element={<SearchResults />} />
+          <Route path="/search-page" element={<SearchPage />} />
           {/* Route mặc định khi không tìm thấy */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
