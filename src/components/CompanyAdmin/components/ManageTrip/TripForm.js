@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useCreateTripMutation, useUpdateTripMutation, useGetTripByIdQuery } from '../../../../Redux/Trip/TripApiSlice';
 import { useGetLocationsQuery } from '../../../../Redux/Location/locationApiSlice';
 import { useGetBusTypesQuery } from '../../../../Redux/Bustype/BusTypeApiSlice';
-import { formatDateForInput, formatDateForServer, formatCurrency } from '../../../../utils/formatUtils';
+import { formatCurrency,timeUtils} from '../../../../utils/formatUtils';
+import moment from 'moment';
 
 const TripForm = ({ tripId, closeDrawer }) => {
   const { companyId } = useSelector((state) => state.user.userInfo);
-  console.log(companyId);
   const [createTrip] = useCreateTripMutation();
   const [updateTrip] = useUpdateTripMutation();
 
-  const { data: tripData  } = useGetTripByIdQuery(tripId, { skip: !tripId });
-
+  const { data: tripData } = useGetTripByIdQuery(tripId, { skip: !tripId });
   const { data: locationData, isLoading: isLoadingLocations } = useGetLocationsQuery();
   const { data: busTypeData, isLoading: isLoadingBusTypes, error: busTypeError } = useGetBusTypesQuery({ companyId }, { skip: !companyId });
 
@@ -20,8 +21,8 @@ const TripForm = ({ tripId, closeDrawer }) => {
     departureLocation: '',
     arrivalLocation: '',
     busType: '',
-    departureTime: '',
-    arrivalTime: '',
+    departureTime: new Date(),
+    arrivalTime: new Date(),
     basePrice: '',
     isRoundTrip: false,
   });
@@ -29,13 +30,15 @@ const TripForm = ({ tripId, closeDrawer }) => {
   useEffect(() => {
     if (tripData && tripData.data) {
       const trip = tripData.data.trip;
+      console.log('Server time:', trip.departureTime);
+      console.log('Parsed time for form:', timeUtils.parseUTCTimeForForm(trip.departureTime));
       setFormData({
         departureLocation: trip?.departureLocation?._id || '',
         arrivalLocation: trip?.arrivalLocation?._id || '',
         busType: trip?.busType?._id || '',
-        departureTime: formatDateForInput(trip?.departureTime),
-        arrivalTime: formatDateForInput(trip?.arrivalTime),
-        basePrice: trip?.basePrice,
+        departureTime: timeUtils.parseUTCTimeForForm(trip.departureTime),
+        arrivalTime: timeUtils.parseUTCTimeForForm(trip.arrivalTime),
+         basePrice: trip?.basePrice,
         isRoundTrip: trip?.isRoundTrip || false,
       });
     }
@@ -49,23 +52,25 @@ const TripForm = ({ tripId, closeDrawer }) => {
     });
   };
 
+  const handleDateChange = (name, date) => {
+    setFormData({
+      ...formData,
+      [name]: date,
+    });
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Kiểm tra thời gian hợp lệ
-    if (new Date(formData.arrivalTime) <= new Date(formData.departureTime)) {
-      alert('Thời gian đến phải lớn hơn thời gian khởi hành!');
-      return;
-    }
-
+    console.log('Form time:', formData.departureTime);
+    console.log('Formatted time for server:', timeUtils.formatTimeForServer(formData.departureTime));
     try {
-      // Định dạng thời gian và giá vé trước khi gửi lên server
       const tripDetails = {
         ...formData,
         companyId,
-        departureTime: formatDateForServer(formData.departureTime),
-        arrivalTime: formatDateForServer(formData.arrivalTime),
-        basePrice: parseInt(formData.basePrice, 10), // Chuyển basePrice thành số nguyên
+        departureTime: timeUtils.formatTimeForServer(formData.departureTime),
+        arrivalTime: timeUtils.formatTimeForServer(formData.arrivalTime),
+        basePrice: parseInt(formData.basePrice, 10),
       };
 
       if (tripId) {
@@ -76,7 +81,6 @@ const TripForm = ({ tripId, closeDrawer }) => {
       closeDrawer();
     } catch (err) {
       console.error('Lỗi khi lưu chuyến đi:', err);
-      alert(`Lỗi khi lưu chuyến đi: ${err.message}`);
     }
   };
 
@@ -150,27 +154,36 @@ const TripForm = ({ tripId, closeDrawer }) => {
       {/* Thời Gian Khởi Hành */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Thời Gian Khởi Hành:</label>
-        <input
-          type="datetime-local"
-          name="departureTime"
-          value={formData.departureTime}
-          onChange={handleChange}
-          className="mt-2 p-2 border rounded w-full focus:ring focus:ring-green-500"
-          required
-        />
+          <DatePicker
+            selected={formData.departureTime}
+            onChange={(date) => handleDateChange('departureTime', date)}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="dd/MM/yyyy HH:mm"
+            className="mt-2 p-3 border border-gray-300 text-gray-700 rounded-lg shadow-sm w-full 
+                   focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200 
+                   transition duration-200 ease-in-out hover:shadow-lg"
+            required
+          />
       </div>
 
       {/* Thời Gian Đến */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Thời Gian Đến:</label>
-        <input
-          type="datetime-local"
-          name="arrivalTime"
-          value={formData.arrivalTime}
-          onChange={handleChange}
-          className="mt-2 p-2 border rounded w-full focus:ring focus:ring-green-500"
+        <DatePicker
+          selected={formData.arrivalTime}
+          onChange={(date) => handleDateChange('arrivalTime', date)}
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={15}
+          dateFormat="dd/MM/yyyy HH:mm"
+          className="mt-2 p-3 border border-gray-300 text-gray-700 rounded-lg shadow-sm w-full 
+                   focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200 
+                   transition duration-200 ease-in-out hover:shadow-lg"
           required
         />
+        
       </div>
 
       {/* Giá Vé Cơ Bản */}

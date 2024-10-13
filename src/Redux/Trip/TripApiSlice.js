@@ -13,7 +13,7 @@ const baseQueryWithAuth = fetchBaseQuery({
 });
 
 export const tripApiSlice = createApi({
-  reducerPath: 'tripApi',
+  reducerPath: 'tripApi', 
   baseQuery: baseQueryWithAuth, 
   endpoints: (builder) => ({
     getAllTrips: builder.query({
@@ -53,9 +53,41 @@ export const tripApiSlice = createApi({
         method: 'DELETE',
       }),
     }),
-  }),
-});
+    searchTrip: builder.query({
+      query: ({
+        departureLocation,
+        arrivalLocation,
+        departureDate,
+        returnDate,
+        ticketCount,
+        departureTimeRange,
+        busType,
+        seatRow,
+        floor,
+        minPrice,
+        maxPrice,
+      }) => {
+        const queryParams = new URLSearchParams();
 
+        if (departureLocation) queryParams.append('departureLocation', departureLocation);
+        if (arrivalLocation) queryParams.append('arrivalLocation', arrivalLocation);
+        if (departureDate) queryParams.append('departureDate', departureDate);
+        if (returnDate) queryParams.append('returnDate', returnDate);
+        if (ticketCount) queryParams.append('ticketCount', ticketCount);
+        if (departureTimeRange) queryParams.append('departureTimeRange', departureTimeRange);
+        if (busType) queryParams.append('busType', busType);
+        if (seatRow) queryParams.append('seatRow', seatRow);
+        if (floor) queryParams.append('floor', floor);
+        if (minPrice) queryParams.append('minPrice', minPrice);
+        if (maxPrice) queryParams.append('maxPrice', maxPrice);
+
+        return {
+          url: `/api/trips/search?${queryParams.toString()}`,
+        };
+      },
+    }),
+  }),
+})
 export const {
   useGetAllTripsQuery,
   useGetTripsByCompanyQuery,
@@ -63,6 +95,7 @@ export const {
   useCreateTripMutation,
   useUpdateTripMutation,
   useDeleteTripMutation,
+  useSearchTripQuery,
 } = tripApiSlice;
 
 export default tripApiSlice;

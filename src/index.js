@@ -5,8 +5,8 @@ import store from './Redux/store';
 import App from './App';
 import './i18n';
 import "./tailwind.css"
-const root = ReactDOM.createRoot(document.getElementById('root'));  
 
+const root = ReactDOM.createRoot(document.getElementById('root'));  
 root.render(
     <Provider store={store}>
         <App />
