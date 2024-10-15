@@ -2,29 +2,36 @@ import React, { useState } from 'react';
 import RouteCard from './RouteCard';
 
 const PopularRoutesSection = () => {
- const routes = [
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/5/img_hero.png?v1', title: 'Sài Gòn - Đà Lạt', price: 'Từ 200.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', title: 'Đồng Nai - Đà Lạt', price: 'Từ 100.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', title: 'Đà Lạt - Sài Gòn', price: 'Từ 200.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/22/img_hero.png', title: 'Sài Gòn - Phan Thiết', price: 'Từ 150.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', title: 'Hà Nội - Hải Phòng', price: 'Từ 100.000đ' },
-    { image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', title: 'Sài Gòn - Đà Lạt', price: 'Từ 200.000đ' },
+  const routes = [
+    { 
+      image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/5/img_hero.png?v1', 
+      title: 'Sài Gòn - Đà Lạt', 
+      price: 'Từ 200.000đ', 
+      from: 'Sài Gòn', 
+      to: 'Đà Lạt'     
+    },
+    { 
+      image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/24/img_hero.png', 
+      title: 'Đồng Nai - Đà Lạt', 
+      price: 'Từ 100.000đ',
+      from: 'Đồng Nai',
+      to: 'Đà Lạt'
+    },
+    // Các tuyến đường khác...
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const visibleRoutesCount = 4; // Number of cards visible at once
+  const visibleRoutesCount = 4;
 
-  // Handle clicking "Next" button
   const handleNext = () => {
     if (currentIndex + visibleRoutesCount < routes.length) {
-      setCurrentIndex(currentIndex + 1); // Move forward by 1
+      setCurrentIndex(currentIndex + 1); 
     }
   };
 
-  // Handle clicking "Prev" button
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1); // Move backward by 1
+      setCurrentIndex(currentIndex - 1); 
     }
   };
 
@@ -41,6 +48,8 @@ const PopularRoutesSection = () => {
               image={route.image}
               title={route.title}
               price={route.price}
+              from={route.from} // Truyền điểm đi
+              to={route.to}     // Truyền điểm đến
             />
           ))}
         </div>

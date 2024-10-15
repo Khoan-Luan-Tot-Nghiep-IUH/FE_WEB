@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetTripsByCompanyQuery } from '../../../Redux/Trip/TripApiSlice';
+import { useGetTripsByCompanyQuery , useDeleteExpiredTripsForCompanyMutation  } from '../../../Redux/Trip/TripApiSlice';
 import TripList from '../components/ManageTrip/TripList';
 import TripForm from '../components/ManageTrip/TripForm';
-import { Button, Drawer, Typography, Spin, Alert, notification } from 'antd';
+import { Button, Drawer, Typography, Spin, Alert, notification ,Popconfirm} from 'antd';
 
 const { Title } = Typography;
 
@@ -18,6 +18,8 @@ const ManageTrips = () => {
   });
 
   const trips = data.trips || [];
+
+  const [deleteExpiredTripsForCompany, { isLoading: isDeleting }] = useDeleteExpiredTripsForCompanyMutation();
 
   // Hàm hiển thị thông báo
   const showNotification = (type, message, description) => {
@@ -48,10 +50,37 @@ const ManageTrips = () => {
     refetch();
   };
 
+  const handleDeleteExpiredTrips = async () => {
+    try {
+      const response = await deleteExpiredTripsForCompany();
+      showNotification('success', 'Thành công', response.data.message || 'Các chuyến đi đã quá hạn đã được xóa thành công.');
+      refetch();
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi xóa các chuyến đi đã quá hạn.';
+      showNotification('error', 'Lỗi', errorMessage);
+    }
+  };
+
   return (
     <div className="p-6 bg-white shadow-md rounded-lg">
       <div className="flex justify-between items-center mb-6">
         <Title level={3} className="text-gray-700">Quản Lý Chuyến Đi</Title>
+        <Popconfirm
+            title="Bạn có chắc chắn muốn xóa tất cả các chuyến đi đã quá hạn?"
+            onConfirm={handleDeleteExpiredTrips}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+               <Button 
+              type="primary" 
+              danger 
+              size="large" 
+              loading={isDeleting} 
+              style={{ marginRight: '10px', backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
+            >
+              Xóa Chuyến Đi Quá Hạn
+            </Button>
+          </Popconfirm>
         {!isDrawerOpen && (
           <Button type="primary" size="large" onClick={() => openDrawer()}>
             Tạo Chuyến Đi
