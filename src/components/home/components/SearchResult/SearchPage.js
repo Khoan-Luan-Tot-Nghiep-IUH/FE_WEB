@@ -3,8 +3,8 @@ import FilterSidebar from './FilterSidebar';
 import SearchResults from './SearchResults';
 import MainSection from 'components/home/MainSection/MainSection';
 import Navbar from 'components/shared/navbar/Navbar';
-import Skeleton from 'react-loading-skeleton'; // Import Skeleton loader
-import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css'; 
 
 const SearchPage = () => {
   const [filters, setFilters] = useState({
@@ -16,11 +16,10 @@ const SearchPage = () => {
     dropoffPoint: ''
   });
 
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(true); 
   React.useEffect(() => {
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading(false); // Sau khi dữ liệu tải xong
     }, 1000);
   }, []);
 
@@ -47,10 +46,9 @@ const SearchPage = () => {
     <div>
       <Navbar />
       <div className="min-h-screen w-full max-w-6xl mx-auto">
-        {/* Hiển thị MainSection hoặc skeleton loader */}
         <div className="w-full mx-auto mb-6">
           {isLoading ? (
-            <Skeleton height={150} /> // Skeleton loader cho MainSection
+            <Skeleton height={150} /> 
           ) : (
             <MainSection />
           )}
