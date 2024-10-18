@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../Redux/User/userSlice'; 
 
 const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
   const [fullName, setFullName] = useState('');
@@ -7,6 +9,9 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
   const [birthDay, setBirthDay] = useState('');
   const [gender, setGender] = useState('');
 
+  const dispatch = useDispatch();
+
+  // Load thông tin người dùng từ userData
   useEffect(() => {
     if (userData && userData.data) {
       const user = userData.data;
@@ -18,6 +23,16 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
     }
   }, [userData]);
 
+  // Kiểm tra lỗi 401 để xử lý token không hợp lệ
+  useEffect(() => {
+    if (userData?.error?.status === 401) {
+      console.log('Token hết hạn hoặc không hợp lệ. Đăng xuất...');
+      dispatch(logout());
+      window.location.href = '/login'; // Điều hướng về trang đăng nhập
+    }
+  }, [userData, dispatch]);
+
+  // Hàm xử lý khi người dùng lưu thông tin
   const handleFormSubmit = (e) => {
     e.preventDefault();
     handleSave(e, { fullName, email, phoneNumber, birthDay, gender });
@@ -27,7 +42,7 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
     <div className="w-full bg-white shadow-lg rounded-lg p-8">
       <h2 className="text-2xl font-bold mb-6 text-gray-700">Bổ sung đầy đủ thông tin để giúp hỗ trợ tốt hơn</h2>
       <form onSubmit={handleFormSubmit}>
-        {/* Full Name */}
+        {/* Họ và tên */}
         <div className="mb-6">
           <label className="block text-gray-700 text-base font-medium mb-2">Họ và tên</label>
           <input
@@ -41,7 +56,7 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
           />
         </div>
 
-        {/* Phone Number */}
+        {/* Số điện thoại */}
         <div className="mb-6">
           <label className="block text-gray-700 text-base font-medium mb-2">Số điện thoại</label>
           <input
@@ -69,7 +84,7 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
           />
         </div>
 
-        {/* Birth Date */}
+        {/* Ngày sinh */}
         <div className="mb-6">
           <label className="block text-gray-700 text-base font-medium mb-2">Ngày sinh</label>
           <input
@@ -83,7 +98,7 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
           />
         </div>
 
-        {/* Gender */}
+        {/* Giới tính */}
         <div className="mb-6">
           <label className="block text-gray-700 text-base font-medium mb-2">Giới tính</label>
           <div className="flex space-x-4">
@@ -126,7 +141,7 @@ const ProfileForm = ({ userData, isEditing, setIsEditing, handleSave }) => {
           </div>
         </div>
 
-        {/* Save Button */}
+        {/* Nút lưu */}
         <button
           type="submit"
           className={`w-full bg-blue-500 text-white py-2 rounded-lg font-bold transition duration-300 hover:bg-blue-600 ${

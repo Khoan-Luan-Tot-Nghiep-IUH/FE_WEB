@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { logout } from './userSlice';
 
 const baseUrl = process.env.REACT_APP_API_URL;
 
@@ -12,6 +13,12 @@ export const apiSlice = createApi({
       }
       return headers;
     },
+    onError: (error, { dispatch }) => {
+      if (error.status === 401) {
+        dispatch(logout()); 
+        window.location.href = '/login'; 
+      }
+    }
   }),
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -21,9 +28,14 @@ export const apiSlice = createApi({
         body: credentials,
       }),
     }),
-    getUserInfo: builder.query({
+   getUserInfo: builder.query({
       query: (id) => `/user/profile/${id}`,
-      providesTags: (result, error, id) => [{ type: 'User', id }],
+      async  onError (error, { dispatch }) {
+        if (error.error?.status === 401) {
+          dispatch(logout()); 
+          window.location.href = '/login';
+        }
+      },
     }),
     updateUserProfile: builder.mutation({
       query: ({ id, userData }) => ({
