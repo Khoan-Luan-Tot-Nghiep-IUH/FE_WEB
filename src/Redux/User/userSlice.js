@@ -31,8 +31,10 @@ const userSlice = createSlice({
       localStorage.setItem('user', JSON.stringify(state.userInfo));
     },
     logout: (state) => {
+      console.log('Đã gọi logout');
       state.userInfo = null;
       localStorage.removeItem('user');
+      localStorage.removeItem('access_token');
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
