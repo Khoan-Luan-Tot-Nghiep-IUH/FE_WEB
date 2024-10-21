@@ -8,10 +8,7 @@ export const companyApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/api`,
     prepareHeaders: (headers, { getState }) => {
-      // Lấy token từ Redux state
       const token = getState().user?.userInfo?.token;
-
-      // Nếu token tồn tại, thêm vào header Authorization
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -62,6 +59,16 @@ export const companyApiSlice = createApi({
         method: 'PATCH',
       }),
     }),
+    addDriver: builder.mutation({
+      query: ({ userName, password, email, phoneNumber, licenseNumber,fullName }) => ({
+        url: '/companies/add-driver',
+        method: 'POST',
+        body: { userName, password, email, phoneNumber, licenseNumber,fullName },
+      }),
+    }),
+    getDrivers: builder.query({
+        query: () => '/companies/drivers',
+      }),
   }),
 });
 
@@ -72,4 +79,6 @@ export const {
   useUpdateCompanyMutation,
   useAddCompanyAdminMutation,
   useToggleCompanyStatusMutation,
+  useAddDriverMutation,
+  useGetDriversQuery,
 } = companyApiSlice;

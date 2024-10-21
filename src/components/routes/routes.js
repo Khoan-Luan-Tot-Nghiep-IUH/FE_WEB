@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
+import ManageDrivers from 'components/CompanyAdmin/pages/ManageDrivers';
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -64,6 +65,7 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="trip" element={<ManageTrips />} />
             <Route path="manage-buses" element={<ManageBuses />} />
+            <Route path="manage-drivers" element={<ManageDrivers />} />
           </Route>
 
           {/* Route cho người dùng */}

@@ -77,7 +77,7 @@ const Sidebar = () => {
           {/* Quản lý tài xế */}
           <li>
             <NavLink
-              to="/manage-drivers"
+              to="/companyadmin/manage-drivers"
               className={({ isActive }) =>
                 isActive
                   ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
