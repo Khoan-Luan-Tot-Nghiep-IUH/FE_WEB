@@ -17,6 +17,7 @@ const SearchResults = ({ filters }) => {
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openTripId, setOpenTripId] = useState(null); // Quản lý TripCard đang mở
 
   const { data: trips, error, isLoading } = useSearchTripQuery({
     departureLocation,
@@ -35,7 +36,6 @@ const SearchResults = ({ filters }) => {
 
   useEffect(() => {
     setLoading(true);
-
 
     const delayDebounceFn = setTimeout(() => {
       const applyFilters = () => {
@@ -86,6 +86,14 @@ const SearchResults = ({ filters }) => {
     return () => clearTimeout(delayDebounceFn); // Xóa timeout nếu component bị unmount
   }, [filters, allTrips]);
 
+  const handleToggleTrip = (tripId) => {
+    if (openTripId === tripId) {
+      setOpenTripId(null); // Đóng trip nếu nhấn lại vào nó
+    } else {
+      setOpenTripId(tripId); // Mở trip mới và đóng các trip khác
+    }
+  };
+
   // Hiển thị loading
   if (loading || isLoading) {
     return (
@@ -97,7 +105,6 @@ const SearchResults = ({ filters }) => {
 
   if (error) return <div>Không tìm thấy chuyến xe. Lỗi: {error.message}</div>;
 
-  // Nếu không có chuyến đi phù hợp sau khi lọc và sắp xếp
   if (filteredTrips.length === 0) {
     return <div>Không tìm thấy chuyến xe nào phù hợp với yêu cầu tìm kiếm của bạn.</div>;
   }
@@ -108,7 +115,12 @@ const SearchResults = ({ filters }) => {
 
       <div className="space-y-4">
         {filteredTrips.map((trip) => (
-          <TripCard key={trip._id} trip={trip} />
+          <TripCard
+            key={trip._id}
+            trip={trip}
+            isOpen={openTripId === trip._id} // Kiểm tra nếu trip đang mở
+            onToggle={() => handleToggleTrip(trip._id)} // Truyền hàm mở/đóng cho TripCard
+          />
         ))}
       </div>
     </div>
