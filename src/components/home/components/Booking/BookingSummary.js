@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+// You can use an icon library like Font Awesome or Ionicons
+import { IoIosArrowDown , IoIosArrowUp  } from 'react-icons/io'; // Importing arrow icons from Ionicons
 
-const BookingSummary = ({ selectedSeats, totalPrice }) => {
+const BookingSummary = ({ totalPrice, selectedSeats }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDetails = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="border-t mt-4 pt-4">
-      <h3 className="text-lg font-semibold">Tóm Tắt Đặt Vé</h3>
-      <p>Ghế đã chọn: {selectedSeats.length > 0 ? selectedSeats.join(', ') : 'Chưa chọn ghế'}</p>
-      <p>Tổng cộng: {totalPrice > 0 ? `${totalPrice} VND` : '0 VND'}</p>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      {/* Header with a toggle icon */}
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-semibold mb-2">Tạm tính</h3>
+        <button onClick={toggleDetails} className="text-xl">
+          {isOpen ? <IoIosArrowUp  /> : <IoIosArrowDown />} 
+        </button>
+      </div>
+      <p className="text-2xl font-bold text-blue-600">
+        {totalPrice?.toLocaleString('vi-VN')}đ
+      </p>
+
+      {isOpen && (
+        <div className="mt-2">
+          <p className="text-sm text-gray-500">
+            Giá vé: {totalPrice?.toLocaleString('vi-VN')} x {selectedSeats.length} ghế
+          </p>
+          <p className="mt-1 text-sm text-gray-500">
+            Mã ghế/giường: {selectedSeats.join(', ')}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

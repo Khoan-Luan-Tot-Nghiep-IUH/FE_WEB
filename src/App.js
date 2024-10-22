@@ -25,7 +25,7 @@ const App = () => {
   const userInfo = useRestoreUser(); 
 
   return (
-    <div className="App">
+    <div className="App bg-slate-100">
     <Router>
       <AppRoutes userInfo={userInfo} />
     </Router>
