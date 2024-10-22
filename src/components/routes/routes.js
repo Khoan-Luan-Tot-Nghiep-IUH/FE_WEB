@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
+import ManageDrivers from 'components/CompanyAdmin/pages/ManageDrivers';
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -24,7 +25,7 @@ const ManageBuses = React.lazy(()=>import('components/CompanyAdmin/pages/ManageB
 const SearchResults = React.lazy(()=> import('components/home/components/SearchResult/SearchResults'));
 
 const SearchPage = React.lazy(()=> import ('components/home/components/SearchResult/SearchPage'));
-
+const BookingPage = React.lazy(()=>import ('components/home/components/Booking/BookingPage'));
 
 const AppRoutes = ({ userInfo }) => {
   return (
@@ -64,6 +65,7 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="trip" element={<ManageTrips />} />
             <Route path="manage-buses" element={<ManageBuses />} />
+            <Route path="manage-drivers" element={<ManageDrivers />} />
           </Route>
 
           {/* Route cho người dùng */}
@@ -74,6 +76,7 @@ const AppRoutes = ({ userInfo }) => {
           </Route>
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/search-page" element={<SearchPage />} />
+          <Route path="/bookingconfirmation" element={<BookingPage/>} />
           {/* Route mặc định khi không tìm thấy */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSearchTripQuery } from '../../../../Redux/Trip/TripApiSlice';
 import TripCard from '../SearchResult/Trip/TripCard';
@@ -17,6 +17,9 @@ const SearchResults = ({ filters }) => {
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [tripDetails, setTripDetails] = useState(null);
 
   const { data: trips, error, isLoading } = useSearchTripQuery({
     departureLocation,
@@ -35,7 +38,6 @@ const SearchResults = ({ filters }) => {
 
   useEffect(() => {
     setLoading(true);
-
 
     const delayDebounceFn = setTimeout(() => {
       const applyFilters = () => {
@@ -65,50 +67,61 @@ const SearchResults = ({ filters }) => {
           });
         }
 
-        // Sắp xếp chuyến đi
+        // Sort trips
         if (filters.sort === 'priceAsc') {
-          filtered.sort((a, b) => a.basePrice - b.basePrice); // Sắp xếp giá tăng dần
+          filtered.sort((a, b) => a.basePrice - b.basePrice);
         } else if (filters.sort === 'priceDesc') {
-          filtered.sort((a, b) => b.basePrice - a.basePrice); // Sắp xếp giá giảm dần
+          filtered.sort((a, b) => b.basePrice - a.basePrice);
         } else if (filters.sort === 'earliest') {
-          filtered.sort((a, b) => new Date(a.departureTime) - new Date(b.departureTime)); // Sắp xếp giờ đi sớm nhất
+          filtered.sort((a, b) => new Date(a.departureTime) - new Date(b.departureTime));
         } else if (filters.sort === 'latest') {
-          filtered.sort((a, b) => new Date(b.departureTime) - new Date(a.departureTime)); // Sắp xếp giờ đi muộn nhất
+          filtered.sort((a, b) => new Date(b.departureTime) - new Date(a.departureTime));
         }
 
-        setFilteredTrips(filtered); // Cập nhật danh sách sau khi lọc và sắp xếp
-        setLoading(false); // Tắt trạng thái loading khi kết thúc
+        setFilteredTrips(filtered);
+        setLoading(false);
       };
 
-      applyFilters(); // Gọi hàm lọc sau thời gian delay
-    }, 500); // Thêm độ trễ 500ms
+      applyFilters();
+    }, 500);
 
-    return () => clearTimeout(delayDebounceFn); // Xóa timeout nếu component bị unmount
+    return () => clearTimeout(delayDebounceFn);
   }, [filters, allTrips]);
 
-  // Hiển thị loading
   if (loading || isLoading) {
     return (
       <div className="container mx-auto py-8">
-        <SkeletonLoader /> {/* Giả sử bạn có component SkeletonLoader */}
+        <SkeletonLoader />
       </div>
     );
   }
 
   if (error) return <div>Không tìm thấy chuyến xe. Lỗi: {error.message}</div>;
 
-  // Nếu không có chuyến đi phù hợp sau khi lọc và sắp xếp
   if (filteredTrips.length === 0) {
     return <div>Không tìm thấy chuyến xe nào phù hợp với yêu cầu tìm kiếm của bạn.</div>;
   }
 
+  const handleContinue = (seats, price, trip) => {
+    setSelectedSeats(seats);
+    setTotalPrice(price);
+    setTripDetails(trip);
+  };
+
   return (
     <div className="container mx-auto py-8">
       <h2 className="text-2xl font-bold mb-4">Kết quả tìm kiếm chuyến xe</h2>
-
       <div className="space-y-4">
         {filteredTrips.map((trip) => (
-          <TripCard key={trip._id} trip={trip} />
+          <TripCard 
+            key={trip._id} 
+            trip={trip} 
+            isOpen={trip._id === tripDetails?._id} // Chỉ mở một tripCard
+            onToggle={() => {
+              setTripDetails(tripDetails?._id === trip._id ? null : trip); // Đóng mở tripCard
+            }} 
+            onContinue={handleContinue} // Truyền hàm xử lý khi nhấn "Tiếp tục"
+          />
         ))}
       </div>
     </div>

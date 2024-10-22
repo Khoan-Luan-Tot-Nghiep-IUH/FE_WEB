@@ -51,7 +51,7 @@ export const tripApiSlice = createApi({
       query: (tripId) => ({
         url: `/api/trips/${tripId}`,
         method: 'DELETE',
-      }),
+      }), 
     }),
     deleteExpiredTripsForCompany: builder.mutation({
       query: () => ({
@@ -92,6 +92,9 @@ export const tripApiSlice = createApi({
         };
       },
     }),
+    getSeatsByTripId: builder.query({
+      query: (tripId) => `/api/trips/${tripId}/seats`,  
+    }),
   }),
 })
 export const {
@@ -103,6 +106,7 @@ export const {
   useDeleteExpiredTripsForCompanyMutation,
   useDeleteTripMutation,
   useSearchTripQuery,
+  useGetSeatsByTripIdQuery,
 } = tripApiSlice;
 
 export default tripApiSlice;
