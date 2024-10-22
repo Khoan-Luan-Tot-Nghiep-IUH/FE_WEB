@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { formatCurrency } from 'utils/formatUtils';
 import { useGetSeatsByTripIdQuery } from '../../../../../Redux/Trip/TripApiSlice';
 import { Transition } from '@headlessui/react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const TripCard = ({ trip, isOpen, onToggle }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const navigate = useNavigate(); // Khởi tạo useNavigate
 
   const { data: seatsData, isLoading: isLoadingSeats } = useGetSeatsByTripIdQuery(trip._id, {
-    skip: !isOpen, // Chỉ tải ghế khi trip được mở
+    skip: !isOpen,
   });
 
   const handleSeatSelect = (seatNumber) => {
@@ -22,10 +24,22 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
   const isSeatBooked = (seat) => !seat.isAvailable;
   const totalPrice = selectedSeats.length * trip.basePrice;
 
+  const handleContinue = () => {
+    // Chuyển hướng đến BookingPage và truyền thông tin ghế và tổng giá
+    navigate('/bookingconfirmation', {
+      state: {
+        selectedSeats,
+        totalPrice,
+        trip,
+      },
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg mb-6 p-4 hover:shadow-xl transition-shadow duration-300">
+      {/* Header section */}
       <div className="flex justify-between">
-        {/* Phần bên trái: Thông tin hình ảnh xe và chuyến */}
+        {/* Left part: Bus image and trip information */}
         <div className="flex items-start">
           <div className="relative">
             <img
@@ -52,12 +66,12 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
           </div>
         </div>
 
-        {/* Phần bên phải: Giá và nút chọn chuyến */}
+        {/* Right part: Price and booking button */}
         <div className="text-right">
           <p className="text-xl font-bold text-blue-600 mb-2">Từ {formatCurrency(trip.basePrice)} VND</p>
           <button
-            onClick={onToggle} // Gọi sự kiện khi nhấn nút chọn chuyến
-            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-300 w-full"
+            onClick={onToggle} // Toggle the trip details
+            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-300"
           >
             {isOpen ? 'Ẩn chi tiết' : 'Chọn chuyến'}
           </button>
@@ -65,7 +79,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
         </div>
       </div>
 
-      {/* Chi tiết ghế ngồi */}
+      {/* Seat selection section */}
       <Transition
         show={isOpen}
         as="div"
@@ -79,7 +93,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
         {isOpen && (
           <div className="border-t mt-4 pt-4">
             <div className="flex justify-between">
-              {/* Legend bên trái */}
+              {/* Legend */}
               <div className="w-1/3">
                 <h4 className="font-medium mb-3">Chú thích:</h4>
                 <div className="space-y-2 text-sm">
@@ -102,7 +116,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
                 </div>
               </div>
 
-              {/* Bản đồ ghế ngồi */}
+              {/* Seat map */}
               <div className="w-2/3">
                 <h4 className="font-medium mb-3 text-center">Thông tin ghế ngồi:</h4>
                 {isLoadingSeats ? (
@@ -129,7 +143,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
               </div>
             </div>
 
-            {/* Tổng cộng và nút tiếp tục */}
+            {/* Total price and continue button */}
             <div className="mt-4 flex justify-between items-center border-t pt-4">
               <div className="text-sm">
                 Ghế đã chọn: {selectedSeats.join(', ')}
@@ -137,7 +151,10 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
               <div className="text-lg font-bold">
                 Tổng cộng: {formatCurrency(totalPrice)} VND
               </div>
-              <button className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+              <button 
+                onClick={handleContinue} // Gọi hàm chuyển tiếp
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+              >
                 Tiếp tục
               </button>
             </div>
