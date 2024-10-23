@@ -87,8 +87,9 @@ export const tripApiSlice = createApi({
         if (minPrice) queryParams.append('minPrice', minPrice);
         if (maxPrice) queryParams.append('maxPrice', maxPrice);
 
+        const queryString = queryParams.toString();
         return {
-          url: `/api/trips/search?${queryParams.toString()}`,
+          url: queryString ? `/api/trips/search?${queryString}` : '/api/trips/search',
         };
       },
     }),

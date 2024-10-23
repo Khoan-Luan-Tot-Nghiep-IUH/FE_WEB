@@ -104,23 +104,18 @@ const MainSection = () => {
 
     const formattedDepartureDate = moment(departureDate).format('YYYY-MM-DD');
     const formattedReturnDate = returnDate ? moment(returnDate).format('YYYY-MM-DD') : null;
-
-    // Giả lập việc chờ đợi API để mô phỏng quá trình lấy dữ liệu
+    const searchParams = {
+      departureLocation: fromLocation,
+      arrivalLocation: toLocation,
+      departureDate: formattedDepartureDate,
+      ticketCount: ticketQuantity,
+    };
+    localStorage.setItem('searchParams', JSON.stringify(searchParams));
     setTimeout(() => {
       // Điều hướng sau khi dữ liệu sẵn sàng
-      navigate('/search-page', {
-        state: {
-          departureLocation: fromLocation,
-          arrivalLocation: toLocation,
-          departureDate: formattedDepartureDate,
-          returnDate: formattedReturnDate,
-          ticketCount: ticketQuantity,
-          ticketType,
-        },
-      });
-      // Dừng hiển thị loader
+      navigate(`/search-page?departureLocation=${encodeURIComponent(fromLocation)}&arrivalLocation=${encodeURIComponent(toLocation)}&departureDate=${formattedDepartureDate}&ticketCount=${ticketQuantity}`);
       setIsLoading(false);
-    }, 1500); // Giả lập thời gian chờ 1.5 giây
+    }, 500); // Giả lập thời gian chờ 1.5 giây
   };
 
   if (isLoading || isLocationsLoading) return <Loader />; // Hiển thị loader trong quá trình tải dữ liệu
