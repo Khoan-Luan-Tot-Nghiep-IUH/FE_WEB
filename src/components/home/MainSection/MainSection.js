@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import CustomDatePicker from '../../UI/CustomStyledDatePicker';
 import { useGetLocationsQuery } from '../../../Redux/Location/locationApiSlice';
 import moment from 'moment-timezone';
@@ -32,43 +32,55 @@ const LocationInput = ({ label, value, onChange, options, placeholder, iconClass
 );
 
 const MainSection = () => {
-  const [fromLocation, setFromLocation] = useState(() => localStorage.getItem('fromLocation') || '');
-  const [toLocation, setToLocation] = useState(() => localStorage.getItem('toLocation') || '');
-  const [ticketType, setTicketType] = useState(() => localStorage.getItem('ticketType') || 'oneWay');
-  const [ticketQuantity, setTicketQuantity] = useState(() => {
-    const storedQuantity = localStorage.getItem('ticketQuantity');
-    return storedQuantity ? parseInt(storedQuantity, 10) : 1;
-  });
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook để lấy params từ URL
+  const [isLoading, setIsLoading] = useState(false); // Khai báo state isLoading
 
-  const [isLoading, setIsLoading] = useState(false);  // Thêm trạng thái loading
+  // Lấy query params từ URL
+  const queryParams = new URLSearchParams(location.search);
+
+  // State khởi tạo dựa trên URL params (nếu có), nếu không thì từ localStorage
+  const [fromLocation, setFromLocation] = useState(queryParams.get('departureLocation') || '');
+  const [toLocation, setToLocation] = useState(queryParams.get('arrivalLocation') || '');
+  const [ticketType, setTicketType] = useState(localStorage.getItem('ticketType') || 'oneWay');
+  const [ticketQuantity, setTicketQuantity] = useState(parseInt(queryParams.get('ticketCount'), 10) || 1);
+
   const parseStoredDate = (date) => {
     return date && !isNaN(Date.parse(date)) ? new Date(date) : null;
   };
 
-  const [departureDate, setDepartureDate] = useState(() => parseStoredDate(localStorage.getItem('departureDate')));
+  const [departureDate, setDepartureDate] = useState(() => 
+    queryParams.get('departureDate') 
+      ? new Date(queryParams.get('departureDate')) 
+      : null
+  );
+
   const [returnDate, setReturnDate] = useState(() => parseStoredDate(localStorage.getItem('returnDate')));
 
   const { data: locations, isLoading: isLocationsLoading, error } = useGetLocationsQuery();
-  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng
 
-  // Lưu lại giá trị vào localStorage nếu chúng hợp lệ
+  // Chỉ cập nhật localStorage khi không có URL params, tức là form được submit trực tiếp
   useEffect(() => {
-    localStorage.setItem('fromLocation', fromLocation);
-  }, [fromLocation]);
+    if (!queryParams.get('departureLocation')) {
+      localStorage.setItem('fromLocation', fromLocation);
+    }
+  }, [fromLocation, queryParams]);
 
   useEffect(() => {
-    localStorage.setItem('toLocation', toLocation);
-  }, [toLocation]);
+    if (!queryParams.get('arrivalLocation')) {
+      localStorage.setItem('toLocation', toLocation);
+    }
+  }, [toLocation, queryParams]);
 
   useEffect(() => {
     localStorage.setItem('ticketType', ticketType);
   }, [ticketType]);
 
   useEffect(() => {
-    if (Number.isInteger(ticketQuantity) && ticketQuantity > 0) {
+    if (!queryParams.get('ticketCount') && Number.isInteger(ticketQuantity) && ticketQuantity > 0) {
       localStorage.setItem('ticketQuantity', ticketQuantity.toString());
     }
-  }, [ticketQuantity]);
+  }, [ticketQuantity, queryParams]);
 
   useEffect(() => {
     if (departureDate && departureDate instanceof Date && !isNaN(departureDate)) {
@@ -86,20 +98,20 @@ const MainSection = () => {
     }
   }, [returnDate]);
 
+  // Hàm hoán đổi vị trí
   const handleSwapLocations = () => {
     const temp = fromLocation;
     setFromLocation(toLocation);
     setToLocation(temp);
   };
 
+  // Hàm xử lý tìm kiếm và điều hướng
   const handleSearch = () => {
-    // Kiểm tra xem các thông tin tìm kiếm có hợp lệ không trước khi điều hướng
     if (!fromLocation || !toLocation || !departureDate) {
       alert('Vui lòng chọn đầy đủ thông tin trước khi tìm kiếm!');
       return;
     }
 
-    // Bắt đầu hiển thị loader
     setIsLoading(true);
 
     const formattedDepartureDate = moment(departureDate).format('YYYY-MM-DD');
@@ -110,15 +122,19 @@ const MainSection = () => {
       departureDate: formattedDepartureDate,
       ticketCount: ticketQuantity,
     };
+
+    // Lưu lại searchParams vào localStorage
     localStorage.setItem('searchParams', JSON.stringify(searchParams));
+
+    // Điều hướng đến trang kết quả tìm kiếm với các giá trị trong URL params
+    navigate(`/search-page?departureLocation=${encodeURIComponent(fromLocation)}&arrivalLocation=${encodeURIComponent(toLocation)}&departureDate=${formattedDepartureDate}&ticketCount=${ticketQuantity}`);
+
     setTimeout(() => {
-      // Điều hướng sau khi dữ liệu sẵn sàng
-      navigate(`/search-page?departureLocation=${encodeURIComponent(fromLocation)}&arrivalLocation=${encodeURIComponent(toLocation)}&departureDate=${formattedDepartureDate}&ticketCount=${ticketQuantity}`);
-      setIsLoading(false);
-    }, 500); // Giả lập thời gian chờ 1.5 giây
+      setIsLoading(false); // Kết thúc quá trình tải
+    }, 500);
   };
 
-  if (isLoading || isLocationsLoading) return <Loader />; // Hiển thị loader trong quá trình tải dữ liệu
+  if (isLoading || isLocationsLoading) return <Loader />;
 
   if (error) return <div>Lỗi khi tải địa điểm</div>;
 

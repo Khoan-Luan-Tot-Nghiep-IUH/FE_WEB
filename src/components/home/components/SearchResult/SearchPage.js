@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Navbar from 'components/shared/navbar/Navbar';
 import Skeleton from 'react-loading-skeleton';
@@ -19,6 +20,7 @@ const SearchPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,23 +63,33 @@ const SearchPage = () => {
     }
   }, [resetFilters]);
 
+  const handlePopularRouteClick = (fromLocation, toLocation) => {
+    const searchParams = new URLSearchParams();
+    searchParams.set('departureLocation', fromLocation);
+    searchParams.set('arrivalLocation', toLocation);
+    const currentDate = new Date().toISOString().split('T')[0];
+    searchParams.set('date', currentDate);
+    searchParams.set('ticketCount', '1');
+    navigate(`/search-page?${searchParams.toString()}`);
+  };
+
   return (
     <div>
       <Navbar />
       <div className="min-h-screen w-full max-w-6xl mx-auto">
         <div className="w-full mx-auto mb-6">
-          {/* Kiểm tra xem có lỗi không, nếu có thì hiển thị lỗi */}
           {error ? (
             <div className="text-red-500">Error: {error}</div>
           ) : (
             <Suspense fallback={<Skeleton height={150} />}>
-              {isLoading ? <Skeleton height={150} /> : <MainSection />}
+              {isLoading ? <Skeleton height={150} /> : (
+                <MainSection onPopularRouteClick={handlePopularRouteClick} /> // Truyền hàm xử lý
+              )}
             </Suspense>
           )}
         </div>
 
         <div className="flex w-full">
-          {/* Skeleton cho Sidebar khi đang tải */}
           <div className="w-1/4 pr-4">
             {isLoading ? (
               <div>
@@ -90,7 +102,6 @@ const SearchPage = () => {
             )}
           </div>
 
-          {/* Skeleton cho phần kết quả tìm kiếm khi đang tải */}
           <div className="w-3/4">
             {isLoading ? (
               <div>

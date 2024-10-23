@@ -5,9 +5,9 @@ const PopularRoutesSection = () => {
   const routes = [
     { 
       image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/5/img_hero.png?v1', 
-      title: 'Sài Gòn - Đà Lạt', 
+      title: 'Thành Phố Hồ Chí Minh - Đà Lạt', 
       price: 'Từ 200.000đ', 
-      from: 'Sài Gòn', 
+      from: 'Thành Phố Hồ Chí Minh', 
       to: 'Đà Lạt'     
     },
     { 
@@ -17,7 +17,27 @@ const PopularRoutesSection = () => {
       from: 'Đồng Nai',
       to: 'Đà Lạt'
     },
-    // Các tuyến đường khác...
+    { 
+      image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/3/img_hero.png', 
+      title: 'Hà Nội - Đà Lạt', 
+      price: 'Từ 200.000đ', 
+      from: 'Hà Nội', 
+      to: 'Đà Lạt'     
+    },
+    { 
+      image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/22/img_hero.png', 
+      title: 'Đồng Nai - Thành Phố Hồ Chí Minh', 
+      price: 'Từ 80.000đ', 
+      from: 'Đồng Nai', 
+      to: 'Thành Phố Hồ Chí Minh'     
+    },
+    { 
+      image: 'https://f1e425bd6cd9ac6.cmccloud.com.vn/cms-tool/destination/images/25/img_hero.png', 
+      title: 'Đồng Nai - Hà Nội', 
+      price: 'Từ 700.000đ', 
+      from: 'Đồng Nai', 
+      to: 'Hà Nội'     
+    },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,13 +68,11 @@ const PopularRoutesSection = () => {
               image={route.image}
               title={route.title}
               price={route.price}
-              from={route.from} // Truyền điểm đi
-              to={route.to}     // Truyền điểm đến
+              from={route.from}
+              to={route.to}    
             />
           ))}
         </div>
-
-        {/* Prev Button */}
         {currentIndex > 0 && (
           <button
             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-300 hover:bg-gray-400 text-white px-4 py-2 rounded-full shadow-md"
@@ -63,8 +81,6 @@ const PopularRoutesSection = () => {
             Prev
           </button>
         )}
-
-        {/* Next Button */}
         {currentIndex + visibleRoutesCount < routes.length && (
           <button
             className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-300 hover:bg-gray-400 text-white px-4 py-2 rounded-full shadow-md"
