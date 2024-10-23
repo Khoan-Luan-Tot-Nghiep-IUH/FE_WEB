@@ -3,25 +3,32 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import BookingForm from './BookingForm';
 import BookingSummary from './BookingSummary';
 import BookingConfirmation from './BookingConfirmation';
-
+import Navbar from 'components/shared/navbar/Navbar';
+import { IoIosArrowBack } from "react-icons/io";
 const BookingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { selectedSeats, totalPrice, trip } = location.state || {};
 
   const handleBack = () => {
-    navigate('/search-result');
+    const storedParams = localStorage.getItem('searchParams');
+    if (storedParams) {
+      const { departureLocation, arrivalLocation, departureDate, ticketCount } = JSON.parse(storedParams);
+      navigate(`/search-page?departureLocation=${encodeURIComponent(departureLocation)}&arrivalLocation=${encodeURIComponent(arrivalLocation)}&departureDate=${encodeURIComponent(departureDate)}&ticketCount=${encodeURIComponent(ticketCount)}`);
+    } else {
+      navigate('/search-page');
+    }
   };
-
+  
+  
   return (
     <div className="min-h-screen pb-0">
+    <Navbar />
       <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Back Button */}
         <div className="lg:col-span-3 mb-4">
           <button onClick={handleBack} className="text-blue-500 flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11.5a1 1 0 10-2 0v3H6.5a1 1 0 100 2H9v3a1 1 0 102 0v-3h2.5a1 1 0 000-2H11v-3z" clipRule="evenodd" />
-            </svg>
+          <IoIosArrowBack />
             Quay lại
           </button>
         </div>
@@ -76,10 +83,8 @@ const BookingPage = () => {
         </div>
       </div>
 
-      {/* Bottom Section with White Background */}
-      <div className="w-full bg-white shadow-md mt-6">
+      <div className="w-full h-full bg-white shadow-md mt-6">
         <div className="container mx-auto">
-          {/* Booking Buttons */}
           <div className="px-4 py-6 flex justify-between items-center space-x-4">
             <button className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition duration-200 w-1/2">
               Tiếp tục đặt vé một chiều
@@ -88,21 +93,19 @@ const BookingPage = () => {
               Đặt thêm chiều về
             </button>
           </div>
-
-          {/* Terms and Discount Info */}
           <div className="px-4 pb-6 flex justify-between items-center">
             <p className="text-sm text-gray-600">
               Bằng việc tiếp tục, bạn đồng ý với{' '}
               <a href="#" className="text-blue-500 underline">
                 Chính sách bảo mật thanh toán
-              </a>{' '}
-              và{' '}
+              </a>
+              và
               <a href="#" className="text-blue-500 underline">
                 Quy chế
               </a>
             </p>
             <div className="text-green-600 text-sm font-semibold">
-              Đặt thêm chiều về, giảm ngay 20k!{' '}
+              Đặt thêm chiều về, giảm ngay 20k!
               <a href="#" className="text-blue-500 underline">
                 Chi tiết
               </a>

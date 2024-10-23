@@ -62,8 +62,6 @@ const TripForm = ({ tripId, closeDrawer }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form time:', formData.departureTime);
-    console.log('Formatted time for server:', timeUtils.formatTimeForServer(formData.departureTime));
     try {
       const tripDetails = {
         ...formData,

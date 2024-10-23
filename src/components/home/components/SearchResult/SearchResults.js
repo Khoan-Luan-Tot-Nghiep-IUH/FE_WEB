@@ -5,14 +5,15 @@ import TripCard from '../SearchResult/Trip/TripCard';
 import SkeletonLoader from '../../../shared/Loader/Loader';
 
 const SearchResults = ({ filters }) => {
-  const { state } = useLocation();
-  const {
-    departureLocation,
-    arrivalLocation,
-    departureDate,
-    returnDate,
-    ticketCount,
-  } = state || {};
+  const location = useLocation();
+
+  // Lấy các giá trị params từ URL thay vì sử dụng state
+  const searchParams = new URLSearchParams(location.search);
+  const departureLocation = searchParams.get('departureLocation');
+  const arrivalLocation = searchParams.get('arrivalLocation');
+  const departureDate = searchParams.get('departureDate');
+  const returnDate = searchParams.get('returnDate');
+  const ticketCount = searchParams.get('ticketCount');
 
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [allTrips, setAllTrips] = useState([]);
@@ -21,6 +22,7 @@ const SearchResults = ({ filters }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [tripDetails, setTripDetails] = useState(null);
 
+  // Gọi API để tìm kiếm chuyến xe, mặc định gọi API không điều kiện
   const { data: trips, error, isLoading } = useSearchTripQuery({
     departureLocation,
     arrivalLocation,
@@ -29,6 +31,7 @@ const SearchResults = ({ filters }) => {
     ticketCount,
   });
 
+  // Cập nhật dữ liệu khi nhận được từ API
   useEffect(() => {
     if (trips?.data?.departureTrips) {
       setAllTrips(trips.data.departureTrips);
@@ -36,6 +39,7 @@ const SearchResults = ({ filters }) => {
     }
   }, [trips]);
 
+  // Áp dụng bộ lọc và cập nhật danh sách chuyến xe
   useEffect(() => {
     setLoading(true);
 
@@ -88,6 +92,14 @@ const SearchResults = ({ filters }) => {
     return () => clearTimeout(delayDebounceFn);
   }, [filters, allTrips]);
 
+  // Đặt tất cả hooks trước khi kiểm tra điều kiện
+
+  // Nếu thiếu params, hiển thị thông báo sau khi hooks đã được gọi
+  if (!departureLocation || !arrivalLocation || !departureDate) {
+    return <div>Thiếu thông tin tìm kiếm. Vui lòng thử lại.</div>;
+  }
+
+  // Hiển thị loader nếu đang tải dữ liệu
   if (loading || isLoading) {
     return (
       <div className="container mx-auto py-8">
@@ -96,12 +108,17 @@ const SearchResults = ({ filters }) => {
     );
   }
 
-  if (error) return <div>Không tìm thấy chuyến xe. Lỗi: {error.message}</div>;
+  // Xử lý lỗi từ API
+  if (error) {
+    return <div>Không tìm thấy chuyến xe. Lỗi: {error.message}</div>;
+  }
 
+  // Xử lý trường hợp không có kết quả phù hợp với bộ lọc
   if (filteredTrips.length === 0) {
     return <div>Không tìm thấy chuyến xe nào phù hợp với yêu cầu tìm kiếm của bạn.</div>;
   }
 
+  // Hàm để xử lý khi người dùng chọn ghế và tiếp tục
   const handleContinue = (seats, price, trip) => {
     setSelectedSeats(seats);
     setTotalPrice(price);
@@ -116,11 +133,11 @@ const SearchResults = ({ filters }) => {
           <TripCard 
             key={trip._id} 
             trip={trip} 
-            isOpen={trip._id === tripDetails?._id} // Chỉ mở một tripCard
+            isOpen={trip._id === tripDetails?._id} 
             onToggle={() => {
-              setTripDetails(tripDetails?._id === trip._id ? null : trip); // Đóng mở tripCard
+              setTripDetails(tripDetails?._id === trip._id ? null : trip); 
             }} 
-            onContinue={handleContinue} // Truyền hàm xử lý khi nhấn "Tiếp tục"
+            onContinue={handleContinue}
           />
         ))}
       </div>

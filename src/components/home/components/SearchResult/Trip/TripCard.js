@@ -25,13 +25,13 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
   const totalPrice = selectedSeats.length * trip.basePrice;
 
   const handleContinue = () => {
-    // Chuyển hướng đến BookingPage và truyền thông tin ghế và tổng giá
     navigate('/bookingconfirmation', {
       state: {
         selectedSeats,
         totalPrice,
         trip,
       },
+      
     });
   };
 

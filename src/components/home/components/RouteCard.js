@@ -5,19 +5,13 @@ const RouteCard = ({ image, title, price, from, to }) => {
   const navigate = useNavigate(); // Khởi tạo hook navigate
 
   const handleCardClick = () => {
-    // Chuyển hướng đến trang search với giá trị from và to
-    navigate('/search-page', { 
-      state: { 
-        fromLocation: from, 
-        toLocation: to 
-      } 
-    });
+    const currentDate = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại
+    navigate(`/search-page?departureLocation=${encodeURIComponent(from)}&arrivalLocation=${encodeURIComponent(to)}&departureDate=${currentDate}`);
   };
-
   return (
     <div 
       className="relative bg-gray-200 rounded-lg overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-300"
-      onClick={handleCardClick} // Thêm sự kiện onClick vào thẻ
+      onClick={handleCardClick}   
     >
       <img
         src={image}
