@@ -57,9 +57,7 @@ const SearchPage = () => {
     if (field === 'clear') {
       resetFilters();
     } else {
-      setIsLoading(true); // Hiển thị trạng thái tải khi thay đổi bộ lọc
       setFilters((prev) => ({ ...prev, [field]: value }));
-      setTimeout(() => setIsLoading(false), 500); // Giả lập quá trình tải
     }
   }, [resetFilters]);
 
@@ -97,7 +95,7 @@ const SearchPage = () => {
               </div>
             ) : (
               <Suspense fallback={<Skeleton height={40} count={6} />}>
-                <FilterSidebar onSortChange={handleSortChange} onFilterChange={handleFilterChange} />
+                <FilterSidebar filters={filters} onSortChange={handleSortChange} onFilterChange={handleFilterChange} />
               </Suspense>
             )}
           </div>

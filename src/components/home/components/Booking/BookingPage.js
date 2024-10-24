@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import BookingForm from './BookingForm';
-import BookingSummary from './BookingSummary';
-import BookingConfirmation from './BookingConfirmation';
+import BookingForm from './ComponentBooking/BookingForm';
+import BookingSummary from './ComponentBooking/BookingSummary';
+import BookingConfirmation from './ComponentBooking/BookingConfirmation';
 import Navbar from 'components/shared/navbar/Navbar';
 import { IoIosArrowBack } from "react-icons/io";
 const BookingPage = () => {
@@ -17,6 +17,13 @@ const BookingPage = () => {
       navigate(`/search-page?departureLocation=${encodeURIComponent(departureLocation)}&arrivalLocation=${encodeURIComponent(arrivalLocation)}&departureDate=${encodeURIComponent(departureDate)}&ticketCount=${encodeURIComponent(ticketCount)}`);
     } else {
       navigate('/search-page');
+    }
+  };
+  const handleContinueBooking = () => {
+    if (selectedSeats && totalPrice && trip) {
+      navigate('/payment-methods', { state: { selectedSeats, totalPrice, trip } });
+    } else {
+      console.error('Dữ liệu không đầy đủ!');
     }
   };
   
@@ -86,7 +93,7 @@ const BookingPage = () => {
       <div className="w-full h-full bg-white shadow-md mt-6">
         <div className="container mx-auto">
           <div className="px-4 py-6 flex justify-between items-center space-x-4">
-            <button className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition duration-200 w-1/2">
+            <button  onClick={handleContinueBooking}  className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition duration-200 w-1/2">
               Tiếp tục đặt vé một chiều
             </button>
             <button className="bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-200 w-1/2">

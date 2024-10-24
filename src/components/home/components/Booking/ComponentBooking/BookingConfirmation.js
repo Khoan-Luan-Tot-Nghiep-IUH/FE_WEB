@@ -100,17 +100,16 @@ const BookingConfirmation = ({ trip }) => {
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">{trip.busType?.name || 'Vie Limousine'}</h2>
                 <p className="text-sm">
-                  {new Date(trip.departureTime).toLocaleTimeString('vi-VN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}{' '}
-                  •{' '}
-                  {new Date(trip.departureTime).toLocaleDateString('vi-VN', {
-                    weekday: 'short',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
+                  {trip.departureTime &&
+                    `${new Date(trip.departureTime).toLocaleTimeString('vi-VN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })} • ${new Date(trip.departureTime).toLocaleDateString('vi-VN', {
+                      weekday: 'short',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}`}
                 </p>
               </div>
             </div>

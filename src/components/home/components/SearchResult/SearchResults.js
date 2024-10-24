@@ -4,7 +4,7 @@ import { useSearchTripQuery } from '../../../../Redux/Trip/TripApiSlice';
 import TripCard from '../SearchResult/Trip/TripCard';
 import SkeletonLoader from '../../../shared/Loader/Loader';
 
-const SearchResults = ({ filters }) => {
+const SearchResults = ({ filters = {} }) => {
   const location = useLocation();
 
   // Lấy các giá trị params từ URL thay vì sử dụng state

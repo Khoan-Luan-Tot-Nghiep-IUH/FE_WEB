@@ -20,7 +20,7 @@ const Login = () => {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [notificationSeverity, setNotificationSeverity] = useState('success');
 
-  const from = location.state?.from || { pathname: '/search-results', search: location.search };
+  const from = location.state?.from ||  { pathname: '/' }; ;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,7 +38,8 @@ const Login = () => {
         throw new Error('Token is missing or invalid.');
       }
     } catch (err) {
-      const errorMsg = err?.data?.message || 'Login failed. Please try again.';
+
+      const errorMsg = err?.data?.msg || err?.mmsg || 'Đăng nhập thất bại. Vui lòng thử lại.';
       setErrorMessage(errorMsg);
       showNotification('error', errorMsg);
     }
@@ -62,10 +63,14 @@ const Login = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
+    const from = params.get('from') || '/'; // Trang mặc định là trang chủ
+  
     if (token) {
-      handleSocialLoginSuccess(token);
+      handleSocialLoginSuccess(token); // Hàm xử lý token và đăng nhập người dùng
+      navigate(from); // Điều hướng về trang trước đó sau khi đăng nhập thành công
     }
   }, [location]);
+  
 
   const handleFacebookLogin = () => {
     window.location.href = `${process.env.REACT_APP_API_URL}/api/user/facebook`;

@@ -96,6 +96,13 @@ export const tripApiSlice = createApi({
     getSeatsByTripId: builder.query({
       query: (tripId) => `/api/trips/${tripId}/seats`,  
     }),
+    updateTripDrivers: builder.mutation({
+      query: ({ tripId, driverIds }) => ({
+        url: `/api/trips/${tripId}/drivers`,
+        method: 'PUT',
+        body: { driverIds },
+      }),
+    }),
   }),
 })
 export const {
@@ -108,6 +115,7 @@ export const {
   useDeleteTripMutation,
   useSearchTripQuery,
   useGetSeatsByTripIdQuery,
+  useUpdateTripDriversMutation,
 } = tripApiSlice;
 
 export default tripApiSlice;
