@@ -4,6 +4,7 @@ import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
 import ManageDrivers from 'components/CompanyAdmin/pages/ManageDrivers';
+import PaymentMethod from 'components/home/components/Booking/PaymentMethod';
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -77,6 +78,7 @@ const AppRoutes = ({ userInfo }) => {
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/search-page" element={<SearchPage />} />
           <Route path="/bookingconfirmation" element={<BookingPage/>} />
+          <Route path="/payment-methods" element={<PaymentMethod/>} />
           {/* Route mặc định khi không tìm thấy */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

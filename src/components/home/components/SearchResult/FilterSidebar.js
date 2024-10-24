@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'; // Import các icon cần thiết
 
-const FilterSidebar = ({ onFilterChange }) => {
+const FilterSidebar = ({ filters, onFilterChange }) => {
   const [openSections, setOpenSections] = useState({
     departureTime: false,
     busOperator: false,
@@ -32,6 +32,7 @@ const FilterSidebar = ({ onFilterChange }) => {
               type="radio"
               name="sort"
               value={value}
+              checked={filters.sort === value} // Đồng bộ radio với state
               onChange={(e) => onFilterChange('sort', e.target.value)}
               className="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500"
             />
@@ -55,6 +56,7 @@ const FilterSidebar = ({ onFilterChange }) => {
           </h4>
           {openSections.departureTime && (
             <select
+              value={filters.departureTimeRange} // Đồng bộ giá trị của select với state
               className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => onFilterChange('departureTimeRange', e.target.value)}
             >
@@ -76,11 +78,12 @@ const FilterSidebar = ({ onFilterChange }) => {
           </h4>
           {openSections.busOperator && (
             <select
+              value={filters.busOperator} // Đồng bộ giá trị của select với state
               className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => onFilterChange('busOperator', e.target.value)}
             >
               <option value="">Tất cả</option>
-              <option value="Vie Limousine">Vie Limousine</option>
+              <option value="Nhà Xe Minh Toàn">Nhà Xe Minh Toàn</option>
               <option value="Thành Bưởi">Thành Bưởi</option>
             </select>
           )}
@@ -97,6 +100,7 @@ const FilterSidebar = ({ onFilterChange }) => {
           </h4>
           {openSections.priceRange && (
             <select
+              value={filters.priceRange} // Đồng bộ giá trị của select với state
               className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => onFilterChange('priceRange', e.target.value)}
             >

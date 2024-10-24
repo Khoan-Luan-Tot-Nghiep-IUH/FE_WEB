@@ -59,9 +59,9 @@ const PopularRoutesSection = () => {
     <section className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Tuyến đường phổ biến</h2>
 
-      <div className="relative">
+      <div className="relative max-w-full overflow-hidden">
         {/* Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {routes.slice(currentIndex, currentIndex + visibleRoutesCount).map((route, index) => (
             <RouteCard
               key={index}

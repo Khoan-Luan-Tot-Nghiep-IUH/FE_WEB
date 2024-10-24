@@ -33,15 +33,15 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`lg:w-64 md:w-48 w-64 bg-gray-900 fixed top-0 left-0 shadow-lg transition-transform duration-300 z-40 overflow-y-auto ${
+        className={`lg:w-64 md:w-48 w-48 bg-gray-900 fixed top-0 left-0 shadow-lg transition-transform duration-300 z-40 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
         style={{ height: '100vh' }}
       >
-        <div className="p-4 font-bold text-xl bg-gray-800 text-center text-white border-b border-gray-700">
+        <div className="p-4 font-bold text-lg bg-gray-800 text-center text-white border-b border-gray-700">
           Quản Lý Nhà Xe
         </div>
-        <nav className="mt-6">
+        <nav className="mt-6 text-sm"> {/* Giảm kích thước văn bản */}
           <ul className="space-y-2">
             <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
               Quản lý chung
@@ -51,132 +51,120 @@ const Sidebar = () => {
                 to="/companyadmin/dashboard"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaTachometerAlt className="mr-3 text-lg" />
-                <span className="hidden md:inline">Dashboard</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaTachometerAlt className="mr-2 text-base" /> {/* Giảm kích thước biểu tượng */}
+                <span className="hidden md:inline-block">Dashboard</span> {/* Hiển thị văn bản trên màn hình trung bình trở lên */}
               </NavLink>
             </li>
 
-            {/* Quản lý chuyến đi */}
             <li>
               <NavLink
                 to="/companyadmin/trip"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaRoute className="mr-3 text-lg" />
-                <span className="hidden md:inline">Quản lý chuyến đi</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaRoute className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Quản lý chuyến đi</span>
               </NavLink>
             </li>
 
-            {/* Divider */}
             <hr className="border-gray-700 my-2" />
 
-            {/* Group Title: Quản lý xe */}
             <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
               Quản lý xe cộ
             </li>
-
-            {/* Quản lý xe */}
             <li>
               <NavLink
                 to="/companyadmin/manage-buses"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaBusAlt className="mr-3 text-lg" />
-                <span className="hidden md:inline">Quản lý xe</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaBusAlt className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Quản lý xe</span>
               </NavLink>
             </li>
 
-            {/* Quản lý tài xế */}
             <li>
               <NavLink
                 to="/companyadmin/manage-drivers"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaUser className="mr-3 text-lg" />
-                <span className="hidden md:inline">Quản lý tài xế</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaUser className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Quản lý tài xế</span>
               </NavLink>
             </li>
 
-            {/* Divider */}
             <hr className="border-gray-700 my-2" />
 
-            {/* Group Title: Tài chính */}
             <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
               Quản lý tài chính
             </li>
-
-            {/* Doanh thu */}
             <li>
               <NavLink
                 to="/revenue"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaDollarSign className="mr-3 text-lg" />
-                <span className="hidden md:inline">Doanh thu</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaDollarSign className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Doanh thu</span>
               </NavLink>
             </li>
 
-            {/* Hóa đơn */}
             <li>
               <NavLink
                 to="/invoices"
                 className={({ isActive }) =>
                   isActive
-                    ? "bg-gray-700 px-4 py-3 text-white flex items-center rounded-lg shadow-inner"
-                    : "px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
                 }
               >
-                <FaFileInvoice className="mr-3 text-lg" />
-                <span className="hidden md:inline">Quản lý hóa đơn</span> {/* Ẩn văn bản trên màn hình nhỏ */}
+                <FaFileInvoice className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Quản lý hóa đơn</span>
               </NavLink>
             </li>
 
-            {/* Divider */}
             <hr className="border-gray-700 my-2" />
-            <li className="px-4 py-2 text-xs text-gray-400 uppercase tracking-wide">
-              Khác
-            </li>
+
             <li>
               <NavLink
                 to="/"
-                className="px-4 py-3 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                className="px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
               >
-                <FaHome className="mr-3 text-lg" />
-                <span className="hidden md:inline">Trang chủ</span>
+                <FaHome className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Trang chủ</span>
               </NavLink>
             </li>
             <li>
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-3 hover:bg-red-700 text-white flex items-center rounded-lg transition-all duration-200"
+                className="w-full px-3 py-2 hover:bg-red-700 text-white flex items-center rounded-lg transition-all duration-200"
               >
-                <FaSignOutAlt className="mr-3 text-lg" />
-                <span className="hidden md:inline">Đăng xuất</span> 
+                <FaSignOutAlt className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Đăng xuất</span> 
               </button>
             </li>
           </ul>
         </nav>
       </aside>
+
+      {/* Overlay khi sidebar đang mở trên màn hình nhỏ */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-30"

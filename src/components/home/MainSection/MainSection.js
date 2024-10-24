@@ -33,54 +33,46 @@ const LocationInput = ({ label, value, onChange, options, placeholder, iconClass
 
 const MainSection = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Hook để lấy params từ URL
-  const [isLoading, setIsLoading] = useState(false); // Khai báo state isLoading
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Lấy query params từ URL
   const queryParams = new URLSearchParams(location.search);
 
-  // State khởi tạo dựa trên URL params (nếu có), nếu không thì từ localStorage
-  const [fromLocation, setFromLocation] = useState(queryParams.get('departureLocation') || '');
-  const [toLocation, setToLocation] = useState(queryParams.get('arrivalLocation') || '');
-  const [ticketType, setTicketType] = useState(localStorage.getItem('ticketType') || 'oneWay');
-  const [ticketQuantity, setTicketQuantity] = useState(parseInt(queryParams.get('ticketCount'), 10) || 1);
-
-  const parseStoredDate = (date) => {
-    return date && !isNaN(Date.parse(date)) ? new Date(date) : null;
-  };
-
-  const [departureDate, setDepartureDate] = useState(() => 
-    queryParams.get('departureDate') 
-      ? new Date(queryParams.get('departureDate')) 
-      : null
-  );
-
-  const [returnDate, setReturnDate] = useState(() => parseStoredDate(localStorage.getItem('returnDate')));
+  // Khởi tạo state từ localStorage hoặc URL params (nếu có)
+  const [fromLocation, setFromLocation] = useState(() => queryParams.get('departureLocation') || localStorage.getItem('fromLocation') || '');
+  const [toLocation, setToLocation] = useState(() => queryParams.get('arrivalLocation') || localStorage.getItem('toLocation') || '');
+  const [ticketType, setTicketType] = useState(() => localStorage.getItem('ticketType') || 'oneWay');
+  const [ticketQuantity, setTicketQuantity] = useState(() => parseInt(queryParams.get('ticketCount')) || parseInt(localStorage.getItem('ticketQuantity')) || 1);
+  const [departureDate, setDepartureDate] = useState(() => {
+    const storedDate = queryParams.get('departureDate') || localStorage.getItem('departureDate');
+    return storedDate ? new Date(storedDate) : null;
+  });
+  const [returnDate, setReturnDate] = useState(() => {
+    const storedDate = localStorage.getItem('returnDate');
+    return storedDate ? new Date(storedDate) : null;
+  });
 
   const { data: locations, isLoading: isLocationsLoading, error } = useGetLocationsQuery();
 
-  // Chỉ cập nhật localStorage khi không có URL params, tức là form được submit trực tiếp
+  // Lưu lựa chọn vào localStorage khi thay đổi giá trị
   useEffect(() => {
-    if (!queryParams.get('departureLocation')) {
-      localStorage.setItem('fromLocation', fromLocation);
-    }
-  }, [fromLocation, queryParams]);
+    localStorage.setItem('fromLocation', fromLocation);
+  }, [fromLocation]);
 
   useEffect(() => {
-    if (!queryParams.get('arrivalLocation')) {
-      localStorage.setItem('toLocation', toLocation);
-    }
-  }, [toLocation, queryParams]);
+    localStorage.setItem('toLocation', toLocation);
+  }, [toLocation]);
 
   useEffect(() => {
     localStorage.setItem('ticketType', ticketType);
   }, [ticketType]);
 
   useEffect(() => {
-    if (!queryParams.get('ticketCount') && Number.isInteger(ticketQuantity) && ticketQuantity > 0) {
+    if (Number.isInteger(ticketQuantity) && ticketQuantity > 0) {
       localStorage.setItem('ticketQuantity', ticketQuantity.toString());
     }
-  }, [ticketQuantity, queryParams]);
+  }, [ticketQuantity]);
 
   useEffect(() => {
     if (departureDate && departureDate instanceof Date && !isNaN(departureDate)) {
@@ -123,14 +115,12 @@ const MainSection = () => {
       ticketCount: ticketQuantity,
     };
 
-    // Lưu lại searchParams vào localStorage
     localStorage.setItem('searchParams', JSON.stringify(searchParams));
 
-    // Điều hướng đến trang kết quả tìm kiếm với các giá trị trong URL params
     navigate(`/search-page?departureLocation=${encodeURIComponent(fromLocation)}&arrivalLocation=${encodeURIComponent(toLocation)}&departureDate=${formattedDepartureDate}&ticketCount=${ticketQuantity}`);
 
     setTimeout(() => {
-      setIsLoading(false); // Kết thúc quá trình tải
+      setIsLoading(false);
     }, 500);
   };
 
