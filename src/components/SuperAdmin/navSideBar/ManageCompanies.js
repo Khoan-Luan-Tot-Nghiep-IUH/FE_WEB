@@ -65,20 +65,22 @@ const ManageCompanies = () => {
 
   const handleToggleStatus = async (companyId) => {
     try {
-      const updatedCompany = await toggleCompanyStatus(companyId).unwrap();
-      setCompanies((prevCompanies) =>
-        prevCompanies.map((company) =>
-          company._id === updatedCompany.company._id ? updatedCompany.company : company
-        )
-      );
-      showSnackbar(
-        'success',
-        `Công ty ${updatedCompany.company.isActive ? 'đã được kích hoạt' : 'đã bị vô hiệu hóa'}.`
-      );
+        const updatedCompany = await toggleCompanyStatus(companyId).unwrap();
+        setCompanies((prevCompanies) =>
+            prevCompanies.map((company) =>
+                company._id === updatedCompany.company._id ? updatedCompany.company : company
+            )
+        );
+        
+        // Hiển thị thông báo khi thay đổi trạng thái công ty thành công
+        showSnackbar(
+            'success',
+            `Công ty ${updatedCompany.company.isActive ? 'đã được kích hoạt' : 'đã bị vô hiệu hóa'} và tất cả các tài khoản liên quan cũng được cập nhật trạng thái.`
+        );
     } catch (error) {
-      showSnackbar('error', 'Không thể thay đổi trạng thái công ty.');
+        showSnackbar('error', 'Không thể thay đổi trạng thái công ty.');
     }
-  };
+};
 
   const handleCreateOrUpdateCompany = async (e) => {
     e.preventDefault();
