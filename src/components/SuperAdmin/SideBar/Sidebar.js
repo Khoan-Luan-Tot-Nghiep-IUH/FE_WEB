@@ -62,20 +62,6 @@ const Sidebar = ({ setActiveContent }) => {
             <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Công ty</span>
           </li>
         </Tooltip>
-
-        {/* Quản lý Admin */}
-        <Tooltip title="Quản lý Admin" placement="right" visible={collapsed}>
-          <li
-            onClick={() => handleNavigation('admins')}
-            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
-              collapsed ? 'justify-center' : 'justify-start'
-            }`}
-          >
-            <FaUser className="text-xl" />
-            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Admin</span>
-          </li>
-        </Tooltip>
-
         {/* Quản lý Người dùng */}
         <Tooltip title="Quản lý Người dùng" placement="right" visible={collapsed}>
           <li

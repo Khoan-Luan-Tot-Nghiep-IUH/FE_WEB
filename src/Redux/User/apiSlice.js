@@ -54,10 +54,23 @@ export const apiSlice = createApi({
     }),
     verifyOtp: builder.mutation({
       query: (otpData) => ({
-        url: '/user/verify',
+        url: '/user/verify',  // Đảm bảo đúng URL
         method: 'POST',
         body: otpData,
       }),
+    }),
+    getAllUsersByLastLogin: builder.query({
+      query: () => '/user/getLastLoginUser',
+      providesTags: (result) => {
+        // Kiểm tra result và users trước khi dùng map
+        if (!result || !Array.isArray(result.users)) {
+          return [{ type: 'User', id: 'LIST' }];
+        }
+        return [
+          ...result.users.map(({ _id }) => ({ type: 'User', id: _id })),
+          { type: 'User', id: 'LIST' }
+        ];
+      },
     }),
   }),
 });
@@ -67,5 +80,6 @@ export const {
   useGetUserInfoQuery, 
   useUpdateUserProfileMutation,
   useRegisterMutation, 
-  useVerifyOtpMutation 
+  useVerifyOtpMutation,
+  useGetAllUsersByLastLoginQuery 
 } = apiSlice;
