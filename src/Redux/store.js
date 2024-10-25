@@ -15,6 +15,8 @@ import locationReducer from './Location/locationSlice';
 import { busTypeApiSlice } from './Bustype/BusTypeApiSlice'; 
 import busTypeReducer from './Bustype/BusTypeSlice';
 
+import { bookingApiSlice } from './Booking/bookingApiSlice';
+
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -27,6 +29,7 @@ const store = configureStore({
     [tripApiSlice.reducerPath]: tripApiSlice.reducer,
     [locationApiSlice.reducerPath]: locationApiSlice.reducer,
     [busTypeApiSlice.reducerPath]: busTypeApiSlice.reducer, 
+    [bookingApiSlice.reducerPath]: bookingApiSlice.reducer, 
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -34,7 +37,8 @@ const store = configureStore({
       companyApiSlice.middleware,
       tripApiSlice.middleware,
       locationApiSlice.middleware,
-      busTypeApiSlice.middleware 
+      busTypeApiSlice.middleware,
+      bookingApiSlice.middleware 
     ),
 });
 
