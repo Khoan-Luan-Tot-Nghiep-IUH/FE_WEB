@@ -90,9 +90,13 @@ const PaymentMethods = () => {
         try {
             await createBooking(bookingData).unwrap();
             if (paymentMethod === 'Online') {
-                showNotification('Đặt chỗ thành công! Đang chuyển đến trang thanh toán...');
+                showNotification('Đặt chỗ thành công! vui lòng quý khách nhấn vào link để đến trang thanh toán...');
+                setTimeout(() => {
+                    window.open(data?.data?.paymentLink, "_self");
+                }, 2000);
             }
-        } catch (error) {
+        }
+         catch (error) {
             console.error('Lỗi khi đặt chỗ:', error);
             showNotification('Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.', 'error');
         }
@@ -100,7 +104,7 @@ const PaymentMethods = () => {
 
     const handlePaymentRedirect = () => {
         if (data?.data?.paymentLink) {
-            window.open(data.data.paymentLink, "_self");  // Đảm bảo mở trong cùng tab
+            window.open(data.data.paymentLink, "_self");
         }
     };
 

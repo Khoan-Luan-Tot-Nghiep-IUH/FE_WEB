@@ -5,7 +5,16 @@ const baseUrl = process.env.REACT_APP_API_URL;
 
 export const locationApiSlice = createApi({
   reducerPath: 'locationApi', 
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api',
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().user?.userInfo?.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   tagTypes: ['Location'], 
   endpoints: (builder) => ({
     getLocations: builder.query({

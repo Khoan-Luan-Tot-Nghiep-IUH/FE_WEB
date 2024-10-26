@@ -171,7 +171,7 @@ const Navbar = () => {
           <Link to="/lich-trinh" className="text-white hover:text-gray-300 transition duration-300">Lịch trình</Link>
           <Link to="/search-page" className="text-white hover:text-gray-300 transition duration-300">Tra cứu vé</Link>
           <Link to="/tin-tuc" className="text-white hover:text-gray-300 transition duration-300">Tin tức</Link>
-          <Link to="/hoa-don" className="text-white hover:text-gray-300 transition duration-300">Hóa đơn</Link>
+          <Link to="/user/ticket-buy" className="text-white hover:text-gray-300 transition duration-300">Hóa đơn</Link>
           <Link to="/lien-he" className="text-white hover:text-gray-300 transition duration-300">Liên hệ</Link>
           <Link to="/ve-chung-toi" className="text-white hover:text-gray-300 transition duration-300">Về chúng tôi</Link>
 
