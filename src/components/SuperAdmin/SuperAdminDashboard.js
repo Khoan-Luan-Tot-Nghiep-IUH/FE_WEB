@@ -8,6 +8,7 @@ import ManageUsers from './navSideBar/ManageUsers';
 import './SuperAdminDashboard.css';
 import Statistics from './navSideBar/Statistics';
 import Settings from './navSideBar/Settings';
+import Location from './navSideBar/Location';
 
 const SuperAdminDashboard = () => {
   const [activeContent, setActiveContent] = useState('default');
@@ -47,8 +48,8 @@ const SuperAdminDashboard = () => {
         return <ManageUsers />;
       case 'statistics':
         return <Statistics />;
-      case 'logs':
-        return <div>Nhật ký hoạt động Content</div>;
+      case 'Location':
+        return <Location/>
       case 'settings':
         return <Settings />;
       case 'reports':

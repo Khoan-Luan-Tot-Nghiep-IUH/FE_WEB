@@ -5,6 +5,7 @@ import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
 import ManageDrivers from 'components/CompanyAdmin/pages/ManageDrivers';
 import PaymentMethod from 'components/home/components/Booking/PaymentMethod';
+import Location from 'components/SuperAdmin/navSideBar/Location';
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -52,6 +53,7 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="companies" element={<ManageCompanies />} />
             <Route path="admins" element={<ManageAdmins />} />
             <Route path="users" element={<ManageUsers />} />
+            <Route path="Location" element={<Location />} />
           </Route>
 
           {/* Route cho CompanyAdminDashboard và các route con */}

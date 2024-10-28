@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaHome, FaClipboardList, FaUser, FaChartBar, FaCogs, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaHome, FaClipboardList, FaUser, FaChartBar, FaCogs, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaSearchLocation } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../Redux/User/userSlice';
 import { Tooltip } from 'antd';
@@ -62,20 +62,6 @@ const Sidebar = ({ setActiveContent }) => {
             <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Công ty</span>
           </li>
         </Tooltip>
-
-        {/* Quản lý Admin */}
-        <Tooltip title="Quản lý Admin" placement="right" visible={collapsed}>
-          <li
-            onClick={() => handleNavigation('admins')}
-            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
-              collapsed ? 'justify-center' : 'justify-start'
-            }`}
-          >
-            <FaUser className="text-xl" />
-            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Quản lý Admin</span>
-          </li>
-        </Tooltip>
-
         {/* Quản lý Người dùng */}
         <Tooltip title="Quản lý Người dùng" placement="right" visible={collapsed}>
           <li
@@ -103,15 +89,15 @@ const Sidebar = ({ setActiveContent }) => {
         </Tooltip>
 
         {/* Nhật ký hoạt động */}
-        <Tooltip title="Nhật ký hoạt động" placement="right" visible={collapsed}>
+        <Tooltip title="Địa điểm" placement="right" visible={collapsed}>
           <li
-            onClick={() => handleNavigation('logs')}
+            onClick={() => handleNavigation('Location')}
             className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
               collapsed ? 'justify-center' : 'justify-start'
             }`}
           >
-            <FaClipboardList className="text-xl" />
-            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Nhật ký hoạt động</span>
+            <FaSearchLocation className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Địa điểm cho hệ thống</span>
           </li>
         </Tooltip>
 

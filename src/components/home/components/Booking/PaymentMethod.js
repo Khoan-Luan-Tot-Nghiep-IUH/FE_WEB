@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaQrcode, FaTicketAlt, FaLink, FaMoneyCheckAlt } from 'react-icons/fa';
-import { useCreateBookingMutation, usePaymentSuccessQuery } from '../../../../Redux/Booking/bookingApiSlice';
+import { useCreateBookingMutation } from '../../../../Redux/Booking/bookingApiSlice';
 import QRCode from 'qrcode';
+import Notification from '../../../shared/Notification/Notification';  // Import custom Notification
 
 const QRCodeDisplay = ({ qrCodeData }) => {
     const [qrUrl, setQrUrl] = useState('');
@@ -44,45 +45,39 @@ const PaymentMethods = () => {
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [createBooking, { isLoading, isError, data, isSuccess }] = useCreateBookingMutation();
 
-    const [orderCode, setOrderCode] = useState(null);
+    // Trạng thái của thông báo
+    const [notification, setNotification] = useState({
+        open: false,
+        message: '',
+        severity: 'success',  // "success", "error", "warning", "info"
+    });
 
-    // Polling để kiểm tra kết quả thanh toán
-    const { data: paymentSuccessData, refetch: checkPaymentStatus } = usePaymentSuccessQuery(
-        { orderCode },
-        { skip: !orderCode, pollingInterval: 5000 } // Thêm polling mỗi 5 giây
-    );
+    // Mở thông báo
+    const showNotification = (message, severity = 'success') => {
+        setNotification({ open: true, message, severity });
+    };
 
-    // Polling để kiểm tra trạng thái thanh toán
+    // Đóng thông báo
+    const closeNotification = () => {
+        setNotification({ ...notification, open: false });
+    };
+
+    // Kiểm tra nếu booking thành công với phương thức OnBoard
     useEffect(() => {
-        if (isSuccess && data?.data?.orderCode) {
-            setOrderCode(data.data.orderCode);
-
-            const intervalId = setInterval(() => {
-                checkPaymentStatus();  // Kiểm tra trạng thái thanh toán sau mỗi 5 giây
-            }, 5000);  // Polling mỗi 5 giây
-
-            return () => clearInterval(intervalId);  // Hủy polling khi component bị unmount
+        if (isSuccess && paymentMethod === 'OnBoard') {
+            showNotification('Đặt chỗ thành công! Bạn sẽ thanh toán khi lên xe.');
+            navigate('/user/ticket-buy');  // Điều hướng về trang lịch sử đặt vé
         }
-    }, [isSuccess, data, checkPaymentStatus]);
-
-    // Xử lý khi thanh toán thành công
-    useEffect(() => {
-        if (paymentSuccessData?.success && paymentSuccessData?.message === 'Thanh toán thành công') {
-            alert('Thanh toán thành công!');
-
-            // Chuyển về trang chủ sau khi thanh toán thành công
-            navigate('/');
-        }
-    }, [paymentSuccessData, navigate]);
+    }, [isSuccess, paymentMethod, navigate]);
 
     const handleBooking = async () => {
         if (!paymentMethod) {
-            alert('Vui lòng chọn phương thức thanh toán');
+            showNotification('Vui lòng chọn phương thức thanh toán', 'error');
             return;
         }
 
         if (!trip || !selectedSeats || !totalPrice) {
-            alert('Dữ liệu không hợp lệ');
+            showNotification('Dữ liệu không hợp lệ', 'error');
             return;
         }
 
@@ -94,9 +89,22 @@ const PaymentMethods = () => {
 
         try {
             await createBooking(bookingData).unwrap();
-        } catch (error) {
+            if (paymentMethod === 'Online') {
+                showNotification('Đặt chỗ thành công! vui lòng quý khách nhấn vào link để đến trang thanh toán...');
+                setTimeout(() => {
+                    window.open(data?.data?.paymentLink, "_self");
+                }, 2000);
+            }
+        }
+         catch (error) {
             console.error('Lỗi khi đặt chỗ:', error);
-            alert('Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.');
+            showNotification('Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.', 'error');
+        }
+    };
+
+    const handlePaymentRedirect = () => {
+        if (data?.data?.paymentLink) {
+            window.open(data.data.paymentLink, "_self");
         }
     };
 
@@ -162,21 +170,12 @@ const PaymentMethods = () => {
                         {data?.data?.paymentLink && (
                             <div className="p-4 border rounded-lg shadow-sm bg-gray-50">
                                 <h3 className="text-lg font-medium text-gray-700 mb-2">Thanh toán qua liên kết</h3>
-                                <a
-                                    href={data.data.paymentLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <button
+                                    onClick={handlePaymentRedirect}
                                     className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center"
                                 >
                                     <FaLink className="mr-2" /> Chuyển đến trang thanh toán
-                                </a>
-                            </div>
-                        )}
-
-                        {/* Thông báo khi thanh toán thành công */}
-                        {paymentSuccessData?.success && (
-                            <div className="bg-green-500 text-white p-4 rounded-lg">
-                                Thanh toán thành công! Cảm ơn bạn đã đặt vé.
+                                </button>
                             </div>
                         )}
                     </div>
@@ -191,6 +190,14 @@ const PaymentMethods = () => {
                     <FaMoneyCheckAlt className="text-4xl text-blue-600" />
                 </div>
             </div>
+
+            {/* Thông báo */}
+            <Notification
+                open={notification.open}
+                onClose={closeNotification}
+                severity={notification.severity}
+                message={notification.message}
+            />
         </div>
     );
 };
