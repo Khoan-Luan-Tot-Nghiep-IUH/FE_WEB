@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useGetDriversQuery } from '../../../Redux/Company/companyApiSlice';
-import { Button, Table, Typography, Space, Spin, notification, Alert } from 'antd';
+import { useGetDriversQuery, useUpdateDriverMutation, useDeleteDriverMutation } from '../../../Redux/Company/companyApiSlice';
+import { Button, Table, Typography, Space, Spin, notification, Alert, Modal, Form, InputNumber, Input } from 'antd';
 import AddDriverDrawer from '../components/ManageDriver/AddDriverDrawer';
 
 const { Title } = Typography;
+const { confirm } = Modal;
+
+// Hàm định dạng tiền tệ
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
 const ManageDrivers = () => {
   const { data: driversData, isLoading, isError, refetch } = useGetDriversQuery();
+  const [updateDriver] = useUpdateDriverMutation();
+  const [deleteDriver] = useDeleteDriverMutation();
   const [drivers, setDrivers] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [editingDriver, setEditingDriver] = useState(null);
+  const [form] = Form.useForm(); // Khai báo form instance
 
   useEffect(() => {
     if (driversData && driversData.drivers) {
@@ -34,6 +49,51 @@ const ManageDrivers = () => {
     });
   };
 
+  // Xử lý cập nhật tài xế
+  const handleEditDriver = (driver) => {
+    setEditingDriver(driver);
+    form.setFieldsValue(driver); // Đặt giá trị form từ tài xế được chọn
+  };
+
+  const handleUpdateDriver = async (values) => {
+    try {
+      await updateDriver({ driverId: editingDriver._id, updatedData: values }).unwrap();
+      notification.success({
+        message: 'Cập nhật thành công',
+        description: `Tài xế ${values.fullName} đã được cập nhật.`,
+      });
+      setEditingDriver(null);
+      refetch(); // Cập nhật danh sách sau khi sửa
+    } catch (error) {
+      notification.error({
+        message: 'Lỗi',
+        description: 'Có lỗi xảy ra khi cập nhật tài xế!',
+      });
+    }
+  };
+
+  // Xử lý xóa tài xế
+  const handleDeleteDriver = (driverId) => {
+    confirm({
+      title: 'Bạn có chắc chắn muốn xóa tài xế này không?',
+      onOk: async () => {
+        try {
+          await deleteDriver(driverId).unwrap();
+          notification.success({
+            message: 'Xóa thành công',
+            description: 'Tài xế đã được xóa thành công.',
+          });
+          refetch(); // Cập nhật danh sách sau khi xóa
+        } catch (error) {
+          notification.error({
+            message: 'Lỗi',
+            description: 'Có lỗi xảy ra khi xóa tài xế!',
+          });
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: 'Tên tài xế',
@@ -56,12 +116,24 @@ const ManageDrivers = () => {
       key: 'licenseNumber',
     },
     {
+      title: 'Lương cơ bản',
+      dataIndex: 'baseSalary',
+      key: 'baseSalary',
+      render: (value) => formatCurrency(value),
+    },
+    {
+      title: 'Mức lương mỗi chuyến',
+      dataIndex: 'salaryRate',
+      key: 'salaryRate',
+      render: (value) => formatCurrency(value),
+    },
+    {
       title: 'Thao tác',
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <Button type="link">Sửa</Button>
-          <Button type="link" danger>Xóa</Button>
+          <Button type="link" onClick={() => handleEditDriver(record)}>Sửa</Button>
+          <Button type="link" danger onClick={() => handleDeleteDriver(record._id)}>Xóa</Button>
         </Space>
       ),
     },
@@ -98,6 +170,58 @@ const ManageDrivers = () => {
         onClose={handleCloseDrawer}
         onAddDriverSuccess={handleAddDriverSuccess}
       />
+      <Modal
+        title="Chỉnh sửa tài xế"
+        visible={!!editingDriver}
+        onCancel={() => setEditingDriver(null)}
+        onOk={() => {
+          form.submit();
+        }}
+      >
+        <Form
+          form={form} 
+          onFinish={handleUpdateDriver}
+          layout="vertical"
+        >
+          <Form.Item
+            name={['userId', 'fullName']}
+            label="Tên tài xế"
+            rules={[{ required: true, message: 'Vui lòng nhập tên tài xế' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="licenseNumber"
+            label="Giấy phép lái xe"
+            rules={[{ required: true, message: 'Vui lòng nhập giấy phép lái xe' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+          name="baseSalary"
+          label="Lương cơ bản"
+          rules={[{ required: true, message: 'Vui lòng nhập lương cơ bản' }]}
+        >
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={(value) => `${formatCurrency(value)}`}
+            parser={(value) => value.replace(/\đ\s?|(,*)/g, '')} 
+          />
+        </Form.Item>
+        <Form.Item
+          name="salaryRate"
+          label="Mức lương mỗi chuyến"
+          rules={[{ required: true, message: 'Vui lòng nhập mức lương mỗi chuyến' }]}
+        >
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={(value) => `${formatCurrency(value)}`}
+            parser={(value) => value.replace(/\đ\s?|(,*)/g, '')} 
+          />
+        </Form.Item>
+
+        </Form>
+      </Modal>
     </div>
   );
 };

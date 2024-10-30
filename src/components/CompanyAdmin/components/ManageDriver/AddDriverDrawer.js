@@ -1,6 +1,12 @@
 import React from 'react';
-import { Drawer, Button, Form, Input, notification, Row, Col } from 'antd';
+import { Drawer, Button, Form, Input, notification, Row, Col, InputNumber } from 'antd';
 import { useAddDriverMutation } from '../../../../Redux/Company/companyApiSlice';
+
+// Hàm format tiền tệ
+const formatCurrency = (value) => {
+  if (!value) return '';
+  return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format số với dấu phẩy mỗi 3 chữ số
+};
 
 const AddDriverDrawer = ({ visible, onClose, onAddDriverSuccess }) => {
   const [addDriver, { isLoading }] = useAddDriverMutation();
@@ -14,7 +20,7 @@ const AddDriverDrawer = ({ visible, onClose, onAddDriverSuccess }) => {
         description: 'Tài xế mới đã được thêm thành công!',
       });
       form.resetFields();
-      onAddDriverSuccess(result.driver); // Gọi hàm callback để cập nhật danh sách
+      onAddDriverSuccess(result.driver);
       onClose();
     } catch (error) {
       notification.error({
@@ -86,6 +92,39 @@ const AddDriverDrawer = ({ visible, onClose, onAddDriverSuccess }) => {
               rules={[{ required: true, message: 'Vui lòng nhập mật khẩu', min: 3 }]}
             >
               <Input.Password placeholder="Nhập mật khẩu" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="baseSalary"
+              label="Lương cơ bản"
+              rules={[{ required: true, message: 'Vui lòng nhập lương cơ bản' }]}
+            >
+              <InputNumber
+                placeholder="Nhập lương cơ bản"
+                min={0}
+                style={{ width: '100%' }}
+                formatter={(value) => `${formatCurrency(value)} đ`} // Format với 'đ' ở cuối
+                parser={(value) => value.replace(/\đ\s?|(,*)/g, '')} // Loại bỏ ký tự đ và dấu phẩy
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="salaryRate"
+              label="Mức lương mỗi chuyến"
+              rules={[{ required: true, message: 'Vui lòng nhập mức lương mỗi chuyến' }]}
+            >
+              <InputNumber
+                placeholder="Nhập mức lương mỗi chuyến"
+                min={0}
+                style={{ width: '100%' }}
+                formatter={(value) => `${formatCurrency(value)} đ`}
+                parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
+              />
             </Form.Item>
           </Col>
         </Row>

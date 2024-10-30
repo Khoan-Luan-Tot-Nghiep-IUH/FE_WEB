@@ -60,16 +60,30 @@ export const companyApiSlice = createApi({
       }),
     }),
     addDriver: builder.mutation({
-      query: ({ userName, password, email, phoneNumber, licenseNumber,fullName }) => ({
+      query: ({ userName, password, email, phoneNumber, licenseNumber,fullName ,salaryRate, baseSalary }) => ({
         url: '/companies/add-driver',
         method: 'POST',
-        body: { userName, password, email, phoneNumber, licenseNumber,fullName },
+        body: { userName, password, email, phoneNumber, licenseNumber,fullName , baseSalary ,salaryRate },
       }),
     }),
     getDrivers: builder.query({
         query: () => '/companies/drivers',
+      }),   updateDriver: builder.mutation({
+        query: ({ driverId, updatedData }) => ({
+          url: `/companies/drivers/${driverId}`,
+          method: 'PUT',
+          body: updatedData,
+        }),
       }),
-  }),
+  
+      // Xóa tài xế
+      deleteDriver: builder.mutation({
+        query: (driverId) => ({
+          url: `/companies/drivers/${driverId}`,
+          method: 'DELETE',
+        }),
+      }),
+    }),
 });
 
 export const {
@@ -81,4 +95,6 @@ export const {
   useToggleCompanyStatusMutation,
   useAddDriverMutation,
   useGetDriversQuery,
+  useUpdateDriverMutation,
+  useDeleteDriverMutation,
 } = companyApiSlice;
