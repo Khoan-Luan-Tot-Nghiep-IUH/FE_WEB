@@ -15,10 +15,6 @@ const AddDriverDrawer = ({ visible, onClose, onAddDriverSuccess }) => {
   const handleFinish = async (values) => {
     try {
       const result = await addDriver(values).unwrap();
-      notification.success({
-        message: 'Thành công',
-        description: 'Tài xế mới đã được thêm thành công!',
-      });
       form.resetFields();
       onAddDriverSuccess(result.driver);
       onClose();

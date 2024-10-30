@@ -75,13 +75,23 @@ export const companyApiSlice = createApi({
           body: updatedData,
         }),
       }),
-  
-      // Xóa tài xế
       deleteDriver: builder.mutation({
         query: (driverId) => ({
           url: `/companies/drivers/${driverId}`,
           method: 'DELETE',
         }),
+      }),
+
+      //Thống kê
+      getCompletedTripsByMonth: builder.query({
+        query: () => '/companies/completed-trips-by-month',
+      }),
+      getRevenueByPaymentMethod: builder.query({
+        query: () => '/companies/revenue-by-payment-method',
+      }),
+      getRevenueByTimeRange: builder.query({
+        query: ({ startDate, endDate, timeFrame }) =>
+          `/companies/revenue-by-time?startDate=${startDate}&endDate=${endDate}&timeFrame=${timeFrame}`,
       }),
     }),
 });
@@ -97,4 +107,7 @@ export const {
   useGetDriversQuery,
   useUpdateDriverMutation,
   useDeleteDriverMutation,
+  useGetCompletedTripsByMonthQuery,
+  useGetRevenueByPaymentMethodQuery,
+  useGetRevenueByTimeRangeQuery,
 } = companyApiSlice;
