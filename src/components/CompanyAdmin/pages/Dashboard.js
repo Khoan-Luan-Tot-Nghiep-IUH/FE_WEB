@@ -1,45 +1,42 @@
 import React from "react";
-import Card from '../components/CardsSection';
-import { FaUsers, FaChartLine, FaDollarSign, FaShoppingCart } from 'react-icons/fa';
-import StatsSection from "../components/StatsSection";
+import { Tabs, Row, Col } from "antd";
+import CompletedTripsChart from "../components/Revenue/CompletedTripsChart";
+
+import RevenueChart from "../components/Revenue/RevenueChart";
+
+import UserGrowthChart from "../components/Revenue/UserGrowthChart";
+
+const { TabPane } = Tabs;
+
 const Dashboard = () => {
   return (
-    <div className="p-6 mt-16">
-      {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-        <Card
-          title="Total Views"
-          value="3.456K"
-          growth={0.43}
-          icon={<FaChartLine />}
-          color="text-blue-500"
-        />
-        <Card
-          title="Total Profit"
-          value="$45.2K"
-          growth={4.35}
-          icon={<FaDollarSign />}
-          color="text-green-500"
-        />
-        <Card
-          title="Total Product"
-          value="2.450"
-          growth={2.59}
-          icon={<FaShoppingCart />}
-          color="text-purple-500"
-        />
-        <Card
-          title="Total Users"
-          value="3.456"
-          growth={0.95}
-          icon={<FaUsers />}
-          color="text-yellow-500"
-        />
-      </div>
+    <div className="p-6 mt-16 bg-white">
+      <Tabs defaultActiveKey="1">
+      <TabPane tab="Doanh thu" key="1">
+          <Row gutter={16}>
+            <Col span={24}>
+              <RevenueChart />
+            </Col>
+          </Row>
+        </TabPane>
 
-      {/* Stats Section */}
-      <StatsSection />
+        <TabPane tab="Chuyến đi" key="2">
+          <Row gutter={16}>
+            <Col span={24}>
+              <CompletedTripsChart />
+            </Col>
+          </Row>
+        </TabPane>
+        <TabPane tab="Tăng trưởng người dùng" key="3">
+          <Row gutter={16}>
+            <Col span={24}>
+              <UserGrowthChart />
+            </Col>
+          </Row>
+        </TabPane>
+      </Tabs>
     </div>
   );
 };
+
 export default Dashboard;
