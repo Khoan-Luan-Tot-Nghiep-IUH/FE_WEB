@@ -40,7 +40,7 @@ const App = () => {
     setIsCartOpen(false);
   };
 
-  // Tính tổng số lượng mục trong giỏ hàng
+
   const itemCount = cartItems?.data?.length || 0;
 
   return (

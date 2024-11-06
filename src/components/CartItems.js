@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Button, Typography, Divider, Badge, Card } from 'antd';
 import { CloseOutlined, ClockCircleOutlined, EnvironmentOutlined, DollarOutlined, UserOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
 
 const CartItems = ({ items, onClose }) => {
     const [cartItems, setCartItems] = useState(items);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const countdownInterval = setInterval(() => {
@@ -33,6 +35,16 @@ const CartItems = ({ items, onClose }) => {
 
     const totalPrice = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
+    const handleCheckout = () => {
+        onClose(); // Đóng CartItems trước khi chuyển trang
+        if (cartItems.length > 0) {
+            const { _id: bookingId, expiryTime, totalPrice } = cartItems[0];
+            navigate('/payment-methods', { 
+                state: { bookingId, expiryTime, totalPrice } // Gửi dữ liệu qua state
+            });
+        }
+    };
+
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50"
@@ -44,7 +56,7 @@ const CartItems = ({ items, onClose }) => {
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 className="w-full max-w-md bg-gray-100 shadow-2xl rounded-lg p-6 relative overflow-y-auto"
-                style={{ backgroundColor: '#f2f4f5' }} // Nền xám nhạt
+                style={{ backgroundColor: '#f2f4f5' }}
             >
                 <div className="flex justify-between items-center mb-4">
                     <Title level={4} className="m-0">Giỏ hàng của bạn</Title>
@@ -64,7 +76,7 @@ const CartItems = ({ items, onClose }) => {
                         className="mb-4 shadow-md rounded-lg"
                         style={{
                             borderLeft: '4px solid #1890ff',
-                            backgroundColor: '#ffffff', // Nền trắng
+                            backgroundColor: '#ffffff',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                         }}
                     >
@@ -116,7 +128,7 @@ const CartItems = ({ items, onClose }) => {
                     type="primary"
                     block
                     className="h-12 mt-4 text-lg font-semibold"
-                    onClick={() => alert("Thanh toán")}
+                    onClick={handleCheckout}
                     icon={<ClockCircleOutlined />}
                     style={{
                         backgroundColor: '#1890ff',
