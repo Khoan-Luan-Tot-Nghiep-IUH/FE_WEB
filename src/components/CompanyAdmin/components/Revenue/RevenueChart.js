@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGetRevenueByPaymentMethodQuery, useGetRevenueByTimeRangeQuery } from '../../../../Redux/Company/companyApiSlice';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { Spin, Alert, Typography, Select, DatePicker, Space, Card, Divider } from 'antd';
+import { Spin, Alert, Typography, Select, DatePicker, Space, Card, Row, Col } from 'antd';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
@@ -69,18 +69,11 @@ const RevenueChart = () => {
     }
   };
 
-  const { data: revenueData, isLoading: loadingRevenue, error: errorRevenue } = useGetRevenueByPaymentMethodQuery(undefined, {
-    refetchOnReconnect: true,
-    refetchOnMountOrArgChange: true,
-  });
-
+  const { data: revenueData, isLoading: loadingRevenue, error: errorRevenue } = useGetRevenueByPaymentMethodQuery();
   const { data: timeRevenueData, isLoading: loadingTimeRevenue, error: errorTimeRevenue } = useGetRevenueByTimeRangeQuery({
     startDate: dates.startDate,
     endDate: dates.endDate,
     timeFrame,
-  }, {
-    refetchOnReconnect: true,
-    refetchOnMountOrArgChange: true,
   });
 
   const totalRevenue = revenueData?.data?.reduce((sum, item) => sum + item.revenue, 0) || 0;
@@ -99,47 +92,62 @@ const RevenueChart = () => {
 
   return (
     <Card style={{ borderRadius: '10px', padding: '20px' }}>
-      <Title level={3} style={{ textAlign: 'center', marginBottom: '20px' }}>Báo Cáo Doanh Thu</Title>
-      <Divider />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px' }}>
-        <Space direction="vertical" style={{ flex: 1 }}>
-          <Text strong>Chọn Thời Gian</Text>
-          <Select
-            defaultValue="month"
-            style={{ width: '100%' }}
-            onChange={(value) => setTimeFrame(value)}
-          >
-            <Option value="day">Theo ngày</Option>
-            <Option value="month">Theo tháng</Option>
-            <Option value="year">Theo năm</Option>
-          </Select>
-
-          {timeFrame === 'day' && (
-            <DatePicker
+      <Title level={4} style={{ textAlign: 'center', marginBottom: '20px' }}>Báo Cáo Doanh Thu</Title>
+      
+      <Row gutter={16}>
+        <Col span={12}>
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Text strong>Chọn Thời Gian</Text>
+            <Select
+              defaultValue="month"
               style={{ width: '100%' }}
-              onChange={(date) => handleDateChange('day', date)}
-              value={moment(selectedDate.day)}
-              format="YYYY-MM-DD"
-              disabledDate={(current) => current && current > moment().endOf('day')}
-            />
-          )}
+              onChange={(value) => setTimeFrame(value)}
+            >
+              <Option value="day">Theo ngày</Option>
+              <Option value="month">Theo tháng</Option>
+              <Option value="year">Theo năm</Option>
+            </Select>
 
-          {timeFrame === 'month' && (
-            <Space>
+            {timeFrame === 'day' && (
+              <DatePicker
+                style={{ width: '100%' }}
+                onChange={(date) => handleDateChange('day', date)}
+                value={moment(selectedDate.day)}
+                format="YYYY-MM-DD"
+                disabledDate={(current) => current && current > moment().endOf('day')}
+              />
+            )}
+
+            {timeFrame === 'month' && (
+              <Space>
+                <Select
+                  style={{ width: '100%' }}
+                  value={selectedDate.month}
+                  onChange={(value) => handleDateChange('month', value)}
+                >
+                  {[...Array(12)].map((_, i) => (
+                    <Option key={i + 1} value={i + 1}>
+                      Tháng {i + 1}
+                    </Option>
+                  ))}
+                </Select>
+                <Select
+                  style={{ width: '100%' }}
+                  value={selectedDate.year}
+                  onChange={(value) => handleDateChange('year', value)}
+                >
+                  {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
+                    <Option key={year} value={year}>
+                      Năm {year}
+                    </Option>
+                  ))}
+                </Select>
+              </Space>
+            )}
+
+            {timeFrame === 'year' && (
               <Select
-                style={{ width: 120 }}
-                value={selectedDate.month}
-                onChange={(value) => handleDateChange('month', value)}
-              >
-                {[...Array(12)].map((_, i) => (
-                  <Option key={i + 1} value={i + 1}>
-                    Tháng {i + 1}
-                  </Option>
-                ))}
-              </Select>
-              <Select
-                style={{ width: 120 }}
+                style={{ width: '100%' }}
                 value={selectedDate.year}
                 onChange={(value) => handleDateChange('year', value)}
               >
@@ -149,65 +157,46 @@ const RevenueChart = () => {
                   </Option>
                 ))}
               </Select>
-            </Space>
-          )}
+            )}
 
-          {timeFrame === 'year' && (
-            <Select
-              style={{ width: '100%' }}
-              value={selectedDate.year}
-              onChange={(value) => handleDateChange('year', value)}
-            >
-              {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
-                <Option key={year} value={year}>
-                  Năm {year}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </Space>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={timeRevenueChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="period" />
+                <YAxis />
+                <Tooltip formatter={(value) => `${value.toLocaleString('vi-VN')} VND`} />
+                <Bar dataKey="revenue" fill="#4f85f1" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Space>
+        </Col>
 
-        <div style={{ flex: 3, paddingLeft: '20px' }}>
-          <Title level={5} style={{ textAlign: 'center' }}>Doanh Thu Theo {timeFrame === 'month' ? 'Tháng' : timeFrame === 'year' ? 'Năm' : 'Ngày'}</Title>
+        <Col span={12}>
+          <Title level={5} style={{ textAlign: 'center', marginBottom: '10px' }}>Doanh Thu Theo Phương Thức Thanh Toán</Title>
+          <Text strong style={{ display: 'block', textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}>
+            Tổng Doanh Thu: {totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+          </Text>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={timeRevenueChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis />
+            <PieChart>
+              <Pie
+                data={paymentMethodData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+              >
+                {paymentMethodData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
               <Tooltip formatter={(value) => `${value.toLocaleString('vi-VN')} VND`} />
-              <Bar dataKey="revenue" fill="#4f85f1" />
-            </BarChart>
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      <Divider />
-
-      <div>
-        <Title level={5} style={{ textAlign: 'center', marginBottom: '20px' }}>Tỷ Lệ Doanh Thu Theo Phương Thức Thanh Toán</Title>
-        <Text strong style={{ display: 'block', textAlign: 'center', fontSize: '18px', marginBottom: '20px' }}>
-          Tổng Doanh Thu: {totalRevenue.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-        </Text>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={paymentMethodData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-            >
-              {paymentMethodData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value) => `${value.toLocaleString('vi-VN')} VND`} />
-            <Legend verticalAlign="bottom" height={36} />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+        </Col>
+      </Row>
     </Card>
   );
 };

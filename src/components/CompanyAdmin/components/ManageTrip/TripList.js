@@ -68,12 +68,11 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
       setIsModalVisible(false);
       refetch();
     } catch (err) {
-      const errorMessage = err.data.message || 'Lỗi khi thêm tài xế.';
-      const conflictingDrivers = err.data.conflictingDrivers || [];
+      const errorMessage = err.data?.message || 'Lỗi khi thêm tài xế.';
+      const conflictingDrivers = err.data?.conflictingDrivers || [];
       const conflictingDriversMessage = conflictingDrivers.length
         ? `Các tài xế gây xung đột: ${conflictingDrivers.join(', ')}`
         : '';
-      
       showNotification('error', `${errorMessage} ${conflictingDriversMessage}`);
     }
   };
@@ -119,7 +118,11 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
       key: 'drivers',
       render: (drivers) => (
         drivers && drivers.length > 0 ? (
-          drivers.map((driver) => <span key={driver._id}>{driver.userId?.fullName}</span>)
+          drivers.map((driver) => (
+            <span key={driver._id} className="block">
+              {driver.fullName ? `${driver.fullName} (Driver)` : 'Thông tin không xác định'}
+            </span>
+          ))
         ) : (
           <span className="text-rose-400">Chưa có tài xế</span>
         )
@@ -128,47 +131,51 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
     {
       title: 'Thao tác',
       key: 'action',
-      render: (text, record) => (
-        <div className="flex space-x-2">
-          <Tooltip title="Chi tiết">
-            <Link to={`/trips/${record._id}`} className="text-blue-500 hover:text-blue-700">
-              <FaEye className="inline mr-1 text-lg align-middle" />
-            </Link>
-          </Tooltip>
-          <Tooltip title="Sửa">
-            <Button
-              type="link"
-              className="text-yellow-500 hover:text-yellow-700"
-              onClick={() => handleEdit(record)}
-            >
-              <FaEdit className="inline mr-1 text-lg align-middle" />
-            </Button>
-          </Tooltip>
-          {!record.drivers || record.drivers.length === 0 ? (
-            <Tooltip title="Thêm tài xế">
+      render: (text, record) => {
+        const hasDriver = record.drivers && record.drivers.length > 0;
+
+        return (
+          <div className="flex space-x-2">
+            <Tooltip title="Chi tiết">
+              <Link to={`/trips/${record._id}`} className="text-blue-500 hover:text-blue-700">
+                <FaEye className="inline mr-1 text-lg align-middle" />
+              </Link>
+            </Tooltip>
+            <Tooltip title="Sửa">
               <Button
                 type="link"
-                className="text-green-500 hover:text-green-700"
-                onClick={() => handleAddDriver(record)}
+                className="text-yellow-500 hover:text-yellow-700"
+                onClick={() => handleEdit(record)}
               >
-                <FaUserPlus className="inline mr-1 text-lg align-middle" />
+                <FaEdit className="inline mr-1 text-lg align-middle" />
               </Button>
             </Tooltip>
-          ) : null}
-          <Tooltip title="Xóa">
-            <Popconfirm
-              title="Bạn có chắc chắn muốn xóa chuyến đi này không?"
-              onConfirm={() => handleDelete(record._id)}
-              okText="Có"
-              cancelText="Không"
-            >
-              <Button type="link" className="text-red-500 hover:text-red-700">
-                <FaTrash className="inline mr-1 text-lg align-middle" />
-              </Button>
-            </Popconfirm>
-          </Tooltip>
-        </div>
-      ),
+            {!hasDriver && (
+              <Tooltip title="Thêm tài xế">
+                <Button
+                  type="link"
+                  className="text-green-500 hover:text-green-700"
+                  onClick={() => handleAddDriver(record)}
+                >
+                  <FaUserPlus className="inline mr-1 text-lg align-middle" />
+                </Button>
+              </Tooltip>
+            )}
+            <Tooltip title="Xóa">
+              <Popconfirm
+                title="Bạn có chắc chắn muốn xóa chuyến đi này không?"
+                onConfirm={() => handleDelete(record._id)}
+                okText="Có"
+                cancelText="Không"
+              >
+                <Button type="link" className="text-red-500 hover:text-red-700">
+                  <FaTrash className="inline mr-1 text-lg align-middle" />
+                </Button>
+              </Popconfirm>
+            </Tooltip>
+          </div>
+        );
+      },
     },
   ];
 

@@ -3,9 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
-import ManageDrivers from 'components/CompanyAdmin/pages/ManageDrivers';
-import PaymentMethod from 'components/home/components/Booking/PaymentMethod';
-import Location from 'components/SuperAdmin/navSideBar/Location';
 
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
@@ -14,7 +11,9 @@ const Register = React.lazy(() => import('../auth/Register'));
 const SuperAdminDashboard = React.lazy(() => import('../SuperAdmin/SuperAdminDashboard')); // SuperAdmin
 const ManageCompanies = React.lazy(() => import('../SuperAdmin/navSideBar/ManageCompanies')); // Quản lý Nhà Xe
 const ManageAdmins = React.lazy(() => import('../SuperAdmin/navSideBar/ManageAdmins')); // Quản lý Admin Nhà Xe
-const ManageUsers = React.lazy(() => import('../SuperAdmin/navSideBar/ManageUsers')); // Quản lý Người Dùng
+const ManageUsers = React.lazy(() => import('../SuperAdmin/navSideBar/ManageUsers'));
+
+// Quản lý Người Dùng
 const UserProfile = React.lazy(() => import('components/auth/UserProfile'));
 const TicketBookingPage = React.lazy(() => import('components/Orders/TicketBookingPage'));
 const UserDashboardLayout = React.lazy(() => import('components/auth/Dashboard/UserDashboardLayout'));
@@ -25,6 +24,11 @@ const ManageTrips = React.lazy(()=> import ('components/CompanyAdmin/pages/Manag
 const Dashboard = React.lazy(()=> import ('components/CompanyAdmin/pages/Dashboard'));
 const ManageBuses = React.lazy(()=>import('components/CompanyAdmin/pages/ManageBuses'));
 const SearchResults = React.lazy(()=> import('components/home/components/SearchResult/SearchResults'));
+const ManageDrivers = React.lazy(() => import('components/CompanyAdmin/pages/ManageDrivers'));
+const PaymentMethod = React.lazy(() => import('components/home/components/Booking/PaymentMethod'));
+const Location = React.lazy(() => import('components/SuperAdmin/navSideBar/Location'));
+const Employee = React.lazy(() => import('components/CompanyAdmin/pages/Employee'));
+
 
 const SearchPage = React.lazy(()=> import ('components/home/components/SearchResult/SearchPage'));
 const BookingPage = React.lazy(()=>import ('components/home/components/Booking/BookingPage'));
@@ -69,6 +73,7 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="trip" element={<ManageTrips />} />
             <Route path="manage-buses" element={<ManageBuses />} />
             <Route path="manage-drivers" element={<ManageDrivers />} />
+            <Route path="employee" element={<Employee />} />
           </Route>
 
           {/* Route cho người dùng */}
