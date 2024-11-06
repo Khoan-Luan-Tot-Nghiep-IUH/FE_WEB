@@ -13,7 +13,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
   const userId = userInfo?.id;
 
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [seatsData, setSeatsData] = useState([]);
+  const [seatsData, setSeatsData] = useState({ lower: [], upper: [] }); 
   const [lockTimers, setLockTimers] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
 
   useEffect(() => {
     if (initialSeatsData) {
-      setSeatsData(initialSeatsData.data.lower);
+      setSeatsData(initialSeatsData.data);
       setError(null);
     }
   }, [initialSeatsData]);
@@ -69,24 +69,34 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
     const socket = socketRef.current;
 
     const handleSeatLocked = ({ seatNumber, lockedBy, lockExpiration }) => {
-      setSeatsData((prevSeats) =>
-        prevSeats.map((seat) =>
+      setSeatsData((prevSeats) => ({
+        lower: prevSeats.lower.map((seat) =>
           seat.seatNumber === seatNumber
             ? { ...seat, isAvailable: false, lockedBy, lockExpiration }
             : seat
-        )
-      );
+        ),
+        upper: prevSeats.upper.map((seat) =>
+          seat.seatNumber === seatNumber
+            ? { ...seat, isAvailable: false, lockedBy, lockExpiration }
+            : seat
+        ),
+      }));
     };
 
     const handleSeatReleased = ({ seatNumber }) => {
-      setSeatsData((prevSeats) =>
-        prevSeats.map((seat) =>
+      setSeatsData((prevSeats) => ({
+        lower: prevSeats.lower.map((seat) =>
           seat.seatNumber === seatNumber
             ? { ...seat, isAvailable: true, lockedBy: null }
             : seat
-        )
-      );
-
+        ),
+        upper: prevSeats.upper.map((seat) =>
+          seat.seatNumber === seatNumber
+            ? { ...seat, isAvailable: true, lockedBy: null }
+            : seat
+        ),
+      }));
+    
       if (lockTimers[seatNumber]) {
         clearTimeout(lockTimers[seatNumber]);
         setLockTimers((prev) => {
@@ -133,35 +143,43 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
 
   const handleSeatSelect = useCallback(
     async (seatNumber) => {
-      if (!userId) {
-        setError('Please log in to select seats');
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        if (selectedSeats.includes(seatNumber)) {
-          const seat = seatsData.find((seat) => seat.seatNumber === seatNumber);
-          if (!seat.isAvailable && seat.lockedBy && seat.lockedBy !== userId) {
-            setError(`Seat ${seatNumber} is temporarily reserved by another user`);
+        if (!userId) {
+            setError('Please log in to select seats');
             return;
-          }
-          socketRef.current.emit('releaseSeat', { tripId: trip._id, seatNumber, userId });
-          setSelectedSeats((prev) => prev.filter((s) => s !== seatNumber));
-        } else {
-          socketRef.current.emit('reserveSeat', { tripId: trip._id, seatNumber, userId });
-          setSelectedSeats((prev) => [...prev, seatNumber]);
         }
-      } catch (error) {
-        setError('Failed to process seat selection. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            console.log("Selected seat number:", seatNumber);
+            
+            // Nếu ghế đã được chọn, người dùng muốn bỏ chọn
+            if (selectedSeats.includes(seatNumber)) {
+                const seat = [...seatsData.lower, ...seatsData.upper].find((seat) => seat.seatNumber === seatNumber);
+                if (!seat.isAvailable && seat.lockedBy && seat.lockedBy !== userId) {
+                    setError(`Seat ${seatNumber} is temporarily reserved by another user`);
+                    return;
+                }
+                console.log("Releasing seat:", seatNumber);
+                socketRef.current.emit('releaseSeat', { tripId: trip._id, seatNumber, userId });
+                setSelectedSeats((prev) => prev.filter((s) => s !== seatNumber));
+            } else {
+                // Chọn ghế nếu chưa chọn
+                console.log("Reserving seat:", seatNumber);
+                socketRef.current.emit('reserveSeat', { tripId: trip._id, seatNumber, userId });
+                setSelectedSeats((prev) => [...prev, seatNumber]);
+            }
+        } catch (error) {
+            console.error("Error in seat selection:", error);
+            setError('Failed to process seat selection. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     },
     [trip._id, userId, seatsData, selectedSeats]
-  );
+);
+
 
   const handleContinue = useCallback(() => {
     if (selectedSeats.length === 0) {
