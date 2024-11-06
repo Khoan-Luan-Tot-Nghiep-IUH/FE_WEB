@@ -16,6 +16,14 @@ export const bookingApiSlice = createApi({
   }),
   tagTypes: ['Booking'],
   endpoints: (builder) => ({
+    createBookingDraft: builder.mutation({
+      query: (draftBooking) => ({
+        url: '/bookings-confirm',
+        method: 'POST',
+        body: draftBooking,
+      }),
+      invalidatesTags: ['Booking'],
+    }),
     createBooking: builder.mutation({
       query: (newBooking) => ({
         url: '/bookings',
@@ -34,11 +42,18 @@ export const bookingApiSlice = createApi({
       providesTags: ['Booking'],
       keepUnusedDataFor: 60, 
     }),
+    getBookingDrafts: builder.query({
+      query: () => '/booking-drafts',
+      providesTags: ['Booking'],
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
 export const {
+  useCreateBookingDraftMutation,
   useCreateBookingMutation,
   usePaymentSuccessQuery,
   useGetBookingHistoryQuery,
+  useGetBookingDraftsQuery,
 } = bookingApiSlice;

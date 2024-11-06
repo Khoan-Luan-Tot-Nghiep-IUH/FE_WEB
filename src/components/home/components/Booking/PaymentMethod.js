@@ -43,7 +43,7 @@ const QRCodeDisplay = ({ qrCodeData }) => {
 const PaymentMethods = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { selectedSeats, totalPrice, trip } = location.state || {};
+    const { selectedSeats, totalPrice, trip, bookingId, expiryTime } = location.state || {};
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [createBooking, { isLoading, isError, data, isSuccess }] = useCreateBookingMutation();
 
@@ -55,14 +55,6 @@ const PaymentMethods = () => {
 
     const [confirmDialog, setConfirmDialog] = useState(false);
 
-    // Tạo sessionId duy nhất cho phiên đặt vé này
-    const [sessionId, setSessionId] = useState(localStorage.getItem('currentSessionId') || uuidv4());
-
-    // Lưu sessionId vào localStorage nếu nó chưa tồn tại
-    useEffect(() => {
-        localStorage.setItem('currentSessionId', sessionId);
-    }, [sessionId]);
-
     // Mở thông báo
     const showNotification = (message, severity = 'success') => {
         setNotification({ open: true, message, severity });
@@ -73,7 +65,6 @@ const PaymentMethods = () => {
         setNotification({ ...notification, open: false });
     };
 
-    // Xử lý khi countdown hết thời gian
     const handleTimeout = () => {
         setConfirmDialog(true);
     };
@@ -99,14 +90,13 @@ const PaymentMethods = () => {
             return;
         }
 
-        if (!trip || !selectedSeats || !totalPrice) {
+        if (!bookingId) {
             showNotification('Dữ liệu không hợp lệ', 'error');
             return;
         }
 
         const bookingData = {
-            tripId: trip._id,
-            seatNumbers: selectedSeats,
+            bookingId,
             paymentMethod,
         };
 
@@ -118,14 +108,6 @@ const PaymentMethods = () => {
                     window.open(result.data.paymentLink, "_self");
                 }, 2000);
             }
-
-            // Reset countdown khi tạo booking mới
-            localStorage.removeItem('currentSessionId');
-            localStorage.removeItem('countdownEndTime');
-            const newSessionId = uuidv4();
-            setSessionId(newSessionId);
-            localStorage.setItem('currentSessionId', newSessionId);
-
         }
         catch (error) {
             console.error('Lỗi khi đặt chỗ:', error);
@@ -142,7 +124,7 @@ const PaymentMethods = () => {
     return (
         <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
             {/* Countdown Timer */}
-            <CountdownTimer initialTime={300} sessionId={sessionId} onTimeout={handleTimeout} />
+            <CountdownTimer endTime={expiryTime} onTimeout={handleTimeout} />
 
             {/* Xác nhận trước khi rời trang */}
             {confirmDialog && (

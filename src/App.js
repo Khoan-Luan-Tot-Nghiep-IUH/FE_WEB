@@ -5,7 +5,9 @@ import { setCredentials } from './Redux/User/userSlice';
 import AppRoutes from './components/routes/routes';
 import CartItems from './components/CartItems';
 import { FaShoppingCart } from 'react-icons/fa';
-import { motion } from 'framer-motion'; // Import framer-motion
+import { motion } from 'framer-motion';
+import { Badge } from 'antd';
+import { useGetBookingDraftsQuery } from './Redux/Booking/bookingApiSlice';
 import './reset.css';
 import './globalScrollbar.css';
 
@@ -28,10 +30,7 @@ const useRestoreUser = () => {
 const App = () => {
   const userInfo = useRestoreUser();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([
-    { name: 'Vé xe Hà Nội - TP.HCM', price: 100000 },
-    { name: 'Vé xe Đà Nẵng - TP.HCM', price: 120000 },
-  ]);
+  const { data: cartItems = [] } = useGetBookingDraftsQuery();
 
   const handleCartClick = () => {
     setIsCartOpen(!isCartOpen);
@@ -40,6 +39,9 @@ const App = () => {
   const handleCloseCart = () => {
     setIsCartOpen(false);
   };
+
+  // Tính tổng số lượng mục trong giỏ hàng
+  const itemCount = cartItems?.data?.length || 0;
 
   return (
     <div className="App bg-slate-100 min-h-screen">
@@ -54,10 +56,12 @@ const App = () => {
               transition: { repeat: Infinity, repeatType: "loop", duration: 1.5 }
             }}
           >
-            <FaShoppingCart size={24} color="#fff" />
+            <Badge count={itemCount} overflowCount={9} offset={[-5, 5]}>
+              <FaShoppingCart size={30} color="#fff" />
+            </Badge>
           </motion.div>
         )}
-        {isCartOpen && <CartItems items={cartItems} onClose={handleCloseCart} />}
+        {isCartOpen && <CartItems items={cartItems?.data || []} onClose={handleCloseCart} />}
       </Router>
     </div>
   );

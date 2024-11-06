@@ -1,43 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
-const CountdownTimer = ({ initialTime, onTimeout, sessionId }) => {
-    const [timeLeft, setTimeLeft] = useState(initialTime);
+const CountdownTimer = ({ endTime, onTimeout }) => {
+    const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        // Kiểm tra sessionId và endTime trong localStorage
-        const storedSessionId = localStorage.getItem('currentSessionId');
-        const storedEndTime = parseInt(localStorage.getItem('countdownEndTime'), 10);
+        const endTimestamp = new Date(endTime).getTime();
+        const calculateTimeLeft = () => Math.max(0, Math.floor((endTimestamp - Date.now()) / 1000));
+        
+        setTimeLeft(calculateTimeLeft());
 
-        // Nếu sessionId trong localStorage khác với sessionId hiện tại hoặc không có endTime
-        if (storedSessionId !== sessionId || isNaN(storedEndTime)) {
-            // Thiết lập endTime mới và lưu vào localStorage
-            const newEndTime = Date.now() + initialTime * 1000;
-            localStorage.setItem('currentSessionId', sessionId);
-            localStorage.setItem('countdownEndTime', newEndTime);
-            setTimeLeft(initialTime);
-        } else {
-            // Tính toán thời gian còn lại dựa trên endTime đã lưu
-            const remainingTime = Math.floor((storedEndTime - Date.now()) / 1000);
-            setTimeLeft(remainingTime > 0 ? remainingTime : 0);
-        }
-
-        // Cập nhật countdown mỗi giây
         const timerId = setInterval(() => {
             setTimeLeft(prevTime => {
-                if (prevTime <= 1) {
+                const newTime = calculateTimeLeft();
+                if (newTime <= 0) {
                     clearInterval(timerId);
-                    localStorage.removeItem('currentSessionId');
-                    localStorage.removeItem('countdownEndTime');
                     onTimeout();
-                    return 0;
                 }
-                return prevTime - 1;
+                return newTime;
             });
         }, 1000);
 
-        // Dọn dẹp bộ đếm khi component unmount
         return () => clearInterval(timerId);
-    }, [initialTime, onTimeout, sessionId]);
+    }, [endTime, onTimeout]);
 
     const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
     const seconds = String(timeLeft % 60).padStart(2, '0');
