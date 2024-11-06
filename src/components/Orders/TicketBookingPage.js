@@ -28,7 +28,11 @@ const TicketBookingPage = () => {
   }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading booking history.</p>;
+  if (isError || !data?.success) return (
+    <div className="container mx-auto mt-10 bg-white shadow-md rounded-lg p-8">
+      <p>Bạn chưa có lịch sử đặt vé nào. <a href="/" className="text-blue-600">Đặt vé ngay!</a></p>
+    </div>
+  );
 
   const renderBookings = (tab) => {
     const bookingsList = bookings[tab];
@@ -40,7 +44,7 @@ const TicketBookingPage = () => {
             : tab === 'completed'
             ? "Bạn chưa có chuyến nào đã hoàn thành."
             : "Bạn chưa có vé nào đã hủy."}
-          {tab === 'current' && <a href="/book" className="text-blue-600">Đặt chuyến đi ngay</a>}
+          {tab === 'current' && <a href="/book" className="text-blue-600">Đặt chuyến đi ngay!</a>}
         </p>
       );
     }
@@ -80,38 +84,43 @@ const BookingCard = ({ booking }) => {
   const departureLocation = booking.trip?.departureLocation?.name || 'N/A';
   const arrivalLocation = booking.trip?.arrivalLocation?.name || 'N/A';
   const departureTime = booking.trip?.departureTime ? new Date(booking.trip.departureTime) : null;
+  const bookingDate = booking.bookingDate ? new Date(booking.bookingDate) : null;
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mb-4 flex flex-col space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-800">
-          {departureLocation} → {arrivalLocation}
-        </h3>
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-600' : booking.status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
-          {booking.status}
-        </span>
-      </div>
+    <div className="bg-white shadow-lg rounded-lg p-6 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="flex-1">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-800">
+            {departureLocation} → {arrivalLocation}
+          </h3>
+          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-600' : booking.status === 'Completed' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
+            {booking.status}
+          </span>
+        </div>
 
-      <div className="flex items-center space-x-2 text-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M6 2a1 1 0 00-1 1v2a1 1 0 001 1h8a1 1 0 001-1V3a1 1 0 00-1-1H6zM4 6V3a3 3 0 013-3h6a3 3 0 013 3v3h1a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h1z" />
-        </svg>
-        {departureTime ? (
-          <p>{departureTime.toLocaleDateString()} - {departureTime.toLocaleTimeString()}</p>
-        ) : (
-          <p>Thời gian không có sẵn</p>
-        )}
-      </div>
+        <div className="flex items-center space-x-2 text-gray-600 mt-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M6 2a1 1 0 00-1 1v2a1 1 0 001 1h8a1 1 0 001-1V3a1 1 0 00-1-1H6zM4 6V3a3 3 0 013-3h6a3 3 0 013 3v3h1a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h1z" />
+          </svg>
+          {departureTime ? (
+            <p>{departureTime.toLocaleDateString()} - {departureTime.toLocaleTimeString()}</p>
+          ) : (
+            <p>Thời gian không có sẵn</p>
+          )}
+        </div>
 
-      <div className="flex items-center justify-between text-gray-800">
-        <div>
+        <div className="text-gray-800 mt-4">
           <p className="text-sm">Ghế: <span className="font-semibold">{booking.seatNumbers.join(', ')}</span></p>
           <p className="text-sm">Giá vé: <span className="font-semibold">{booking.totalPrice} VND</span></p>
+          <p className="text-sm">Mã đặt vé: <span className="font-semibold">{booking.orderCode}</span></p>
         </div>
-        <div className="flex flex-col items-center space-y-1">
-          <span className="text-sm text-gray-500">Mã đặt vé</span>
-          <span className="text-lg font-semibold text-gray-800">{booking.orderCode}</span>
-        </div>
+      </div>
+
+      <div className="mt-4 md:mt-0 md:ml-6 text-right">
+        <p className="text-gray-500 text-sm">Ngày đặt vé</p>
+        <p className="text-lg font-semibold text-gray-800">
+          {bookingDate ? bookingDate.toLocaleDateString() : 'Không có sẵn'}
+        </p>
       </div>
     </div>
   );
