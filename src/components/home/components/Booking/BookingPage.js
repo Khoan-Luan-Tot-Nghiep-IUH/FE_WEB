@@ -1,14 +1,18 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useCreateBookingDraftMutation } from '../../../../Redux/Booking/bookingApiSlice';
 import BookingForm from './ComponentBooking/BookingForm';
 import BookingSummary from './ComponentBooking/BookingSummary';
 import BookingConfirmation from './ComponentBooking/BookingConfirmation';
 import Navbar from 'components/shared/navbar/Navbar';
 import { IoIosArrowBack } from "react-icons/io";
+
 const BookingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { selectedSeats, totalPrice, trip } = location.state || {};
+
+  const [createBookingDraft, { isLoading }] = useCreateBookingDraftMutation();
 
   const handleBack = () => {
     const storedParams = localStorage.getItem('searchParams');
@@ -19,23 +23,41 @@ const BookingPage = () => {
       navigate('/search-page');
     }
   };
-  const handleContinueBooking = () => {
+
+  const handleContinueBooking = async () => {
     if (selectedSeats && totalPrice && trip) {
-      navigate('/payment-methods', { state: { selectedSeats, totalPrice, trip } });
+      try {
+
+        const response = await createBookingDraft({
+          tripId: trip._id,
+          seatNumbers: selectedSeats,
+        }).unwrap();
+
+        navigate('/payment-methods', {
+          state: {
+            selectedSeats,
+            totalPrice: response.data.totalPrice,
+            trip,
+            bookingId: response.data.bookingId,
+            expiryTime: response.data.expiryTime,
+          },
+        });
+      } catch (error) {
+        console.error('Lỗi khi tạo booking draft:', error);
+      }
     } else {
       console.error('Dữ liệu không đầy đủ!');
     }
   };
-  
-  
+
   return (
     <div className="min-h-screen pb-0">
-    <Navbar />
+      <Navbar />
       <div className="container mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Back Button */}
         <div className="lg:col-span-3 mb-4">
           <button onClick={handleBack} className="text-blue-500 flex items-center mb-4">
-          <IoIosArrowBack />
+            <IoIosArrowBack />
             Quay lại
           </button>
         </div>
@@ -93,8 +115,12 @@ const BookingPage = () => {
       <div className="w-full h-full bg-white shadow-md mt-6">
         <div className="container mx-auto">
           <div className="px-4 py-6 flex justify-between items-center space-x-4">
-            <button  onClick={handleContinueBooking}  className="bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition duration-200 w-1/2">
-              Tiếp tục đặt vé một chiều
+            <button
+              onClick={handleContinueBooking}
+              className={`bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition duration-200 w-1/2 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Đang xử lý...' : 'Tiếp tục đặt vé một chiều'}
             </button>
             <button className="bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-200 w-1/2">
               Đặt thêm chiều về

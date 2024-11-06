@@ -114,7 +114,7 @@ const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to="/revenue"
+                to="/companyadmin/employee"
                 className={({ isActive }) =>
                   isActive
                     ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
@@ -122,7 +122,7 @@ const Sidebar = () => {
                 }
               >
                 <FaDollarSign className="mr-2 text-base" />
-                <span className="hidden md:inline-block">Doanh thu</span>
+                <span className="hidden md:inline-block">Quản Lí Nhân Viên</span>
               </NavLink>
             </li>
 

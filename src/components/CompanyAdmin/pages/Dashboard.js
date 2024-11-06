@@ -10,9 +10,16 @@ const { TabPane } = Tabs;
 
 const Dashboard = () => {
   return (
-    <div className="p-6 mt-16 bg-white">
+    <div className="p-6 h-[1000px] bg-white">
       <Tabs defaultActiveKey="1">
-      <TabPane tab="Doanh thu" key="1">
+      <TabPane tab="Tăng trưởng người dùng" key="1">
+          <Row gutter={16}>
+            <Col span={24}>
+              <UserGrowthChart />
+            </Col>
+          </Row>
+        </TabPane>
+      <TabPane tab="Doanh thu" key="2">
           <Row gutter={16}>
             <Col span={24}>
               <RevenueChart />
@@ -20,17 +27,10 @@ const Dashboard = () => {
           </Row>
         </TabPane>
 
-        <TabPane tab="Chuyến đi" key="2">
+        <TabPane tab="Chuyến đi" key="3">
           <Row gutter={16}>
             <Col span={24}>
               <CompletedTripsChart />
-            </Col>
-          </Row>
-        </TabPane>
-        <TabPane tab="Tăng trưởng người dùng" key="3">
-          <Row gutter={16}>
-            <Col span={24}>
-              <UserGrowthChart />
             </Col>
           </Row>
         </TabPane>

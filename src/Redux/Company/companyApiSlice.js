@@ -66,6 +66,12 @@ export const companyApiSlice = createApi({
         body: { userName, password, email, phoneNumber, licenseNumber,fullName , baseSalary ,salaryRate },
       }),
     }),
+      disableEmployee: builder.mutation({
+      query: (userId) => ({
+          url: `/companies/employees/${userId}/disable`,
+          method: 'PATCH',
+      }),
+  }),
     getDrivers: builder.query({
         query: () => '/companies/drivers',
       }),   updateDriver: builder.mutation({
@@ -93,6 +99,20 @@ export const companyApiSlice = createApi({
         query: ({ startDate, endDate, timeFrame }) =>
           `/companies/revenue-by-time?startDate=${startDate}&endDate=${endDate}&timeFrame=${timeFrame}`,
       }),
+      getTopBookingUsers: builder.query({
+        query: () => '/companies/top-booking-users',
+      }),
+      getTopBookingUsersByTimeFrame: builder.query({
+        query: ({ year, timeFrame }) =>
+          `/companies/top-booking-users-by-timeframe?year=${year}&timeFrame=${timeFrame}`,
+      }),
+      calculateAndRecordDriverSalary: builder.mutation({
+        query: ({ userId, startDate, endDate }) => ({
+          url: '/companies/calculate-salary',
+          method: 'POST',
+          body: { userId, startDate, endDate },
+        }),
+      }),
     }),
 });
 
@@ -110,4 +130,8 @@ export const {
   useGetCompletedTripsByMonthQuery,
   useGetRevenueByPaymentMethodQuery,
   useGetRevenueByTimeRangeQuery,
+  useDisableEmployeeMutation,
+  useGetTopBookingUsersQuery,
+  useGetTopBookingUsersByTimeFrameQuery,
+  useCalculateAndRecordDriverSalaryMutation,
 } = companyApiSlice;

@@ -1,31 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { useGetDriversQuery, useUpdateDriverMutation, useDeleteDriverMutation } from '../../../Redux/Company/companyApiSlice';
-import { Button, Table, Typography, Space, Spin, notification, Alert, Modal, Form, InputNumber, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  useGetDriversQuery,
+  useUpdateDriverMutation,
+  useDeleteDriverMutation,
+  useDisableEmployeeMutation
+} from '../../../Redux/Company/companyApiSlice';
+import { Button, Table, Typography, Space, Spin, notification, Alert, Modal, Form, Input, InputNumber, Select } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined, SearchOutlined, DollarOutlined } from '@ant-design/icons';
 import AddDriverDrawer from '../components/ManageDriver/AddDriverDrawer';
+import CalculateSalaryModal from '../components/ManageDriver/CalculateSalaryModal';
 
 const { Title } = Typography;
 const { confirm } = Modal;
-const { Option } = Select;
 const { Search } = Input;
 
-// Hàm định dạng tiền tệ
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-};
+const formatCurrency = (value) => new Intl.NumberFormat('vi-VN', {
+  style: 'currency',
+  currency: 'VND',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+}).format(value);
 
 const ManageDrivers = () => {
   const { data: driversData, isLoading, isError, refetch } = useGetDriversQuery();
   const [updateDriver] = useUpdateDriverMutation();
   const [deleteDriver] = useDeleteDriverMutation();
+  const [toggleEmployeeStatus] = useDisableEmployeeMutation();
   const [drivers, setDrivers] = useState([]);
   const [filteredDrivers, setFilteredDrivers] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [salaryModalVisible, setSalaryModalVisible] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
   const [editingDriver, setEditingDriver] = useState(null);
   const [form] = Form.useForm();
 
@@ -36,6 +41,27 @@ const ManageDrivers = () => {
     }
   }, [driversData]);
 
+  const handleToggleDriverStatus = async (userId) => {
+    try {
+      const result = await toggleEmployeeStatus(userId).unwrap();
+      notification.success({
+        message: 'Thay đổi trạng thái thành công',
+        description: 'Trạng thái của tài xế đã được cập nhật.',
+      });
+      refetch();
+    } catch (error) {
+      notification.error({
+        message: 'Lỗi',
+        description: 'Có lỗi xảy ra khi thay đổi trạng thái tài xế!',
+      });
+    }
+  };
+
+  const handleCalculateSalaryClick = (driver) => {
+    setSelectedDriver(driver);
+    setSalaryModalVisible(true);
+  };
+
   const handleAddDriverClick = () => {
     setDrawerVisible(true);
   };
@@ -44,7 +70,6 @@ const ManageDrivers = () => {
     setDrawerVisible(false);
   };
 
-  // Hàm callback để cập nhật danh sách tài xế mới
   const handleAddDriverSuccess = (newDriver) => {
     setDrivers((prevDrivers) => [...prevDrivers, newDriver]);
     setFilteredDrivers((prevDrivers) => [...prevDrivers, newDriver]);
@@ -67,9 +92,7 @@ const ManageDrivers = () => {
       setFilteredDrivers(filteredData);
     }
   };
-  
 
-  // Xử lý cập nhật tài xế
   const handleEditDriver = (driver) => {
     setEditingDriver(driver);
     form.setFieldsValue(driver);
@@ -92,7 +115,6 @@ const ManageDrivers = () => {
     }
   };
 
-  // Xử lý xóa tài xế
   const handleDeleteDriver = (driverId) => {
     confirm({
       title: 'Bạn có chắc chắn muốn xóa tài xế này không?',
@@ -155,6 +177,12 @@ const ManageDrivers = () => {
         <Space size="middle">
           <Button type="link" icon={<EditOutlined />} onClick={() => handleEditDriver(record)}>Sửa</Button>
           <Button type="link" icon={<DeleteOutlined />} danger onClick={() => handleDeleteDriver(record._id)}>Xóa</Button>
+          <Button type="link" onClick={() => handleToggleDriverStatus(record.userId._id)}>
+            {record.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
+          </Button>
+          <Button type="link" icon={<DollarOutlined />} onClick={() => handleCalculateSalaryClick(record)}>
+            Tính lương
+          </Button>
         </Space>
       ),
     },
@@ -199,58 +227,13 @@ const ManageDrivers = () => {
         onAddDriverSuccess={handleAddDriverSuccess}
       />
 
-      {/* Modal chỉnh sửa tài xế */}
-      <Modal
-        title="Chỉnh sửa tài xế"
-        visible={!!editingDriver}
-        onCancel={() => setEditingDriver(null)}
-        onOk={() => {
-          form.submit();
-        }}
-      >
-        <Form
-          form={form}
-          onFinish={handleUpdateDriver}
-          layout="vertical"
-        >
-          <Form.Item
-            name={['userId', 'fullName']}
-            label="Tên tài xế"
-            rules={[{ required: true, message: 'Vui lòng nhập tên tài xế' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="licenseNumber"
-            label="Giấy phép lái xe"
-            rules={[{ required: true, message: 'Vui lòng nhập giấy phép lái xe' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="baseSalary"
-            label="Lương cơ bản"
-            rules={[{ required: true, message: 'Vui lòng nhập lương cơ bản' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              formatter={(value) => `${formatCurrency(value)}`}
-              parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
-            />
-          </Form.Item>
-          <Form.Item
-            name="salaryRate"
-            label="Mức lương mỗi chuyến"
-            rules={[{ required: true, message: 'Vui lòng nhập mức lương mỗi chuyến' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              formatter={(value) => `${formatCurrency(value)}`}
-              parser={(value) => value.replace(/\đ\s?|(,*)/g, '')}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      {selectedDriver && (
+        <CalculateSalaryModal
+          visible={salaryModalVisible}
+          onClose={() => setSalaryModalVisible(false)}
+          driver={selectedDriver}
+        />
+      )}
     </div>
   );
 };
