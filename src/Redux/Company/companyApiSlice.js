@@ -59,6 +59,13 @@ export const companyApiSlice = createApi({
         method: 'PATCH',
       }),
     }),
+    toggleNewUserVoucher: builder.mutation({
+      query: (allowNewUserVoucher) => ({
+        url: '/system-settings/toggle-new-user-voucher',
+        method: 'POST',
+        body: { allowNewUserVoucher },
+      }),
+    }),
     addDriver: builder.mutation({
       query: ({ userName, password, email, phoneNumber, licenseNumber,fullName ,salaryRate, baseSalary }) => ({
         url: '/companies/add-driver',
@@ -122,6 +129,7 @@ export const {
   useCreateCompanyMutation,
   useUpdateCompanyMutation,
   useAddCompanyAdminMutation,
+  useToggleNewUserVoucherMutation,
   useToggleCompanyStatusMutation,
   useAddDriverMutation,
   useGetDriversQuery,

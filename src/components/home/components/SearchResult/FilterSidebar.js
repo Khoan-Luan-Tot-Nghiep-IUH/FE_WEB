@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'; // Import các icon cần thiết
+import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 const FilterSidebar = ({ filters, onFilterChange }) => {
   const [openSections, setOpenSections] = useState({
@@ -13,13 +13,13 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
   };
 
   return (
-    <div className="filter-sidebar p-4 shadow-xl bg-white rounded-3xl sticky top-4 h-[calc(100vh-50px)] overflow-y-auto border border-gray-200">
+    <div className="filter-sidebar p-3 shadow-xl bg-white rounded-3xl sm:rounded-none sm:shadow-none sm:w-full md:w-64 lg:w-80 sticky top-4 h-[calc(100vh-50px)] overflow-y-auto border border-gray-200">
       {/* Header */}
-      <h3 className="text-xl font-extrabold text-gray-900 mb-6">Bộ lọc</h3>
+      <h3 className="text-xl font-extrabold text-gray-900 mb-6 sm:text-lg">Bộ lọc</h3>
 
       {/* Card for Sorting */}
-      <div className="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow-md border border-gray-200">
-        <h4 className="text-lg font-semibold text-gray-800">Sắp xếp</h4>
+      <div className="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow-md border border-gray-200 sm:shadow-none sm:border-none">
+        <h4 className="text-lg font-semibold text-gray-800 sm:text-base">Sắp xếp</h4>
         {[
           { value: 'default', label: 'Mặc định' },
           { value: 'earliest', label: 'Giờ đi sớm nhất' },
@@ -27,26 +27,29 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           { value: 'priceAsc', label: 'Giá tăng dần' },
           { value: 'priceDesc', label: 'Giá giảm dần' },
         ].map(({ value, label }) => (
-          <label key={value} className="flex items-center space-x-3 cursor-pointer transition hover:bg-gray-100 rounded-lg p-2">
+          <label key={value} className="flex items-center space-x-3 cursor-pointer transition hover:bg-gray-100 rounded-lg p-2 sm:p-1">
             <input
               type="radio"
               name="sort"
               value={value}
-              checked={filters.sort === value} // Đồng bộ radio với state
+              checked={filters.sort === value}
               onChange={(e) => onFilterChange('sort', e.target.value)}
-              className="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500"
+              className="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500 sm:h-4 sm:w-4"
             />
-            <span className="text-gray-700">{label}</span>
+            <span className="text-gray-700 sm:text-sm">{label}</span>
           </label>
         ))}
       </div>
 
-      <hr className="my-6" />
+      <hr className="my-6 sm:my-4" />
 
       {/* Card for Filters */}
       <div className="space-y-6">
-        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <h4 onClick={() => toggleSection('departureTime')} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center">
+        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 sm:shadow-none sm:border-none">
+          <h4
+            onClick={() => toggleSection('departureTime')}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center sm:text-base"
+          >
             Giờ đi
             {openSections.departureTime ? (
               <ChevronDownIcon className="h-5 w-5 text-gray-600" />
@@ -56,8 +59,8 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           </h4>
           {openSections.departureTime && (
             <select
-              value={filters.departureTimeRange} // Đồng bộ giá trị của select với state
-              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={filters.departureTimeRange}
+              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-2 sm:text-sm"
               onChange={(e) => onFilterChange('departureTimeRange', e.target.value)}
             >
               <option value="">Tất cả</option>
@@ -67,8 +70,11 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           )}
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <h4 onClick={() => toggleSection('busOperator')} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center">
+        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 sm:shadow-none sm:border-none">
+          <h4
+            onClick={() => toggleSection('busOperator')}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center sm:text-base"
+          >
             Nhà xe
             {openSections.busOperator ? (
               <ChevronDownIcon className="h-5 w-5 text-gray-600" />
@@ -78,8 +84,8 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           </h4>
           {openSections.busOperator && (
             <select
-              value={filters.busOperator} // Đồng bộ giá trị của select với state
-              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={filters.busOperator}
+              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-2 sm:text-sm"
               onChange={(e) => onFilterChange('busOperator', e.target.value)}
             >
               <option value="">Tất cả</option>
@@ -89,8 +95,11 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           )}
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-          <h4 onClick={() => toggleSection('priceRange')} className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center">
+        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 sm:shadow-none sm:border-none">
+          <h4
+            onClick={() => toggleSection('priceRange')}
+            className="text-lg font-semibold text-gray-800 mb-2 cursor-pointer flex justify-between items-center sm:text-base"
+          >
             Giá vé
             {openSections.priceRange ? (
               <ChevronDownIcon className="h-5 w-5 text-gray-600" />
@@ -100,8 +109,8 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
           </h4>
           {openSections.priceRange && (
             <select
-              value={filters.priceRange} // Đồng bộ giá trị của select với state
-              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={filters.priceRange}
+              className="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-2 sm:text-sm"
               onChange={(e) => onFilterChange('priceRange', e.target.value)}
             >
               <option value="">Tất cả</option>
@@ -114,7 +123,7 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
 
         <div className="flex justify-end">
           <button
-            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition sm:px-3 sm:py-1 sm:text-sm"
             onClick={() => onFilterChange('clear', '')}
           >
             Xóa lọc

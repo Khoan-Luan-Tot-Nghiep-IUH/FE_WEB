@@ -6,7 +6,7 @@ import TripDetails from './TripDetails';
 import SeatSelection from './SeatSelection';
 import { useGetSeatsByTripIdQuery } from '../../../../../Redux/Trip/TripApiSlice';
 
-const TripCard = ({ trip, isOpen, onToggle }) => {
+const TripCard = ({ trip, isOpen, onToggle, onReleaseSeats }) => {
   const navigate = useNavigate();
   const socketRef = useRef(null);
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -141,10 +141,26 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
     }
   }, [isOpen]);
 
+  // Hàm để giải phóng tất cả ghế đã chọn
+ 
+  const releaseSeats = () => {
+    selectedSeats.forEach((seatNumber) => {
+      socketRef.current.emit('releaseSeat', { tripId: trip._id, seatNumber });
+    });
+    setSelectedSeats([]);
+  };
+  useEffect(() => {
+    if (onReleaseSeats) {
+      onReleaseSeats(releaseSeats);
+    }
+  }, [onReleaseSeats, releaseSeats]);
+
+
+  
   const handleSeatSelect = useCallback(
     async (seatNumber) => {
         if (!userId) {
-            setError('Please log in to select seats');
+            setError('Vui lòng đăng nhập để chọn ghế');
             return;
         }
 
@@ -179,7 +195,6 @@ const TripCard = ({ trip, isOpen, onToggle }) => {
     },
     [trip._id, userId, seatsData, selectedSeats]
 );
-
 
   const handleContinue = useCallback(() => {
     if (selectedSeats.length === 0) {

@@ -31,7 +31,7 @@ const LocationInput = ({ label, value, onChange, options, placeholder, iconClass
   </div>
 );
 
-const MainSection = () => {
+const MainSection = ({ onSearch }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,6 @@ const MainSection = () => {
   // Lấy query params từ URL
   const queryParams = new URLSearchParams(location.search);
 
-  // Khởi tạo state từ localStorage hoặc URL params (nếu có)
   const [fromLocation, setFromLocation] = useState(() => queryParams.get('departureLocation') || localStorage.getItem('fromLocation') || '');
   const [toLocation, setToLocation] = useState(() => queryParams.get('arrivalLocation') || localStorage.getItem('toLocation') || '');
   const [ticketType, setTicketType] = useState(() => localStorage.getItem('ticketType') || 'oneWay');
@@ -117,6 +116,9 @@ const MainSection = () => {
 
     localStorage.setItem('searchParams', JSON.stringify(searchParams));
 
+    if (onSearch) {
+      onSearch(); 
+    }
     navigate(`/search-page?departureLocation=${encodeURIComponent(fromLocation)}&arrivalLocation=${encodeURIComponent(toLocation)}&departureDate=${formattedDepartureDate}&ticketCount=${ticketQuantity}`);
 
     setTimeout(() => {
