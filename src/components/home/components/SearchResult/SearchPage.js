@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { FaPen } from 'react-icons/fa';
 import Navbar from 'components/shared/navbar/Navbar';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -20,7 +21,9 @@ const SearchPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +40,6 @@ const SearchPage = () => {
     fetchData();
   }, []);
 
-  // Sử dụng useCallback để tránh việc tái tạo lại hàm khi re-render
   const handleSortChange = useCallback((e) => {
     setFilters((prev) => ({ ...prev, sort: e.target.value }));
   }, []);
@@ -71,46 +73,91 @@ const SearchPage = () => {
     navigate(`/search-page?${searchParams.toString()}`);
   };
 
+  const searchParams = new URLSearchParams(location.search);
+  const fromLocation = searchParams.get('departureLocation');
+  const toLocation = searchParams.get('arrivalLocation');
+  const departureDate = searchParams.get('departureDate') ;
+
+  const date = new Date(departureDate);
+  const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
+  const formattedDate = new Intl.DateTimeFormat('vi-VN', options).format(date);
+
   return (
-    <div>
-      <Navbar />
-      <div className="min-h-screen w-full max-w-6xl mx-auto">
-        <div className="w-full mx-auto mb-6">
+    <div className="min-h-screen">
+      <div className="hidden sm:block">
+        <Navbar />
+        <div className="container mx-auto mb-6">
           {error ? (
             <div className="text-red-500">Error: {error}</div>
           ) : (
             <Suspense fallback={<Skeleton height={150} />}>
               {isLoading ? <Skeleton height={150} /> : (
-                <MainSection onPopularRouteClick={handlePopularRouteClick} /> // Truyền hàm xử lý
+                <MainSection onPopularRouteClick={handlePopularRouteClick} />
               )}
             </Suspense>
           )}
         </div>
+      </div>
 
-        <div className="flex w-full">
-          <div className="w-1/4 pr-4">
-            {isLoading ? (
-              <div>
-                <Skeleton height={40} count={6} /> {/* Skeleton cho các bộ lọc */}
+      {/* Thanh thay thế cho màn hình nhỏ nhất */}
+      <div className="block sm:hidden bg-orange-500 text-white p-4 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="text-white">
+          &larr;
+        </button>
+        <div className="text-center mt-4">
+          <h2 className="text-lg font-bold">
+            {fromLocation} - {toLocation}
+          </h2>
+          <p className="text-sm">{formattedDate}</p>
+        </div>
+        <button onClick={() => setIsSidebarOpen(true)} className="text-white">
+          <FaPen className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Bố cục chính */}
+      <div className="container mx-auto flex flex-col md:flex-row w-full max-w-6xl px-4 md:px-0">
+        {/* Drawer Sidebar cho màn hình nhỏ */}
+        {isSidebarOpen && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-40 flex justify-end sm:hidden">
+            <div className="w-3/4 bg-white h-full p-4 z-50">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-bold">Bộ lọc</h2>
+                <button onClick={() => setIsSidebarOpen(false)} className="text-gray-700">
+                  Đóng
+                </button>
               </div>
-            ) : (
               <Suspense fallback={<Skeleton height={40} count={6} />}>
-                <FilterSidebar filters={filters} onSortChange={handleSortChange} onFilterChange={handleFilterChange} />
+                <FilterSidebar
+                  filters={filters}
+                  onSortChange={handleSortChange}
+                  onFilterChange={handleFilterChange}
+                />
               </Suspense>
-            )}
+            </div>
           </div>
+        )}
 
-          <div className="w-3/4">
-            {isLoading ? (
-              <div>
-                <Skeleton height={150} count={5} /> {/* Hiển thị 5 skeleton card */}
-              </div>
-            ) : (
-              <Suspense fallback={<Skeleton height={150} count={5} />}>
-                <SearchResults filters={filters} />
-              </Suspense>
-            )}
-          </div>
+        {/* Sidebar bên trái và SearchResults bên phải cho màn hình lớn */}
+        <div className="hidden md:block md:w-1/3 pr-4">
+          {isLoading ? (
+            <Skeleton height={40} count={6} />
+          ) : (
+            <Suspense fallback={<Skeleton height={40} count={6} />}>
+              <FilterSidebar filters={filters} onSortChange={handleSortChange} onFilterChange={handleFilterChange} />
+            </Suspense>
+          )}
+        </div>
+
+        {/* Kết quả tìm kiếm */}
+        <div className="w-full md:w-2/3">
+          {isLoading ? (
+            <Skeleton height={150} count={5} />
+          ) : (
+            <Suspense fallback={<Skeleton height={150} count={5} />}>
+              <SearchResults filters={filters} />
+            </Suspense>
+          )}
         </div>
       </div>
     </div>

@@ -166,8 +166,6 @@ const BookingConfirmation = ({ trip }) => {
               </button>
             </div>
           </div>
-
-          {/* Overlay for closing drawer when clicking outside */}
           {drawerOpen && (
             <div onClick={toggleDrawer} className="fixed inset-0 bg-black opacity-50 z-40"></div>
           )}

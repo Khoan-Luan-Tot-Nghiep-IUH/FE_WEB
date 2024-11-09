@@ -41,7 +41,7 @@ const AppRoutes = ({ userInfo }) => {
           {/* Route cho trang chủ */}
           <Route path="/" element={<HomePage />} />
 
-          {/* Route cho login và register */}
+            {/* Route cho login và register */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
