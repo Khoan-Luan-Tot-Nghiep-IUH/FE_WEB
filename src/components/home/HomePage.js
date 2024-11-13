@@ -14,12 +14,21 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <section className="relative h-[500px]">
+      
+      {/* Banner Section - Hidden on small screens */}
+      <section className="relative h-[500px] hidden md:block">
         <img src={banner} alt="Banner" className="w-full h-full object-cover" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl px-4">
           <MainSection />
         </div>
       </section>
+
+      {/* MainSection with adjusted margin-top on small screens */}
+      <div className={`container mx-auto ${window.innerWidth < 768 ? "mt-20" : "mt-8"}`}>
+        {window.innerWidth < 768 && <MainSection />}
+      </div>
+
+      {/* Sections */}
       <div className="container mx-auto mt-8">
         <PopularRoutesSection />
       </div>
@@ -38,6 +47,7 @@ const HomePage = () => {
       <div className="container mx-auto mt-8">
         <PlatformSection />
       </div>
+
       <Footer />
     </div>
   );

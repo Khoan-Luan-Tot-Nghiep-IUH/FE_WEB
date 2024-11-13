@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Modal } from 'antd';
 import { formatCurrency } from 'utils/formatUtils';
 
 const TripDetails = ({ trip, onToggle, isOpen, loading }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // Use the first image if available, otherwise use a fallback image
+  const mainImage = trip.busType.images && trip.busType.images.length > 0
+    ? trip.busType.images[0]
+    : "https://static.vexere.com/production/images/1702527338553.jpeg"; // Fallback image
+
+  const handleViewMore = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-4 mb-4">
       {/* Thời gian và địa điểm khởi hành - đến */}
@@ -30,13 +46,18 @@ const TripDetails = ({ trip, onToggle, isOpen, loading }) => {
         {/* Hình ảnh xe, ẩn trên màn hình nhỏ */}
         <div className="relative flex-shrink-0 hidden sm:block w-24 h-24 rounded-lg overflow-hidden">
           <img
-            src={trip.busType.image || "https://static.vexere.com/production/images/1702527338553.jpeg"}
+            src={mainImage}
             alt="Bus"
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-2 py-1 rounded">
-            Xác nhận ngay
-          </div>
+          {trip.busType.images && trip.busType.images.length > 1 && (
+            <button
+              onClick={handleViewMore}
+              className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded"
+            >
+              Xem Thêm
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col items-start sm:ml-4 flex-1">
@@ -63,6 +84,25 @@ const TripDetails = ({ trip, onToggle, isOpen, loading }) => {
         </button>
         <p className="text-xs text-gray-500 mt-2 sm:mt-0 pl-3">KHÔNG YÊU CẦU THANH TOÁN TRƯỚC</p>
       </div>
+
+      {/* Modal to show additional images */}
+      <Modal
+        visible={isModalVisible}
+        footer={null}
+        onCancel={handleCloseModal}
+        title="Hình Ảnh Xe"
+      >
+        <div className="flex flex-wrap gap-4">
+          {trip.busType.images && trip.busType.images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Bus image ${index + 1}`}
+              className="w-32 h-32 object-cover rounded-lg"
+            />
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -59,6 +59,13 @@ export const companyApiSlice = createApi({
         method: 'PATCH',
       }),
     }),
+    createVoucher: builder.mutation({
+      query: (voucherData) => ({
+        url: '/vouchers/create',
+        method: 'POST',
+        body: voucherData,
+      }),
+    }),
     toggleNewUserVoucher: builder.mutation({
       query: (allowNewUserVoucher) => ({
         url: '/system-settings/toggle-new-user-voucher',
@@ -131,6 +138,7 @@ export const {
   useAddCompanyAdminMutation,
   useToggleNewUserVoucherMutation,
   useToggleCompanyStatusMutation,
+  useCreateVoucherMutation,
   useAddDriverMutation,
   useGetDriversQuery,
   useUpdateDriverMutation,

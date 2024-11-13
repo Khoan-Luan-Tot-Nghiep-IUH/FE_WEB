@@ -22,16 +22,14 @@ const UserProfile = () => {
     try {
       const response = await updateUserProfile({ id, userData: updatedUserInfo }).unwrap();
 
-    console.log('Updated user from API:', response);  
-    
-    
-    dispatch(setCredentials({
-      fullName: response.data.fullName,
-      email: response.data.email,
-      phoneNumber: response.data.phoneNumber,
-      birthDay : response.data.birthDay,
-    }));
-
+      dispatch(
+        setCredentials({
+          fullName: response.data.fullName,
+          email: response.data.email,
+          phoneNumber: response.data.phoneNumber,
+          birthDay: response.data.birthDay,
+        })
+      );
 
       setNotificationMessage('Cập nhật thông tin thành công!');
       setNotificationSeverity('success');
@@ -50,13 +48,17 @@ const UserProfile = () => {
   };
 
   if (isLoading) return <div className="text-center py-10">Loading...</div>;
-  if (isError) return <div className="text-center py-10 text-red-500">Error loading user data: {error?.data?.message || 'Unknown error'}</div>;
+  if (isError)
+    return (
+      <div className="text-center py-10 text-red-500">
+        Error loading user data: {error?.data?.message || 'Unknown error'}
+      </div>
+    );
 
   return (
-    <div>
-    <div className="container mx-auto mt-10 bg-white shadow-md rounded-lg">
-      <div className="flex gap-6">
-        <div className="w-3/4">
+    <div className="container mx-auto mt-10 p-4 sm:p-6 bg-white shadow-md rounded-lg">
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-3/4">
           <ProfileForm
             userData={userData}
             isEditing={isEditing}
@@ -71,7 +73,6 @@ const UserProfile = () => {
         severity={notificationSeverity}
         message={notificationMessage}
       />
-      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetBusTypesQuery, useDeleteBusTypeMutation } from '../../../../Redux/Bustype/BusTypeApiSlice';
-import { Drawer, Button, Table, Popconfirm, Spin, Typography, Empty } from 'antd';
+import { Drawer, Button, Table, Popconfirm, Spin, Typography, Empty, Modal } from 'antd';
 import BusTypeForm from './BusTypeForm';
 import Notification from '../../../../components/shared/Notification/Notification';
 
@@ -16,37 +16,51 @@ const BusTypeList = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedBusType, setSelectedBusType] = useState(null);
   const [notification, setNotification] = useState({ open: false, severity: 'info', message: '' });
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentImages, setCurrentImages] = useState([]);
 
-  // Mở drawer với trạng thái thêm mới
+  // Open drawer for adding a new bus type
   const showDrawer = () => {
     setSelectedBusType(null);
     setDrawerVisible(true);
   };
 
-  // Đóng drawer và hiện thông báo
+  // Close drawer and show notification if successful
   const closeDrawer = (successMessage) => {
     setDrawerVisible(false);
     if (successMessage) {
       setNotification({ open: true, severity: 'success', message: successMessage });
-      refetch(); // Cập nhật lại danh sách nếu có thay đổi
+      refetch();
     }
   };
 
-  // Chỉnh sửa loại xe
+  // Open drawer for editing a bus type
   const handleEdit = (busType) => {
     setSelectedBusType(busType);
     setDrawerVisible(true);
   };
 
-  // Xóa loại xe
+  // Delete a bus type
   const handleDelete = async (busTypeId) => {
     try {
       await deleteBusType(busTypeId).unwrap();
       setNotification({ open: true, severity: 'success', message: 'Xóa loại xe thành công!' });
-      refetch(); // Lấy lại danh sách sau khi xóa
+      refetch();
     } catch (error) {
       setNotification({ open: true, severity: 'error', message: `Lỗi khi xóa loại xe: ${error.message}` });
     }
+  };
+
+  // Show modal with all images of a bus type
+  const showModal = (images) => {
+    setCurrentImages(images);
+    setIsModalVisible(true);
+  };
+
+  // Close modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCurrentImages([]);
   };
 
   const columns = [
@@ -69,6 +83,28 @@ const BusTypeList = () => {
       title: 'Số Tầng',
       dataIndex: 'floorCount',
       key: 'floorCount',
+    },
+    {
+      title: 'Hình Ảnh',
+      dataIndex: 'images',
+      key: 'images',
+      render: (images) => (
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {images.slice(0, 2).map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Bus type preview ${index + 1}`}
+              style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '4px' }}
+            />
+          ))}
+          {images.length > 2 && (
+            <Button type="link" onClick={() => showModal(images)}>
+              Xem Thêm
+            </Button>
+          )}
+        </div>
+      ),
     },
     {
       title: 'Thao Tác',
@@ -130,6 +166,24 @@ const BusTypeList = () => {
           closeDrawer={(successMessage) => closeDrawer(successMessage)}
         />
       </Drawer>
+
+      <Modal
+        title="Tất Cả Hình Ảnh"
+        visible={isModalVisible}
+        footer={null}
+        onCancel={handleCancel}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+          {currentImages.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Bus type full view ${index + 1}`}
+              style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '4px' }}
+            />
+          ))}
+        </div>
+      </Modal>
 
       <Notification
         open={notification.open}

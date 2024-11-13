@@ -6,7 +6,7 @@ const Breadcrumbs = () => {
 
   const breadcrumbsMap = {
     '/user/profile': 'Thông tin tài khoản',
-    '/user/membership': 'Thành viên Thường',
+    '/user/change-password': 'Đổi mật khẩu',
     '/user/ticket-buy': 'Đơn hàng của tôi',
     '/user/offers': 'Ưu đãi',
     '/user/cards': 'Quản lý thẻ',
