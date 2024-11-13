@@ -4,6 +4,7 @@ import Loader from '../shared/Loader/Loader';
 import ErrorBoundary from '../shared/ErrorBoundary/ErrorBoundary';
 import PrivateRoute from './PrivateRoutes';
 
+
 // Lazy-loaded components
 const HomePage = React.lazy(() => import('../home/HomePage'));
 const Login = React.lazy(() => import('../auth/Login'));
@@ -30,6 +31,7 @@ const Location = React.lazy(() => import('components/SuperAdmin/navSideBar/Locat
 const Employee = React.lazy(() => import('components/CompanyAdmin/pages/Employee'));
 
 
+const ChangePassword = React.lazy(()=> import('components/auth/sidebar/ChangePassword'))
 const SearchPage = React.lazy(()=> import ('components/home/components/SearchResult/SearchPage'));
 const BookingPage = React.lazy(()=>import ('components/home/components/Booking/BookingPage'));
 
@@ -81,6 +83,7 @@ const AppRoutes = ({ userInfo }) => {
             <Route path="profile" element={<UserProfile />} />
             <Route path="ticket-buy" element={<TicketBookingPage />} />
             <Route path="offers" element={<OffersPage />} />
+            <Route path="change-password" element={<ChangePassword />} />
           </Route>
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/search-page" element={<SearchPage />} />

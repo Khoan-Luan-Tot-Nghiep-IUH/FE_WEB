@@ -54,7 +54,7 @@ export const apiSlice = createApi({
     }),
     verifyOtp: builder.mutation({
       query: (otpData) => ({
-        url: '/user/verify',  // Đảm bảo đúng URL
+        url: '/user/verify', 
         method: 'POST',
         body: otpData,
       }),
@@ -62,7 +62,6 @@ export const apiSlice = createApi({
     getAllUsersByLastLogin: builder.query({
       query: () => '/user/getLastLoginUser',
       providesTags: (result) => {
-        // Kiểm tra result và users trước khi dùng map
         if (!result || !Array.isArray(result.users)) {
           return [{ type: 'User', id: 'LIST' }];
         }
@@ -71,6 +70,28 @@ export const apiSlice = createApi({
           { type: 'User', id: 'LIST' }
         ];
       },
+    }),
+    changePassword: builder.mutation({
+      query: (passwordData) => ({
+        url: '/user/change-password',
+        method: 'PUT',
+        body: passwordData,
+      }),
+    }),
+    redeemPointsForVoucher: builder.mutation({
+      query: (pointsData) => ({
+        url: '/vouchers/redeem',
+        method: 'POST',
+        body: pointsData,
+      }),
+    }),
+
+    getAllVouchers: builder.query({
+      query: () => '/vouchers/user-vouchers',
+      providesTags: (result) =>
+        result
+          ? [...result.map(({ _id }) => ({ type: 'Voucher', id: _id })), { type: 'Voucher', id: 'LIST' }]
+          : [{ type: 'Voucher', id: 'LIST' }],
     }),
   }),
 });
@@ -81,5 +102,8 @@ export const {
   useUpdateUserProfileMutation,
   useRegisterMutation, 
   useVerifyOtpMutation,
-  useGetAllUsersByLastLoginQuery 
+  useGetAllUsersByLastLoginQuery,
+  useChangePasswordMutation,
+  useRedeemPointsForVoucherMutation,
+  useGetAllVouchersQuery,    
 } = apiSlice;
