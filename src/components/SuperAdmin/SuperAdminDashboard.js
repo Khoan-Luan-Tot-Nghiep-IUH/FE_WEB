@@ -9,10 +9,11 @@ import './SuperAdminDashboard.css';
 import Statistics from './navSideBar/Statistics';
 import Settings from './navSideBar/Settings';
 import Location from './navSideBar/Location';
-
+import Require from './navSideBar/Require';
+import FAQManagement from './navSideBar/FAQManagement';
 const SuperAdminDashboard = () => {
   const [activeContent, setActiveContent] = useState('default');
-  const [collapsed, setCollapsed] = useState(false); // Trạng thái Sidebar thu nhỏ/mở rộng
+  const [collapsed, setCollapsed] = useState(false); 
 
   useEffect(() => {
     notify();
@@ -50,8 +51,12 @@ const SuperAdminDashboard = () => {
         return <Statistics />;
       case 'Location':
         return <Location/>
+      case 'require':
+          return <Require />;
       case 'settings':
         return <Settings />;
+      case 'faq':
+          return <FAQManagement />;
       case 'reports':
         return <div>Báo cáo Content</div>;
       default:

@@ -20,7 +20,23 @@ export const revenueApi = createApi({
         params: { fromDate, toDate },
       }),
     }),
+    getRevenueByCompany: builder.query({
+      query: () => ({
+        url: '/system-settings/superadmin/revenue/payment-method',
+        method: 'GET',
+      }),
+    }),
+    getCancellationStatistics: builder.query({
+      query: () => ({
+        url: '/system-settings/statistics/cancellations',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGetRevenueStatisticsQuery } = revenueApi;
+export const { 
+  useGetRevenueStatisticsQuery,
+  useGetRevenueByCompanyQuery,
+  useGetCancellationStatisticsQuery
+ } = revenueApi;

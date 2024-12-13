@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useCreateTripMutation, useUpdateTripMutation, useGetTripByIdQuery } from '../../../../Redux/Trip/TripApiSlice';
 import { useGetLocationsQuery } from '../../../../Redux/Location/locationApiSlice';
 import { useGetBusTypesQuery } from '../../../../Redux/Bustype/BusTypeApiSlice';
-import { formatCurrency,timeUtils} from '../../../../utils/formatUtils';
+import { formatCurrency, timeUtils } from '../../../../utils/formatUtils';
 import moment from 'moment';
 
 const TripForm = ({ tripId, closeDrawer }) => {
@@ -25,21 +25,23 @@ const TripForm = ({ tripId, closeDrawer }) => {
     arrivalTime: new Date(),
     basePrice: '',
     isRoundTrip: false,
+    pickupPoints: [],
+    dropOffPoints: [],
   });
 
   useEffect(() => {
     if (tripData && tripData.data) {
       const trip = tripData.data.trip;
-      console.log('Server time:', trip.departureTime);
-      console.log('Parsed time for form:', timeUtils.parseUTCTimeForForm(trip.departureTime));
       setFormData({
         departureLocation: trip?.departureLocation?._id || '',
         arrivalLocation: trip?.arrivalLocation?._id || '',
         busType: trip?.busType?._id || '',
         departureTime: timeUtils.parseUTCTimeForForm(trip.departureTime),
         arrivalTime: timeUtils.parseUTCTimeForForm(trip.arrivalTime),
-         basePrice: trip?.basePrice,
+        basePrice: trip?.basePrice,
         isRoundTrip: trip?.isRoundTrip || false,
+        pickupPoints: trip?.pickupPoints || [],
+        dropOffPoints: trip?.dropOffPoints || [],
       });
     }
   }, [tripData]);
@@ -58,14 +60,82 @@ const TripForm = ({ tripId, closeDrawer }) => {
       [name]: date,
     });
   };
-  
+
+  // Tính toán thời gian tự động cho điểm đón
+  const calculatePickupTimes = (departureTime, pickupPoints) => {
+    const departureMoment = moment(departureTime);
+    return pickupPoints.map((point, index) => {
+      const timeOffset = index * 15; // Giả định mỗi điểm cách nhau 15 phút
+      return {
+        ...point,
+        time: departureMoment.clone().add(timeOffset, 'minutes').format('HH:mm'),
+      };
+    });
+  };
+
+  // Tính toán thời gian tự động cho điểm trả
+  const calculateDropOffTimes = (arrivalTime, dropOffPoints) => {
+    const arrivalMoment = moment(arrivalTime);
+    return dropOffPoints.map((point, index) => {
+      const timeOffset = (dropOffPoints.length - 1 - index) * 15; // Tính ngược thời gian
+      return {
+        ...point,
+        time: arrivalMoment.clone().subtract(timeOffset, 'minutes').format('HH:mm'),
+      };
+    });
+  };
+
+  // Xử lý thêm/xóa/chỉnh sửa điểm đón
+  const handleAddPickup = () => {
+    setFormData({
+      ...formData,
+      pickupPoints: [...formData.pickupPoints, { location: '', note: '' }],
+    });
+  };
+
+  const handleRemovePickup = (index) => {
+    const updatedPickupPoints = [...formData.pickupPoints];
+    updatedPickupPoints.splice(index, 1);
+    setFormData({ ...formData, pickupPoints: updatedPickupPoints });
+  };
+
+  const handlePickupChange = (index, field, value) => {
+    const updatedPickupPoints = [...formData.pickupPoints];
+    updatedPickupPoints[index][field] = value;
+    setFormData({ ...formData, pickupPoints: updatedPickupPoints });
+  };
+
+  // Xử lý thêm/xóa/chỉnh sửa điểm trả
+  const handleAddDropOff = () => {
+    setFormData({
+      ...formData,
+      dropOffPoints: [...formData.dropOffPoints, { location: '', note: '' }],
+    });
+  };
+
+  const handleRemoveDropOff = (index) => {
+    const updatedDropOffPoints = [...formData.dropOffPoints];
+    updatedDropOffPoints.splice(index, 1);
+    setFormData({ ...formData, dropOffPoints: updatedDropOffPoints });
+  };
+
+  const handleDropOffChange = (index, field, value) => {
+    const updatedDropOffPoints = [...formData.dropOffPoints];
+    updatedDropOffPoints[index][field] = value;
+    setFormData({ ...formData, dropOffPoints: updatedDropOffPoints });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Tự động tính toán thời gian cho điểm đón và điểm trả
+      const pickupPointsWithTimes = calculatePickupTimes(formData.departureTime, formData.pickupPoints);
+      const dropOffPointsWithTimes = calculateDropOffTimes(formData.arrivalTime, formData.dropOffPoints);
+
       const tripDetails = {
         ...formData,
-        companyId,
+        pickupPoints: pickupPointsWithTimes,
+        dropOffPoints: dropOffPointsWithTimes,
         departureTime: timeUtils.formatTimeForServer(formData.departureTime),
         arrivalTime: timeUtils.formatTimeForServer(formData.arrivalTime),
         basePrice: parseInt(formData.basePrice, 10),
@@ -83,9 +153,7 @@ const TripForm = ({ tripId, closeDrawer }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-gray-700">{tripId ? 'Sửa Chuyến Đi' : 'Tạo Chuyến Đi Mới'}</h1>
-
+    <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-lg">
       {/* Điểm Khởi Hành */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Điểm Khởi Hành:</label>
@@ -97,11 +165,12 @@ const TripForm = ({ tripId, closeDrawer }) => {
           required
         >
           <option value="">Chọn điểm khởi hành</option>
-          {!isLoadingLocations && locationData?.data?.map((location) => (
-            <option key={location._id} value={location._id}>
-              {location.name} - {location.city}
-            </option>
-          ))}
+          {!isLoadingLocations &&
+            locationData?.data?.map((location) => (
+              <option key={location._id} value={location._id}>
+                {location.name} - {location.city}
+              </option>
+            ))}
         </select>
       </div>
 
@@ -116,16 +185,119 @@ const TripForm = ({ tripId, closeDrawer }) => {
           required
         >
           <option value="">Chọn điểm đến</option>
-          {!isLoadingLocations && locationData?.data?.map((location) => (
-            <option key={location._id} value={location._id}>
-              {location.name} - {location.city}
-            </option>
-          ))}
+          {!isLoadingLocations &&
+            locationData?.data?.map((location) => (
+              <option key={location._id} value={location._id}>
+                {location.name} - {location.city}
+              </option>
+            ))}
         </select>
       </div>
+  <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700">Thời Gian Khởi Hành:</label>
+        <DatePicker
+          selected={formData.departureTime}
+          onChange={(date) => handleDateChange('departureTime', date)}
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={15}
+          dateFormat="dd/MM/yyyy HH:mm"
+          className="mt-2 p-3 border rounded w-full focus:ring focus:ring-blue-500"
+          required
+        />
+      </div>
 
-      {/* Loại Xe */}
+      {/* Thời Gian Đến */}
       <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700">Thời Gian Đến:</label>
+        <DatePicker
+          selected={formData.arrivalTime}
+          onChange={(date) => handleDateChange('arrivalTime', date)}
+          showTimeSelect
+          timeFormat="HH:mm"
+          timeIntervals={15}
+          dateFormat="dd/MM/yyyy HH:mm"
+          className="mt-2 p-3 border rounded w-full focus:ring focus:ring-blue-500"
+          required
+        />
+      </div>
+      {/* Điểm Đón */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700">Điểm Đón:</label>
+        {formData.pickupPoints.map((point, index) => (
+          <div key={index} className="flex items-center mb-2">
+            <input
+              type="text"
+              placeholder="Địa điểm"
+              value={point.location}
+              onChange={(e) => handlePickupChange(index, 'location', e.target.value)}
+              className="mr-2 p-2 border rounded w-2/3 focus:ring focus:ring-green-500"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Ghi chú"
+              value={point.note}
+              onChange={(e) => handlePickupChange(index, 'note', e.target.value)}
+              className="mr-2 p-2 border rounded w-1/3 focus:ring focus:ring-green-500"
+            />
+            <button
+              type="button"
+              onClick={() => handleRemovePickup(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Xóa
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddPickup}
+          className="mt-2 text-blue-500 hover:text-blue-700"
+        >
+          + Thêm Điểm Đón
+        </button>
+      </div>
+
+      {/* Điểm Trả */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700">Điểm Trả:</label>
+        {formData.dropOffPoints.map((point, index) => (
+          <div key={index} className="flex items-center mb-2">
+            <input
+              type="text"
+              placeholder="Địa điểm"
+              value={point.location}
+              onChange={(e) => handleDropOffChange(index, 'location', e.target.value)}
+              className="mr-2 p-2 border rounded w-2/3 focus:ring focus:ring-green-500"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Ghi chú"
+              value={point.note}
+              onChange={(e) => handleDropOffChange(index, 'note', e.target.value)}
+              className="mr-2 p-2 border rounded w-1/3 focus:ring focus:ring-green-500"
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveDropOff(index)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Xóa
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddDropOff}
+          className="mt-2 text-blue-500 hover:text-blue-700"
+        >
+          + Thêm Điểm Trả
+        </button>
+      </div>
+ {/* Loại Xe */}
+ <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Loại Xe:</label>
         {isLoadingBusTypes ? (
           <p>Đang tải danh sách loại xe...</p>
@@ -148,42 +320,6 @@ const TripForm = ({ tripId, closeDrawer }) => {
           </select>
         )}
       </div>
-
-      {/* Thời Gian Khởi Hành */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700">Thời Gian Khởi Hành:</label>
-          <DatePicker
-            selected={formData.departureTime}
-            onChange={(date) => handleDateChange('departureTime', date)}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            dateFormat="dd/MM/yyyy HH:mm"
-            className="mt-2 p-3 border border-gray-300 text-gray-700 rounded-lg shadow-sm w-full 
-                   focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200 
-                   transition duration-200 ease-in-out hover:shadow-lg"
-            required
-          />
-      </div>
-
-      {/* Thời Gian Đến */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700">Thời Gian Đến:</label>
-        <DatePicker
-          selected={formData.arrivalTime}
-          onChange={(date) => handleDateChange('arrivalTime', date)}
-          showTimeSelect
-          timeFormat="HH:mm"
-          timeIntervals={15}
-          dateFormat="dd/MM/yyyy HH:mm"
-          className="mt-2 p-3 border border-gray-300 text-gray-700 rounded-lg shadow-sm w-full 
-                   focus:outline-none focus:border-blue-400 focus:ring focus:ring-blue-200 
-                   transition duration-200 ease-in-out hover:shadow-lg"
-          required
-        />
-        
-      </div>
-
       {/* Giá Vé Cơ Bản */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700">Giá Vé Cơ Bản:</label>

@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// Lấy base URL từ biến môi trường
+
 const baseUrl = process.env.REACT_APP_API_URL;
 
 export const companyApiSlice = createApi({
@@ -121,13 +121,73 @@ export const companyApiSlice = createApi({
           `/companies/top-booking-users-by-timeframe?year=${year}&timeFrame=${timeFrame}`,
       }),
       calculateAndRecordDriverSalary: builder.mutation({
-        query: ({ userId, startDate, endDate }) => ({
+        query: ({ userId, startDate, endDate , bonuses , deductions }) => ({
           url: '/companies/calculate-salary',
           method: 'POST',
-          body: { userId, startDate, endDate },
+          body: { userId, startDate, endDate ,bonuses ,deductions },
         }),
       }),
+     getNotifications: builder.query({
+        query: ({ page = 1, limit = 10 }) => {
+                return `/companies/notifications?page=${page}&limit=${limit}`;
+            },
     }),
+    getBookingStatsAndUsers: builder.query({
+      query: () => '/companies/bookings',
+    }),
+    getTripRequestsForCompany: builder.query({
+      query: () => '/companies/trip-requests',
+    }),
+   
+    approveTripRequest: builder.mutation({
+    query: ({ requestId, ...data }) => ({
+      url: `/companies/trip-requests/${requestId}/approve`,
+      method: 'PATCH',
+      body: data,
+    }),
+    }),
+    rejectTripRequest: builder.mutation({
+      query: ({ requestId, reason }) => ({
+        url: `/companies/trip-requests/${requestId}/reject`,
+        method: 'PATCH',
+        body: { reason },
+      }),
+    }),
+    getRevenueComparison: builder.query({
+      query: () => '/companies/revenue/comparison',
+    }),
+    getCancelledStats: builder.query({
+      query: () => "/companies/cancelled-stats",
+    }),
+    getCompanyExpenses: builder.query({
+      query: () => '/companies/expenses',
+    }),
+    updateExpenseStatus: builder.mutation({
+      query: ({ expenseId, status }) => ({
+        url: `/companies/expenses/${expenseId}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+    }),
+    getExpenseComparison: builder.query({
+      query: () => '/companies/expenses/comparison',
+    }),
+    getTripPassengers: builder.query({
+      query: (tripId) => `/companies/trips/${tripId}/passengers`,
+    }),
+    collectPayment: builder.mutation({
+    query: (bookingId) => ({
+        url: `/companies/bookings/${bookingId}/collect-payment`,
+        method: 'PATCH',
+    }),
+  }),
+  getCompanyFeedbacks: builder.query({
+    query: ({ page = 1, limit = 10 }) => `/companies/feedbacks?page=${page}&limit=${limit}`,
+  }),
+  getRankedRoutes: builder.query({
+    query: () => '/companies/most-booked-route',
+  }),
+  }),
 });
 
 export const {
@@ -150,4 +210,18 @@ export const {
   useGetTopBookingUsersQuery,
   useGetTopBookingUsersByTimeFrameQuery,
   useCalculateAndRecordDriverSalaryMutation,
+  useGetNotificationsQuery,
+  useGetBookingStatsAndUsersQuery,
+  useGetTripRequestsForCompanyQuery,
+  useApproveTripRequestMutation,
+  useRejectTripRequestMutation, 
+  useGetRevenueComparisonQuery,
+  useGetCancelledStatsQuery,
+  useGetCompanyExpensesQuery, 
+  useUpdateExpenseStatusMutation,
+  useGetExpenseComparisonQuery,
+  useGetTripPassengersQuery,
+  useCollectPaymentMutation,
+  useGetCompanyFeedbacksQuery,
+  useGetRankedRoutesQuery,
 } = companyApiSlice;

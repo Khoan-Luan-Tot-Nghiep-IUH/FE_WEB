@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import Loader from '../../shared/Loader/Loader'; 
 import LocationInput from './LocationInput';
 
+import { faBus, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 const MainSection = ({ onSearch }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,7 +27,7 @@ const MainSection = ({ onSearch }) => {
   const [returnDate, setReturnDate] = useState(() => {
     const storedDate = localStorage.getItem('returnDate');
     return storedDate ? new Date(storedDate) : null;
-  });
+  }); 
 
   const { data: locations, isLoading: isLocationsLoading, error } = useGetLocationsQuery();
 
@@ -101,13 +102,14 @@ const MainSection = ({ onSearch }) => {
           </a>
         </div>
 
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2">
           <LocationInput
             label="Nơi xuất phát"
             value={fromLocation}
             onChange={(e) => setFromLocation(e.target.value)}
             placeholder="Chọn nơi xuất phát"
-            iconClass="fas fa-circle text-blue-500"
+            icon={faBus}
+            iconColor="text-blue-500"
             options={locations?.data}
             isOpen={openInput === 'fromLocation'}
             onToggle={() => setOpenInput(openInput === 'fromLocation' ? null : 'fromLocation')}
@@ -128,7 +130,8 @@ const MainSection = ({ onSearch }) => {
             value={toLocation}
             onChange={(e) => setToLocation(e.target.value)}
             placeholder="Chọn nơi đến"
-            iconClass="fas fa-map-marker-alt text-red-500"
+            icon={faMapMarkerAlt}
+            iconColor="text-red-500"
             options={locations?.data}
             isOpen={openInput === 'toLocation'}
             onToggle={() => setOpenInput(openInput === 'toLocation' ? null : 'toLocation')}

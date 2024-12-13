@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const LocationInput = ({ label, value, onChange, options, placeholder, iconClass, isOpen, onToggle }) => {
+const LocationInput = ({ label, value, onChange, options, placeholder, icon, isOpen, onToggle, iconColor }) => {
   const [recentLocations, setRecentLocations] = useState([]);
 
   useEffect(() => {
@@ -26,8 +27,9 @@ const LocationInput = ({ label, value, onChange, options, placeholder, iconClass
   return (
     <div className="relative w-full md:flex-1">
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <div className="relative flex items-center border-2 rounded-lg shadow-md py-2 px-4 bg-white" onClick={onToggle}>
-        <span className={`mr-2 ${iconClass}`} />
+      <div className="relative flex items-center border-2 rounded-lg shadow-md py-2 px-2 bg-white" onClick={onToggle}>
+        {/* Áp dụng màu sắc từ iconColor */}
+        <FontAwesomeIcon icon={icon} className={`mr-2 ${iconColor}`} />
         <button className="flex-grow text-left bg-transparent focus:outline-none">
           {value || placeholder}
         </button>

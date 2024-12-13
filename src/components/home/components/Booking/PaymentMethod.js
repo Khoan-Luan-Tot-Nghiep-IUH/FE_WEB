@@ -50,30 +50,23 @@ const PaymentMethods = () => {
         setConfirmDialog(false);
     };
 
-    useEffect(() => {
-        if (isSuccess && paymentMethod === 'OnBoard') {
-            showNotification('Đặt chỗ thành công! Bạn sẽ thanh toán khi lên xe.');
-            navigate('/user/ticket-buy'); 
-        }
-    }, [isSuccess, paymentMethod, navigate]);
-
     const handleBooking = async () => {
         if (!paymentMethod) {
             showNotification('Vui lòng chọn phương thức thanh toán', 'error');
             return;
         }
-
+    
         if (!bookingId) {
             showNotification('Dữ liệu không hợp lệ', 'error');
             return;
         }
-
+    
         const bookingData = {
             bookingId,
             paymentMethod,
             voucherCode: selectedVoucher?.code || null,
         };
-
+    
         try {
             const result = await createBooking(bookingData).unwrap();
             if (paymentMethod === 'Online') {
@@ -81,24 +74,55 @@ const PaymentMethods = () => {
                 setTimeout(() => {
                     window.open(result.data.paymentLink, "_self");
                 }, 2000);
+            } else if (paymentMethod === 'OnBoard') {
+                // Gửi thông báo thành công
+                showNotification('Đặt chỗ thành công! Di chuyển đến lịch sử đặt vé.', 'success');
+                
+                // Di chuyển đến `/user/ticket-buy` sau 2 giây và gửi thông tin
+                setTimeout(() => {
+                    navigate('/user/ticket-buy', {
+                        state: {
+                            orderCode: result.data.orderCode,
+                            trip: result.data.trip,
+                            seatNumbers: result.data.seatNumbers,
+                            totalPrice: result.data.totalPrice,
+                            paymentMethod: result.data.paymentMethod,
+                        },
+                    });
+                }, 1000);
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Lỗi khi đặt chỗ:', error);
             showNotification('Có lỗi xảy ra khi đặt chỗ. Vui lòng thử lại.', 'error');
         }
     };
-
+    
     const handlePaymentRedirect = () => {
         if (data?.data?.paymentLink) {
             window.open(data.data.paymentLink, "_self");
         }
     };
+    const handleVoucherSelect = (voucher) => {
+        setSelectedVoucher(voucher);
+        setVoucherListVisible(false);
+    };
+
+    const handleRemoveVoucher = () => {
+        setSelectedVoucher(null);
+        showNotification('Đã gỡ bỏ voucher.', 'info');
+    };
 
     return (
         <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
-            <CountdownTimer endTime={expiryTime} onTimeout={handleTimeout} />
-
+           <CountdownTimer 
+                endTime={expiryTime} 
+                onTimeout={() => {
+                    showNotification('Thời gian thanh toán đã hết. Bạn sẽ được chuyển về trang chủ.', 'error');
+                    setTimeout(() => {
+                        navigate('/'); 
+                    }, 3000); 
+                }} 
+            />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white p-8 rounded-xl shadow-lg">
                     <h1 className="text-2xl font-semibold text-gray-800 mb-6">Phương thức thanh toán</h1>
@@ -154,39 +178,65 @@ const PaymentMethods = () => {
                 </div>
 
                 <div className="bg-white p-8 rounded-xl shadow-lg">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-6">Thông tin thanh toán</h2>
-                    <button 
-                        className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300 mb-4"
-                        onClick={() => setVoucherListVisible(!isVoucherListVisible)}
-                    >
-                        {isVoucherListVisible ? 'Ẩn voucher' : 'Hiển thị voucher'}
-                    </button>
+    <h2 className="text-2xl font-semibold text-gray-800 mb-6">Thông tin thanh toán</h2>
 
-                    <div className={`transition-all duration-300 ease-in-out transform ${isVoucherListVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-                        {isVoucherListVisible && (
-                            <VoucherList onSelectVoucher={(voucher) => {
-                                setSelectedVoucher(voucher);
-                                setVoucherListVisible(false); 
-                            }} />
-                        )}
-                    </div>
-                    {selectedVoucher && (
-                        <div className="mt-4 p-4 bg-gray-100 border border-gray-200 rounded-lg">
-                            <p className="text-sm text-gray-600">Voucher áp dụng: <span className="font-semibold">{selectedVoucher.code}</span></p>
-                            <p className="text-sm text-gray-600">Giảm giá: <span className="font-semibold">{selectedVoucher.discount}%</span></p>
-                        </div>
-                    )}
+    {/* Voucher Section */}
+    <button
+        className="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition duration-300 mb-4"
+        onClick={() => setVoucherListVisible(!isVoucherListVisible)}
+    >
+        {isVoucherListVisible ? 'Ẩn voucher' : 'Chọn voucher'}
+    </button>
 
-                    <div className="mt-6 p-6 border rounded-lg shadow-sm bg-gray-100 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-700 mb-2">Tổng tiền</h2>
-                            <p className="text-2xl font-bold text-blue-600">{discountedPrice ? `${discountedPrice.toLocaleString('vi-VN')} VND` : 'Chưa có thông tin giá'}</p>
-                        </div>
-                        <FaMoneyCheckAlt className="text-4xl text-blue-600" />
-                    </div>
-                </div>
+    {isVoucherListVisible && (
+        <div className="mb-4">
+            <VoucherList onSelectVoucher={handleVoucherSelect} />
+        </div>
+    )}
+
+    {selectedVoucher && (
+        <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
+            <div>
+                <p className="text-sm text-gray-600">Mã voucher: <span className="font-semibold">{selectedVoucher.code}</span></p>
+                <p className="text-sm text-gray-600">Giảm giá: <span className="font-semibold">{selectedVoucher.discount}%</span></p>
             </div>
+            <button
+                className="text-red-500 text-sm font-medium hover:underline"
+                onClick={handleRemoveVoucher}
+            >
+                Gỡ bỏ
+            </button>
+        </div>
+    )}
 
+    {/* Payment Summary */}
+    <div className="border-t pt-4">
+        <div className="flex justify-between items-center mb-2">
+            <p className="text-sm text-gray-500">Giá gốc:</p>
+            <p className={`text-lg font-semibold ${selectedVoucher ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
+                {originalTotalPrice.toLocaleString('vi-VN')} VND
+            </p>
+        </div>
+
+        {selectedVoucher && (
+            <div className="flex justify-between items-center mb-2">
+                <p className="text-sm text-gray-500">Giảm giá:</p>
+                <p className="text-lg font-semibold text-green-500">
+                    -{(originalTotalPrice * selectedVoucher.discount / 100).toLocaleString('vi-VN')} VND
+                </p>
+            </div>
+        )}
+
+        <div className="flex justify-between items-center">
+            <p className="text-sm font-semibold text-gray-700">Tổng thanh toán:</p>
+            <p className="text-xl font-bold text-blue-600">
+                {discountedPrice.toLocaleString('vi-VN')} VND
+            </p>
+        </div>
+    </div>
+</div>
+
+            </div>
             <Notification
                 open={notification.open}
                 onClose={closeNotification}

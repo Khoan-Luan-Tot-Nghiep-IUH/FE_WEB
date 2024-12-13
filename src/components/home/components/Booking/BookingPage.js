@@ -89,15 +89,8 @@ const BookingPage = () => {
         {/* Nội dung chính */}
         <div className="lg:col-span-2">
           <BookingForm selectedSeats={selectedSeats} totalPrice={totalPrice} trip={trip} />
-
-          {/* Tiện ích bổ sung */}
-          <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-            <h3 className="text-xl font-semibold mb-4">Tiện ích</h3>
-            {/* Nội dung khác của phần tiện ích */}
-          </div>
         </div>
 
-        {/* Khu vực tổng quan */}
         <div className="lg:col-span-1">
           <BookingSummary totalPrice={totalPrice} selectedSeats={selectedSeats} />
           <div className="my-6"></div>
@@ -105,7 +98,6 @@ const BookingPage = () => {
         </div>
       </div>
 
-      {/* Modal xác nhận giải phóng ghế */}
       <Modal
         title="Xác nhận giải phóng ghế"
         visible={isModalVisible}
@@ -126,9 +118,6 @@ const BookingPage = () => {
               disabled={isLoading}
             >
               {isLoading ? 'Đang xử lý...' : 'Tiếp tục đặt vé một chiều'}
-            </button>
-            <button className="bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-yellow-600 transition duration-200 w-1/2">
-              Đặt thêm chiều về
             </button>
           </div>
           <div className="px-4 pb-6 flex justify-between items-center">

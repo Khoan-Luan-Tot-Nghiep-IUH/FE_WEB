@@ -11,13 +11,13 @@ const TripCard = ({ trip, isOpen, onToggle, onReleaseSeats }) => {
   const socketRef = useRef(null);
   const userInfo = useSelector((state) => state.user.userInfo);
   const userId = userInfo?.id;
-
+  const [expandedTripId, setExpandedTripId] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [seatsData, setSeatsData] = useState({ lower: [], upper: [] }); 
   const [lockTimers, setLockTimers] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [totalPrice, setTotalPrice] = useState(0);
   const { data: initialSeatsData, isLoading: isLoadingSeats } = useGetSeatsByTripIdQuery(trip._id, {
     skip: !isOpen,
   });
@@ -169,8 +169,7 @@ const TripCard = ({ trip, isOpen, onToggle, onReleaseSeats }) => {
 
         try {
             console.log("Selected seat number:", seatNumber);
-            
-            // Nếu ghế đã được chọn, người dùng muốn bỏ chọn
+
             if (selectedSeats.includes(seatNumber)) {
                 const seat = [...seatsData.lower, ...seatsData.upper].find((seat) => seat.seatNumber === seatNumber);
                 if (!seat.isAvailable && seat.lockedBy && seat.lockedBy !== userId) {
@@ -205,14 +204,24 @@ const TripCard = ({ trip, isOpen, onToggle, onReleaseSeats }) => {
     navigate('/bookingconfirmation', {
       state: {
         selectedSeats,
-        totalPrice: selectedSeats.length * trip.basePrice,
+        totalPrice: calculateTotalPrice(),
         trip,
       },
     });
   }, [navigate, selectedSeats, trip]);
-
+  const calculateTotalPrice = () => {
+    return selectedSeats.reduce((total, seatNumber) => {
+      const seat = [...seatsData.lower, ...seatsData.upper].find(s => s.seatNumber === seatNumber);
+      return seat ? total + seat.price : total;
+    }, 0);
+  };
+  
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice());
+  }, [selectedSeats, seatsData]);
+  
   return (
-    <div className="bg-white rounded-lg shadow-lg mb-6 p-4 hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-lg  hover:shadow-xl transition-shadow duration-300">
       <TripDetails trip={trip} onToggle={onToggle} isOpen={isOpen} loading={loading} />
       {isOpen && (
         <SeatSelection
@@ -222,7 +231,7 @@ const TripCard = ({ trip, isOpen, onToggle, onReleaseSeats }) => {
           selectedSeats={selectedSeats}
           lockTimers={lockTimers}
           loading={loading}
-          totalPrice={selectedSeats.length * trip.basePrice}
+          totalPrice={calculateTotalPrice()} 
           handleContinue={handleContinue}
           error={error}
           userId={userId}

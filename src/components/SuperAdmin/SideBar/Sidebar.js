@@ -100,7 +100,17 @@ const Sidebar = ({ setActiveContent }) => {
             <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Địa điểm cho hệ thống</span>
           </li>
         </Tooltip>
-
+        <Tooltip title="Yêu cầu hợp tác" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('require')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaCogs className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Yêu cầu hợp tác</span>
+          </li>
+        </Tooltip>
         {/* Cài đặt */}
         <Tooltip title="Cài đặt" placement="right" visible={collapsed}>
           <li
@@ -111,6 +121,17 @@ const Sidebar = ({ setActiveContent }) => {
           >
             <FaCogs className="text-xl" />
             <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Cài đặt</span>
+          </li>
+        </Tooltip>
+        <Tooltip title="Hỗ trợ" placement="right" visible={collapsed}>
+          <li
+            onClick={() => handleNavigation('faq')}
+            className={`flex items-center p-3 hover:bg-gray-800 transition-all duration-300 cursor-pointer ${
+              collapsed ? 'justify-center' : 'justify-start'
+            }`}
+          >
+            <FaCogs className="text-xl" />
+            <span className={`${collapsed ? 'hidden' : 'ml-3'}`}>Hỗ trợ người dùng</span>
           </li>
         </Tooltip>
       </ul>
