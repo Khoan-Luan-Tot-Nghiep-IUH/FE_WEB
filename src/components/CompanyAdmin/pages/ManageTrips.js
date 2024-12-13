@@ -1,9 +1,14 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetTripsByCompanyQuery, useDeleteExpiredTripsForCompanyMutation } from '../../../Redux/Trip/TripApiSlice';
+import {
+  useGetTripsByCompanyQuery,
+  useDeleteExpiredTripsForCompanyMutation,
+} from '../../../Redux/Trip/TripApiSlice';
 import TripList from '../components/ManageTrip/TripList';
 import TripForm from '../components/ManageTrip/TripForm';
+import { useGetTripRequestsForCompanyQuery } from '../../../Redux/Company/companyApiSlice';
 import { Button, Drawer, Typography, Spin, Alert, notification, Popconfirm, Space, Tabs } from 'antd';
+import TripRequest from '../components/ManageTrip/TripRequest';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -15,6 +20,7 @@ const ManageTrips = () => {
   const [formMode, setFormMode] = useState('add');
   const [activeTab, setActiveTab] = useState('active');
 
+  // Fetch trips
   const { data = {}, isLoading, error, refetch } = useGetTripsByCompanyQuery(companyId, {
     skip: !companyId,
   });
@@ -33,6 +39,10 @@ const ManageTrips = () => {
     return { activeTrips: active, completedTrips: completed };
   }, [trips]);
 
+  // Fetch trip requests
+  const { data: tripRequestsData = {}, isLoading: isRequestsLoading } = useGetTripRequestsForCompanyQuery();
+  const tripRequests = tripRequestsData.data || [];
+
   const [deleteExpiredTripsForCompany, { isLoading: isDeleting }] = useDeleteExpiredTripsForCompanyMutation();
 
   const showNotification = useCallback((type, message, description) => {
@@ -48,20 +58,27 @@ const ManageTrips = () => {
     setIsDrawerOpen(true);
   }, []);
 
-  const closeDrawer = useCallback((success = false, message) => {
-    setIsDrawerOpen(false);
-    setEditingTripId(null);
-    setFormMode('add');
-    if (success) {
-      showNotification('success', 'Thành công', message);
-    }
-    refetch();
-  }, [showNotification, refetch]);
+  const closeDrawer = useCallback(
+    (success = false, message) => {
+      setIsDrawerOpen(false);
+      setEditingTripId(null);
+      setFormMode('add');
+      if (success) {
+        showNotification('success', 'Thành công', message);
+      }
+      refetch();
+    },
+    [showNotification, refetch]
+  );
 
   const handleDeleteExpiredTrips = async () => {
     try {
       const response = await deleteExpiredTripsForCompany().unwrap();
-      showNotification('success', 'Thành công', response.message || 'Các chuyến đi đã quá hạn đã được xóa thành công.');
+      showNotification(
+        'success',
+        'Thành công',
+        response.message || 'Các chuyến đi đã quá hạn đã được xóa thành công.'
+      );
       refetch();
     } catch (error) {
       const errorMessage = error?.data?.message || 'Có lỗi xảy ra khi xóa các chuyến đi đã quá hạn.';
@@ -76,7 +93,9 @@ const ManageTrips = () => {
   return (
     <div className="container mx-auto p-8 bg-white shadow-md rounded-md">
       <div className="header flex justify-between items-center mb-6">
-        <Title level={3} className="text-gray-800">Quản Lý Chuyến Đi</Title>
+        <Title level={3} className="text-gray-800">
+          Quản Lý Chuyến Đi
+        </Title>
         <Space size="large">
           {activeTab === 'active' && (
             <Popconfirm
@@ -85,10 +104,10 @@ const ManageTrips = () => {
               okText="Xóa"
               cancelText="Hủy"
             >
-              <Button 
-                type="primary" 
-                danger 
-                loading={isDeleting} 
+              <Button
+                type="primary"
+                danger
+                loading={isDeleting}
                 style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
               >
                 Xóa Chuyến Đi Quá Hạn
@@ -105,7 +124,7 @@ const ManageTrips = () => {
 
       <div className="content">
         <Tabs activeKey={activeTab} onChange={onTabChange} type="card">
-          <TabPane tab="Chuyến đi đang hoạt động" key="active">
+          <TabPane tab={`Chuyến đi đang hoạt động (${activeTrips.length})`} key="active">
             {isLoading ? (
               <div className="loading-spinner flex justify-center py-10">
                 <Spin tip="Đang tải danh sách chuyến đi..." size="large" />
@@ -119,16 +138,16 @@ const ManageTrips = () => {
                 className="error-alert"
               />
             ) : (
-              <TripList 
-                trips={activeTrips} 
-                openDrawer={openDrawer} 
-                hideAddButton={isDrawerOpen} 
-                showNotification={showNotification} 
-                refetch={refetch} 
+              <TripList
+                trips={activeTrips}
+                openDrawer={openDrawer}
+                hideAddButton={isDrawerOpen}
+                showNotification={showNotification}
+                refetch={refetch}
               />
             )}
           </TabPane>
-          <TabPane tab="Chuyến đi đã hoàn thành" key="completed">
+          <TabPane tab={`Chuyến đi đã hoàn thành (${completedTrips.length})`} key="completed">
             {isLoading ? (
               <div className="loading-spinner flex justify-center py-10">
                 <Spin tip="Đang tải danh sách chuyến đi..." size="large" />
@@ -142,15 +161,21 @@ const ManageTrips = () => {
                 className="error-alert"
               />
             ) : (
-              <TripList 
-                trips={completedTrips} 
-                openDrawer={openDrawer} 
-                hideAddButton={isDrawerOpen} 
-                showNotification={showNotification} 
-                refetch={refetch} 
+              <TripList
+                trips={completedTrips}
+                openDrawer={openDrawer}
+                hideAddButton={isDrawerOpen}
+                showNotification={showNotification}
+                refetch={refetch}
                 isCompleted
               />
             )}
+          </TabPane>
+          <TabPane
+            tab={`Yêu cầu mở chuyến đi (${isRequestsLoading ? '...' : tripRequests.length})`}
+            key="requests"
+          >
+            <TripRequest companyId={companyId} />
           </TabPane>
         </Tabs>
       </div>
@@ -175,3 +200,4 @@ const ManageTrips = () => {
 };
 
 export default ManageTrips;
+ 

@@ -45,9 +45,9 @@ const Sidebar = () => {
               <FaTags className="mr-3 text-lg" />
               <Link to="/user/offers" className="text-base" onClick={() => setIsOpen(false)}>Ưu đãi</Link>
             </li>
-            <li className={`flex items-center py-2 ${isActive('/cards') ? 'font-bold text-blue-600' : 'text-gray-600'} hover:text-blue-600 transition`}>
+            <li className={`flex items-center py-2 ${isActive('/user/requirements') ? 'font-bold text-blue-600' : 'text-gray-600'} hover:text-blue-600 transition`}>
               <FaCreditCard className="mr-3 text-lg" />
-              <Link to="/cards" className="text-base" onClick={() => setIsOpen(false)}>Quản lý thẻ</Link>
+              <Link to="/user/requirements" className="text-base" onClick={() => setIsOpen(false)}>Yêu cầu của bạn</Link>
             </li>
             <li className={`flex items-center py-2 ${isActive('/reviews') ? 'font-bold text-blue-600' : 'text-gray-600'} hover:text-blue-600 transition`}>
               <FaComment className="mr-3 text-lg" />

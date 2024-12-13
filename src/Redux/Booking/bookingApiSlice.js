@@ -47,6 +47,13 @@ export const bookingApiSlice = createApi({
       providesTags: ['Booking'],
       keepUnusedDataFor: 5,
     }),
+    cancelBooking: builder.mutation({
+      query: (bookingId) => ({
+        url: `/bookings/${bookingId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Booking'],
+    }),
   }),
 });
 
@@ -56,4 +63,5 @@ export const {
   usePaymentSuccessQuery,
   useGetBookingHistoryQuery,
   useGetBookingDraftsQuery,
+  useCancelBookingMutation,
 } = bookingApiSlice;

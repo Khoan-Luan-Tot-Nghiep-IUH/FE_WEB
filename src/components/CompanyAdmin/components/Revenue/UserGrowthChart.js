@@ -50,7 +50,7 @@ const Top10UsersTable = () => {
 
   const tableData = data?.data.map((user, index) => ({
     key: index,
-    userName: user._id.fullName,
+    userName: user?._id?.fullName,
     totalRevenue: user.totalRevenue,
   }));
 

@@ -9,7 +9,7 @@ const Breadcrumbs = () => {
     '/user/change-password': 'Đổi mật khẩu',
     '/user/ticket-buy': 'Đơn hàng của tôi',
     '/user/offers': 'Ưu đãi',
-    '/user/cards': 'Quản lý thẻ',
+    '/user/requirements': 'Yêu cầu của bạn',
     '/user/reviews': 'Nhận xét chuyến đi',
     '/logout': 'Đăng xuất',
   };

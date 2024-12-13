@@ -114,7 +114,7 @@ const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to="/companyadmin/employee"
+                to="/companyadmin/expense"
                 className={({ isActive }) =>
                   isActive
                     ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
@@ -122,13 +122,13 @@ const Sidebar = () => {
                 }
               >
                 <FaDollarSign className="mr-2 text-base" />
-                <span className="hidden md:inline-block">Quản Lí Nhân Viên</span>
+                <span className="hidden md:inline-block">Quản Lí Chi Phí</span>
               </NavLink>
             </li>
 
             <li>
               <NavLink
-                to="/invoices"
+                to="/companyadmin/bookings"
                 className={({ isActive }) =>
                   isActive
                     ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
@@ -136,12 +136,24 @@ const Sidebar = () => {
                 }
               >
                 <FaFileInvoice className="mr-2 text-base" />
-                <span className="hidden md:inline-block">Quản lý hóa đơn</span>
+                <span className="hidden md:inline-block">Quản lý đặt vé</span>
               </NavLink>
             </li>
-
+            <li>
+            <NavLink
+                to="/companyadmin/comment"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-gray-700 px-3 py-2 text-white flex items-center rounded-lg shadow-inner"
+                    : "px-3 py-2 hover:bg-gray-800 text-white flex items-center rounded-lg transition-all duration-200"
+                }
+              >
+                <FaHome className="mr-2 text-base" />
+                <span className="hidden md:inline-block">Đánh giá</span>
+              </NavLink>
+            </li>
             <hr className="border-gray-700 my-2" />
-
+            
             <li>
               <NavLink
                 to="/"

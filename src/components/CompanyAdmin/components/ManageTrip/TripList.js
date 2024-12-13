@@ -9,6 +9,7 @@ import Notification from '../../../../components/shared/Notification/Notificatio
 import { FaEdit, FaTrash, FaEye, FaUserPlus } from 'react-icons/fa';
 import { formatCurrency, timeUtils } from 'utils/formatUtils';
 import moment from 'moment-timezone';
+import TripBookings from './TripBookings';
 
 const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
   const dispatch = useDispatch();
@@ -18,6 +19,8 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedDrivers, setSelectedDrivers] = useState([]);
+
+  const [selectedTripId, setSelectedTripId] = useState(null);
 
   // Lấy danh sách tài xế từ API
   const { data: driversData, isLoading: isDriversLoading } = useGetDriversQuery();
@@ -52,6 +55,15 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
   const handleAddDriver = (trip) => {
     setSelectedTrip(trip);
     setIsModalVisible(true);
+  };
+
+
+  const handleViewBookings = (tripId) => {
+    setSelectedTripId(tripId);
+  };
+
+  const closeBookings = () => {
+    setSelectedTripId(null);
   };
 
   const handleConfirmAddDriver = async () => {
@@ -136,10 +148,14 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
 
         return (
           <div className="flex space-x-2">
-            <Tooltip title="Chi tiết">
-              <Link to={`/trips/${record._id}`} className="text-blue-500 hover:text-blue-700">
+           <Tooltip title="Xem đặt vé">
+              <Button
+                type="link"
+                className="text-blue-500 hover:text-blue-700"
+                onClick={() => handleViewBookings(record._id)}
+              >
                 <FaEye className="inline mr-1 text-lg align-middle" />
-              </Link>
+              </Button>
             </Tooltip>
             <Tooltip title="Sửa">
               <Button
@@ -196,6 +212,17 @@ const TripList = ({ trips, openDrawer, hideAddButton, refetch }) => {
         onClose={() => setNotification({ ...notification, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       />
+        {selectedTripId && (
+        <Modal
+          title="Danh sách đặt vé"
+          visible={!!selectedTripId}
+          onCancel={closeBookings}
+          footer={null}
+          width={800}
+        >
+          <TripBookings tripId={selectedTripId} onClose={closeBookings} />
+        </Modal>
+      )}
       <Modal
         title="Thêm tài xế"
         visible={isModalVisible}
